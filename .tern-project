@@ -1,0 +1,23 @@
+{
+	"ecmaVersion": 7,
+	"libs": [
+		"browser"
+	],
+	"loadEagerly": [
+		"*.js",
+		"*.mjs"
+	],
+	"dontLoad": [],
+	"plugins": {
+		"requirejs": {
+			"baseURL": "./",
+			"paths": {}
+		},
+		"es_modules": {},
+		"node": {},
+		"doc_comment": {
+			"fullDocs": true,
+			"strong": true
+		}
+	}
+}
