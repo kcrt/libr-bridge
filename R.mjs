@@ -46,7 +46,7 @@ export default class R{
 	 */
 	__initializeRfunc(){
 		let funclist = ['print', 'require', 'mean', 'cor', 'var', 'sd', 'sqrt', 'IQR', 'min', 'max',
-						'range', 'fisher.test', 't.test', 'prop.test', 'var.test', 'p.adjust',
+						'range', 'fisher.test', 't.test', 'wilcox.test', 'prop.test', 'var.test', 'p.adjust',
 						'sin', 'cos', 'tan', 'sum', 'c',
 						'is.na', 'is.nan', 'write.csv'];
 		this.f = {};
@@ -183,7 +183,7 @@ export default class R{
 	/**
 	 * Execute R code with try. This is more safe than {@link R#eval}.
 	 * @param {string} code		R code
-	 * @return					JavaScript compatible object of returned value. Returns undefined on error.
+	 * @return					Returned value. Returns undefined on error.
 	 */
 	evalWithTry(code){
 		return this.eval("try(" + code + ")")
@@ -191,7 +191,7 @@ export default class R{
 	/**
 	 * Acquire value of R variable
 	 * @param {string} varname	Name of variable
-	 * @return					JavaScript compatible object of variable in R environment.
+	 * @return					Value in the R variable.
 	 */
 	getVar(varname){
 		let varsexp = new SEXPWrap(libR.Rf_findVar(libR.Rf_install(varname), R.GlobalEnv));
@@ -201,18 +201,34 @@ export default class R{
 		return value;
 	}
 	/**
+	 * Acquire names attribute of R variable
+	 * @param {string} varname	Name of variable
+	 * @return					Associated name attribute for the specified R variable. If no name, undefined will be returned.
+	 */
+	getVarNames(varname){
+		let varsexp = new SEXPWrap(libR.Rf_findVar(libR.Rf_install(varname), R.GlobalEnv));
+		return varsexp.names;
+	}
+	/**
 	 * Set value to R variable
 	 * @param {string} varname	Name of variable
 	 * @param {object} value	Value you want to set to variable.
 	 */
 	setVar(varname, value){
-		let varsymbol_sexp = new SEXPWrap(varname);
-		varsymbol_sexp.protect();
 		let value_sexp = new SEXPWrap(value);
 		value_sexp.protect();
 		libR.Rf_setVar(libR.Rf_install(varname), value_sexp.sexp, R.GlobalEnv);
-		value_sexp.unprotect(2);
+		value_sexp.unprotect();
 	}
+	/**
+	 * Set names attribute to R variable
+	 * @param {string} varname	Name of variable
+	 * @param {object} value	Value you want to set to names attributes
+	 */
+	setVarNames(varname, value){
+		let varsexp = new SEXPWrap(libR.Rf_findVar(libR.Rf_install(varname), R.GlobalEnv));
+		varsexp.names = value;
+	}	
 	/**
 	 * Finish using R.
 	 */

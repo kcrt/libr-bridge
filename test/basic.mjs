@@ -1,5 +1,4 @@
 import R from '../R';
-import {RString} from '../RObject';
 import assert from 'assert';
 
 var r;
@@ -73,12 +72,11 @@ describe('Attribute', () => {
 	it('Names', () => {
 		r.setVar("numvar", 2017);
 		r.eval('names(numvar) = "hello"')
-		assert.equal("hello", r.getVar("numvar").names)
+		assert.equal("hello", r.getVarNames("numvar"))
 
-		let valWithName = new RString("kcrt")
-		valWithName.names = "hello"
-		r.setVar("strvar", valWithName);
-		assert.equal("hello", r.eval("names(numvar)"))
+		r.setVar("strvar", "kcrt");
+		r.setVarNames("strvar", "hello");
+		assert.equal("hello", r.eval("names(strvar)"))
 	});
 });
 

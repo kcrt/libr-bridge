@@ -17,29 +17,6 @@ function EnableAttributeAccess(obj){
 	);
 }
 
-export class RNumber extends Number{
-	constructor(value){
-		super(value);
-		EnableAttributeAccess(this);
-	}
-}
-
-/*
- * I stopped using this... Boolean object with false will be diagnosed as 'true'
-export class RLogical extends Boolean{
-	constructor(value){
-		super(value);
-		EnableAttributeAccess(this);
-	}
-}
-*/
-export class RString extends String{
-	constructor(value){
-		super(value);
-		EnableAttributeAccess(this);
-	}
-}
-
 /*
  * vim: filetype=javascript
  */

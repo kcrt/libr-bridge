@@ -2,8 +2,6 @@ import ref from 'ref';
 import refArray from 'ref-array';
 import R from './R';
 import {REALSXP} from './libR';
-import {RNumber, RString} from './RObject';
-
 
 var sexpSize = void 0;
 
@@ -14,12 +12,10 @@ export default class SEXPWrap {
 			this.sexp = value;
 		}else if(typeof(value) == 'number'){
 			this.sexp = R.libR.Rf_ScalarReal(value);
-		}else if(value instanceof RNumber || value instanceof Number){
+		}else if(value instanceof Number){
 			this.sexp = R.libR.Rf_ScalarReal(value.valueOf());
 		}else if(typeof(value) == 'string'){
 			this.sexp = R.libR.Rf_mkString(ref.allocCString(value));
-		}else if(value instanceof RString){
-			this.sexp = R.libR.Rf_mkString(ref.allocCString(value.valueOf()));
 		}else if(typeof(value) == 'boolean'){
 			this.sexp = R.libR.Rf_ScalarLogical(value);
 		}else if(Array.isArray(value)){
@@ -33,10 +29,6 @@ export default class SEXPWrap {
 			this.unprotect();
 		}else{
 			console.log("Cannot convert " + typeof(value) + " in JavaScript to R SEXP / " + value);
-		}
-
-		if((value instanceof RNumber || value instanceof RString) && value.names !== void 0){
-			this.names = value.names;
 		}
 	}
 	protect(){ R.libR.Rf_protect(this.sexp); }
@@ -93,7 +85,6 @@ export default class SEXPWrap {
 				itemtype = this.isInteger() ? ref.types.int : ref.types.double;
 				const p = ref.reinterpret(this.dataptr(), itemtype.size * len);
 				values = R.range(0, len).map( (i) => ref.get(p, itemtype.size * i, itemtype) )
-										.map( (e) => new RNumber(e));
 			}else if(this.isLogical()){
 				itemtype = ref.types.bool;
 				const p = ref.reinterpret(this.dataptr(), itemtype.size * len);
@@ -102,15 +93,10 @@ export default class SEXPWrap {
 				values = R.range(0, len).map((i) => R.libR.STRING_ELT(this.sexp, i))
 										.map((e) => {
 											const s = new SEXPWrap(e);
-											return new RString(s.asChar());
+											return s.asChar();
 										});
 			}else{
-				values = ["unknown vector item!"]
-			}
-			let names = this.names;
-			if(names !== void 0 && !this.isLogical()){
-				if(!Array.isArray(names)) names = [names];
-				R.range(0, len).map((i) => values[i].names = names[i]);
+				values = ["Unsupported vector item!"]
 			}
 			return values.length == 1 ? values[0] : values;
 		}else{
