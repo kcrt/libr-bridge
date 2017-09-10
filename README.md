@@ -3,6 +3,9 @@ libr-bridge
 
 Bridging module: JavaScript <-> R
 
+![🄬🌉⬢](./logo.png)
+
+
 What is libr-bridge?
 ----------------------------------------
 

@@ -1,8 +1,6 @@
-
 /**
  *  @file libr-bridge: Bridging module between JavaScript and R
  *  @author TAKAHASHI, Kyohei <kcrt@kcrt.net> 
- *  @license XXXX
  *  @version XXXX
  */
 
@@ -79,8 +77,8 @@ export default class R{
 	 * @param {string} name		name of R function
 	 * @return {function}		Bridging function
 	 * @example
-	 *		const sum = R.func("sum")
-	 *		console.log(sum([1, 2, 3]))		// prints 6
+	 *	const sum = R.func("sum")
+	 *	console.log(sum([1, 2, 3]))		// prints 6
 	 */
 	func(name){
 		return this.__RFuncBridge.bind(this, this.__func_sexp(name))
@@ -89,6 +87,8 @@ export default class R{
 	 * Acquire bridging function to access R function.
 	 * This function doesn't convert to/from SEXP.
 	 * Receives SEXPWrap, and returns SEXPWrap. Please use carefully.
+	 * @param {string} name		name of R function
+	 * @return {function}		Bridging function
 	 * @see {@link R#func}
 	 */
 	func_raw(name){
@@ -99,7 +99,7 @@ export default class R{
 	 * Please do not call this function manually.
 	 * @private
 	 * @param {string} name		name of function
-	 * @return					SEXPWrap object of R function
+	 * @return {SEXPWrap}		SEXPWrap object of R function
 	 */
 	__func_sexp(name){
 		if(!(name in func_cached)){
@@ -114,7 +114,7 @@ export default class R{
 	 * Please do not call this function manually.
 	 * @private
 	 * @param {function} func	SEXPWrap object of R function
-	 * @return					SEXPWrap object of returned value
+	 * @return {SEXPWrap}		SEXPWrap object of returned value
 	 */
 	__RFuncBridge_raw(func){
 		// Function name with "raw" receives SEXP, and returns SEXP
@@ -156,7 +156,7 @@ export default class R{
 	/**
 	 * Execute R code. Using {@link R#eval} is recommended.
 	 * @param {string} code		R code
-	 * @return					SEXPWrap object of returned value. Returns undefined on error.
+	 * @return {SEXPWrap}		SEXPWrap object of returned value. Returns undefined on error.
 	 * @see {@link eval}
 	 */
 	eval_raw(code){
@@ -181,7 +181,7 @@ export default class R{
 		return retval;
 	}
 	/**
-	 * Execute R code with try. This is more safe than {@link R#eval}.
+	 * Execute R code with R try. This is more safe than {@link R#eval}.
 	 * @param {string} code		R code
 	 * @return					Returned value. Returns undefined on error.
 	 */
@@ -203,7 +203,7 @@ export default class R{
 	/**
 	 * Acquire names attribute of R variable
 	 * @param {string} varname	Name of variable
-	 * @return					Associated name attribute for the specified R variable. If no name, undefined will be returned.
+	 * @return {string}			Associated name attribute for the specified R variable. If no name, undefined will be returned.
 	 */
 	getVarNames(varname){
 		let varsexp = new SEXPWrap(libR.Rf_findVar(libR.Rf_install(varname), R.GlobalEnv));
@@ -239,9 +239,9 @@ export default class R{
 	 * Python like range function.
 	 * Be careful, this is not R ':' operator
 	 * range(0, 3) == [0, 1, 2], which is not eq. to 0:3
-	 * @param{integer} a	from
-	 * @param{integer} b	to (this value won't be included)
-	 * @return				value in a <= x < b. range(0, 3) == [0, 1, 2]
+	 * @param {integer} a	from
+	 * @param {integer} b	to (this value won't be included)
+	 * @return {Array}		value in a <= x < b. range(0, 3) == [0, 1, 2]
 	 */
 	static range(a, b){
 		let len = (b - a);

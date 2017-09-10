@@ -13,6 +13,7 @@ const stringArr = refArray(ref.types.CString)			// char * [] or string[]
 const intPtr = ref.refType(ref.types.int)
 export const SEXP = ref.refType(ref.types.void);
 export const SEXPREC_ALIGN_SIZE = ref.types.double.size;
+/** R SEXP type enums */
 export const SEXPTYPE = {
 	NILSXP		: 0,	/* nil : NULL */
 	SYMSXP		: 1,	/* symbols */
@@ -44,80 +45,80 @@ export const SEXPTYPE = {
 };
 
 const apiList = {
-	"Rf_initialize_R": ["int", ["int", stringArr]],
-	"Rf_initEmbeddedR": ["int", ["int", stringArr]],	// int Rf_initEmbeddedR(int argc, char *argv[]);
-	"R_setStartTime": ["void", []],				// void R_setStartTime(void);
-	"Rf_endEmbeddedR": ["void", ["int"]],				// void Rf_endEmbeddedR(int fatal);
-	"R_sysframe": [SEXP, ["int", "pointer"]],
-	"Rf_findFun": [SEXP, [SEXP, SEXP]], // SEXP Rf_findFun(SEXP, SEXP)
-	"Rf_findVar": [SEXP, [SEXP, SEXP]], // SEXP Rf_findVar(SEXP, SEXP)
-	"Rf_setVar": [SEXP, [SEXP, SEXP, SEXP]],
-	"Rf_mainloop": ["void", []], // void Rf_mainloop();
+	"CAR": [SEXP, [SEXP]],
+	"CDR": [SEXP, [SEXP]],
+	"NAMED": ["int", [SEXP]],
+	"R_CHAR": ["string", [SEXP]],
+	"R_NilValue": [SEXP, []],
+	"R_ParseEvalString": [SEXP, ["string", SEXP]],
+	"R_PreserveObject": ["void", [SEXP]],
 	"R_PreserveObject": ["void", [SEXP]],
 	"R_ReleaseObject": ["void", [SEXP]],
-	"Rf_allocVector": [SEXP, ["int", "int"]], // SEXP Rf_allocVector(SEXPTYPE, int R_xlen_t);
+	"R_ReleaseObject": ["void", [SEXP]],
+	"R_setStartTime": ["void", []],						// void R_setStartTime(void);
+	"R_sysframe": [SEXP, ["int", "pointer"]],
+	"R_tryEval": [SEXP, [SEXP, SEXP, intPtr]],			// SEXP R_tryEval(SEXP e, SEXP env, int *ErrorOccurred)
+	"Rf_GetRowNames": [SEXP, [SEXP]],
 	"Rf_ScalarInteger": [SEXP, ["int"]],
-	"Rf_ScalarReal": [SEXP, ["double"]],		// SEXP ScalarReal(double x)	
 	"Rf_ScalarLogical": [SEXP, ["int"]],
-	"Rf_protect": [SEXP, [SEXP]],
-	"Rf_unprotect": ["void", ["int"]],
-	"Rf_install": [SEXP, ["string"]],
-	"Rf_mkString": [SEXP, [stringPtr]],
-	"Rf_defineVar": ["void", [SEXP, SEXP, "pointer"]],
-	"Rf_asLogical": ["int", [SEXP]],
-	"Rf_asInteger": ["int", [SEXP]],
+	"Rf_ScalarReal": [SEXP, ["double"]],				// SEXP ScalarReal(double x)	
+	"Rf_allocVector": [SEXP, ["int", "int"]],			// SEXP Rf_allocVector(SEXPTYPE, int R_xlen_t);
 	"Rf_asChar": [SEXP, [SEXP]],
-	"Rf_mkChar": [SEXP, ["string"]],
-	"R_CHAR": ["string", [SEXP]],
+	"Rf_asInteger": ["int", [SEXP]],
+	"Rf_asLogical": ["int", [SEXP]],
 	"Rf_asReal": ["double", [SEXP]],
-	"Rf_translateCharUTF8": ["string", [SEXP]],			// const char* Rf_translateCharUTF8(SEXP x)
+	"Rf_cons": [SEXP, [SEXP, SEXP]],
+	"Rf_defineVar": ["void", [SEXP, SEXP, "pointer"]],
+	"Rf_elt": [SEXP, [SEXP, "int"]],
+	"Rf_endEmbeddedR": ["void", ["int"]],				// void Rf_endEmbeddedR(int fatal);
+	"Rf_eval": [SEXP, [SEXP, intPtr]],
+	"Rf_findFun": [SEXP, [SEXP, SEXP]],					// SEXP Rf_findFun(SEXP, SEXP)
+	"Rf_findVar": [SEXP, [SEXP, SEXP]],					// SEXP Rf_findVar(SEXP, SEXP)
+	"Rf_getAttrib": [SEXP, [SEXP, SEXP]],
+	"Rf_initEmbeddedR": ["int", ["int", stringArr]],	// int Rf_initEmbeddedR(int argc, char *argv[]);
+	"Rf_initialize_R": ["int", ["int", stringArr]],
+	"Rf_install": [SEXP, ["string"]],
 	"Rf_isArray": ["int", [SEXP]],						// Rboolean Rf_isArray(SEXP);
 	"Rf_isFactor": ["int", [SEXP]],						// Rboolean Rf_isFactor(SEXP);
-	"Rf_isFunction": ["int", [SEXP]],						// Rboolean Rf_isFunction(SEXP);
-	"Rf_isInteger": ["int", [SEXP]],						// Rboolean Rf_isInteger(SEXP);
-	"Rf_isLogical": ["int", [SEXP]],						// Rboolean Rf_isLogical(SEXP);
-	"Rf_isReal": ["int", [SEXP]],						// Rboolean Rf_isReal(SEXP);
-	"Rf_isNumber": ["int", [SEXP]],						// Rboolean Rf_isNumber(SEXP);
-	"Rf_isNumeric": ["int", [SEXP]],						// Rboolean Rf_isNumeric(SEXP);
+	"Rf_isFunction": ["int", [SEXP]],					// Rboolean Rf_isFunction(SEXP);
+	"Rf_isInteger": ["int", [SEXP]],					// Rboolean Rf_isInteger(SEXP);
 	"Rf_isList": ["int", [SEXP]],						// Rboolean Rf_isList(SEXP);
+	"Rf_isLogical": ["int", [SEXP]],					// Rboolean Rf_isLogical(SEXP);
 	"Rf_isMatrix": ["int", [SEXP]],						// Rboolean Rf_isMatrix(SEXP);
-	"Rf_isPrimitive": ["int", [SEXP]],						// Rboolean Rf_isPrimitive(SEXP);
-	"Rf_isValidString": ["int", [SEXP]],						// Rboolean Rf_isValidString(SEXP);
-	"Rf_isVector": ["int", [SEXP]],						// Rboolean Rf_isVector(SEXP);
 	"Rf_isNull": ["int", [SEXP]],						// Rboolean Rf_isNull(SEXP);
-	"Rf_isS4": ["int", [SEXP]],						// Rboolean Rf_isS4(SEXP);
+	"Rf_isNumber": ["int", [SEXP]],						// Rboolean Rf_isNumber(SEXP);
+	"Rf_isNumeric": ["int", [SEXP]],					// Rboolean Rf_isNumeric(SEXP);
+	"Rf_isPrimitive": ["int", [SEXP]],					// Rboolean Rf_isPrimitive(SEXP);
+	"Rf_isReal": ["int", [SEXP]],						// Rboolean Rf_isReal(SEXP);
+	"Rf_isS4": ["int", [SEXP]],							// Rboolean Rf_isS4(SEXP);
 	"Rf_isString": ["int", [SEXP]],						// Rboolean Rf_isString(SEXP);
+	"Rf_isValidString": ["int", [SEXP]],				// Rboolean Rf_isValidString(SEXP);
+	"Rf_isVector": ["int", [SEXP]],						// Rboolean Rf_isVector(SEXP);
 	"Rf_lang1": [SEXP, [SEXP]],
 	"Rf_lang2": [SEXP, [SEXP, SEXP]],
 	"Rf_lang3": [SEXP, [SEXP, SEXP, SEXP]],
 	"Rf_lang4": [SEXP, [SEXP, SEXP, SEXP, SEXP]],
 	"Rf_lang5": [SEXP, [SEXP, SEXP, SEXP, SEXP, SEXP]],
 	"Rf_lang6": [SEXP, [SEXP, SEXP, SEXP, SEXP, SEXP, SEXP]],
-	"Rf_length": ["int", [SEXP]],
-	"Rf_eval": [SEXP, [SEXP, intPtr]],
-	"R_ParseEvalString": [SEXP, ["string", SEXP]],
-	"R_tryEval": [SEXP, [SEXP, SEXP, intPtr]],// SEXP R_tryEval(SEXP e, SEXP env, int *ErrorOccurred)
-	"R_PreserveObject": ["void", [SEXP]],
-	"R_ReleaseObject": ["void", [SEXP]],
-	"Rf_elt": [SEXP, [SEXP, "int"]],
-	"VECTOR_ELT": [SEXP, [SEXP, "int"]],
-	"CAR": [SEXP, [SEXP]],
-	"CDR": [SEXP, [SEXP]],
-	"TAG": [SEXP, [SEXP]],
-	"SET_TAG": ["void", [SEXP, SEXP]],
-	"STRING_PTR": ["pointer", [SEXP]],		// we use this instead of DATAPTR
 	"Rf_lcons": [SEXP, [SEXP, SEXP]],
-	"Rf_cons": [SEXP, [SEXP, SEXP]],
-	"R_NilValue": [SEXP, []],
-	"TYPEOF": ["int", [SEXP]],
+	"Rf_length": ["int", [SEXP]],
 	"Rf_lengthgets": [SEXP, [SEXP]],
-	"Rf_GetRowNames": [SEXP, [SEXP]],
-	"STRING_ELT": [SEXP, [SEXP, "int"]],					// memory.c
-	"SET_STRING_ELT": [SEXP, [SEXP, "int", SEXP]],			// memory.c
-	"NAMED": ["int", [SEXP]],
-	"SET_NAMED": ["void", [SEXP, "int"]],
-	"Rf_getAttrib": [SEXP, [SEXP, SEXP]],
+	"Rf_mainloop": ["void", []],						// void Rf_mainloop();
+	"Rf_mkChar": [SEXP, ["string"]],
+	"Rf_mkString": [SEXP, [stringPtr]],
+	"Rf_protect": [SEXP, [SEXP]],
 	"Rf_setAttrib": [SEXP, [SEXP, SEXP, SEXP]],
+	"Rf_setVar": [SEXP, [SEXP, SEXP, SEXP]],
+	"Rf_translateCharUTF8": ["string", [SEXP]],			// const char* Rf_translateCharUTF8(SEXP x)
+	"Rf_unprotect": ["void", ["int"]],
+	"SET_NAMED": ["void", [SEXP, "int"]],
+	"SET_STRING_ELT": [SEXP, [SEXP, "int", SEXP]],		// memory.c
+	"SET_TAG": ["void", [SEXP, SEXP]],
+	"STRING_ELT": [SEXP, [SEXP, "int"]],				// memory.c
+	"STRING_PTR": ["pointer", [SEXP]],					// we use this instead of DATAPTR
+	"TAG": [SEXP, [SEXP]],
+	"TYPEOF": ["int", [SEXP]],
+	"VECTOR_ELT": [SEXP, [SEXP, "int"]],
 };
 
 var libR = undefined;

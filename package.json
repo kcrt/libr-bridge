@@ -1,23 +1,26 @@
 {
-  "name": "libr-bridge",
-  "version": "0.0.1",
-  "description": "Use libR from node.js",
-  "main": "index",
-  "scripts": {
-    "doc": "./node_modules/.bin/jsdoc -c jsdoc.conf",
-    "test": "./node_modules/.bin/mocha --require @std/esm test/*.mjs",
-    "test-develop": "./node_modules/.bin/mocha --require @std/esm test/develop.mjs"
-  },
-  "author": "kcrt",
-  "license": "ISC",
-  "dependencies": {
-    "@std/esm": "^0.5.1",
-    "ffi": "^2.2.0",
-    "node-gyp": "^3.6.2",
-    "ref-array": "^1.2.0"
-  },
-  "devDependencies": {
-    "jsdoc": "^3.5.4",
-    "mocha": "^3.5.0"
-  }
+    "name": "libr-bridge",
+    "version": "0.0.1",
+    "description": "Use libR from node.js",
+    "main": "index",
+    "scripts": {
+        "doc": "rm -R doc; ./node_modules/.bin/esdoc; cp ./logo.png doc",
+        "jsdoc": "rm -R doc; ./node_modules/.bin/jsdoc -c jsdoc.conf",
+        "test": "./node_modules/.bin/mocha --require @std/esm test/*.mjs",
+        "test-develop": "./node_modules/.bin/mocha --require @std/esm test/develop.mjs"
+    },
+    "author": "kcrt",
+    "license": "ISC",
+    "dependencies": {
+        "@std/esm": "^0",
+        "ffi": "^2",
+        "node-gyp": "^3",
+        "ref-array": "^1"
+    },
+    "devDependencies": {
+        "esdoc": "^1",
+        "esdoc-importpath-plugin": "^1",
+        "esdoc-standard-plugin": "^1",
+        "mocha": "^3"
+    }
 }

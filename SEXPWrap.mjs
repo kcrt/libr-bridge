@@ -57,13 +57,21 @@ export default class SEXPWrap {
 			console.log("Cannot convert " + typeof(value) + " in JavaScript to R SEXP / " + value);
 		}
 	}
+	/** Protect this SEXP */
 	protect(){ R.libR.Rf_protect(this.sexp); }
+	/** Unprotect SEXPs */
 	unprotect(depth=1){ R.libR.Rf_unprotect(depth); }
+	/** Preserve this SEXP. Please use protect() if you can. */
 	preserve(){ R.libR.R_PreserveObject(this.sexp); }
+	/** Release preserved SEXP. protect()ed SEXP should be releaseed with unprotect() */
 	release(){ R.libR.R_ReleaseObject(this.sexp); }
+	/** Return true if this SEXP is List. */
 	isList(){ return R.libR.Rf_isList(this.sexp); }
+	/** Return true if this SEXP is Vector. Please note single scalar value in R is vector. */
 	isVector(){ return R.libR.Rf_isVector(this.sexp); }
+	/** Return the length of vector. */
 	length(){ return R.libR.Rf_length(this.sexp); }
+	/** Return true if this SEXP is null. */
 	isNull(){ return R.libR.Rf_isNull(this.sexp); }
 	isInteger(){ return R.libR.Rf_isInteger(this.sexp); }
 	isLogical(){ return R.libR.Rf_isLogical(this.sexp); }
@@ -71,6 +79,7 @@ export default class SEXPWrap {
 	isValidString(){ return R.libR.Rf_isValidString(this.sexp); }
 	dataptr(){ return R.libR.STRING_PTR(this.sexp); }
 	asChar(){ return R.libR.R_CHAR(R.libR.Rf_asChar(this.sexp)).slice(); }
+	/** Return sizeof(SEXP) in byte. */
 	static get SEXPSize(){
 		if(sexpSize == void 0){
 			const intSEXP = new SEXPWrap(0)

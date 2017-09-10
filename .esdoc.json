@@ -1,0 +1,29 @@
+{
+	"source": ".",
+	"destination": "./doc",
+	"includes": [".+\\.(js|mjs|jsx)$"],
+	"excludes":["node_modules", "doc", ".esm-cache"],
+	"plugins": [
+		{
+			"name": "esdoc-standard-plugin",
+			"options": {
+				"lint": {"enable": true},
+				"coverage": {"enable": true},
+				"test": {
+					"source": "./test/",
+					"interfaces": ["describe", "it"],
+					"includes": [".+\\.(js|mjs)$"]
+				}
+			}
+		},
+		{
+			"name": "esdoc-importpath-plugin",
+			"option": {
+				"replaces": [
+					{"from": "libr-bridge/", "to": ""},
+					{"from": "\\.mjs$", "to": ""}
+				]
+			}
+		}
+	]
+}
