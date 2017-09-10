@@ -64,7 +64,10 @@ describe('Array', () => {
 		assert.arrayEqual(arr_1to100, r.getVar('myarr'));
 	});
 	it('String Array', () => {
-		assert.arrayEqual(["abc", "def", "ghi", "jkl", "mno"], r.eval('c("abc", "def", "ghi", "jkl", "mno")'));
+		var strArr = ["abc", "def", "ghi", "jkl", "mno"];
+		assert.arrayEqual(strArr, r.eval('c("abc", "def", "ghi", "jkl", "mno")'));
+		r.setVar('strArr', strArr)
+		assert.arrayEqual(strArr, r.getVar("strArr"))
 	});
 });
 

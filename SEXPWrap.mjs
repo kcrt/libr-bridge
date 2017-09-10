@@ -1,30 +1,56 @@
 import ref from 'ref';
 import refArray from 'ref-array';
 import R from './R';
-import {REALSXP} from './libR';
+import {SEXPTYPE} from './libR';
 
 var sexpSize = void 0;
 
 export default class SEXPWrap {
 	constructor(value){
-		if(value instanceof Buffer){
+		
+		if(value === void 0){
+			throw "SEXPWrap: Value not specified."	
+		}else if(value instanceof Buffer){
 			// This may be SEXP!
 			this.sexp = value;
-		}else if(typeof(value) == 'number'){
-			this.sexp = R.libR.Rf_ScalarReal(value);
-		}else if(value instanceof Number){
-			this.sexp = R.libR.Rf_ScalarReal(value.valueOf());
-		}else if(typeof(value) == 'string'){
-			this.sexp = R.libR.Rf_mkString(ref.allocCString(value));
-		}else if(typeof(value) == 'boolean'){
-			this.sexp = R.libR.Rf_ScalarLogical(value);
-		}else if(Array.isArray(value)){
-			// TODO: String Array
-			this.sexp = R.libR.Rf_allocVector(REALSXP, value.length);
+		}else{
+			this.__initializeWithValue(value);
+		}
+	}
+	/**
+	 *  Initialize this instance with specified value.
+	 *  @private
+	 */
+	__initializeWithValue(value){
+		if(!Array.isArray(value)){
+			// not an array.
+			// convert to array and try again.
+			// (You can use Rf_mkString, Rf_ScalarReal, Rf_ScalarLogical if you don't want SEXPWrap)
+			this.__initializeWithValue([value]);
+		}else if(typeof(value[0]) == 'number'){
+			// assume this is array of numbers (e.g. [1, 2, 3, ...])
+			this.sexp = R.libR.Rf_allocVector(SEXPTYPE.REALSXP, value.length);
 			this.protect();
 			let p = ref.reinterpret(this.dataptr(), ref.types.double.size * value.length);
-			R.range(0, value.length).map( (i) => {
-				ref.set(p, ref.types.double.size * i, 1.0 * value[i], ref.types.double);
+			value.map((e, i) => {
+				ref.set(p, ref.types.double.size * i, 1.0 * e /* convert to double */, ref.types.double);
+			});
+			this.unprotect();
+		}else if(typeof(value[0]) == 'boolean'){
+			// assume this is array of boolean (e.g. [false, true, true, ...])
+			this.sexp = R.libR.Rf_allocVector(SEXPTYPE.LGLSXP, value.length);
+			this.protect();
+			let p = ref.reinterpret(this.dataptr(), ref.types.bool.size * value.length);
+			value.map((e, i) => {
+				ref.set(p, ref.types.bool.size * i, (e ? true : false) /* convert to boolean */, ref.types.bool);
+			});
+			this.unprotect();
+		}else if(typeof(value[0] == 'string')){
+			// assuming this is array of strings (e.g. ["abc", "def", ...])
+			this.sexp = R.libR.Rf_allocVector(SEXPTYPE.STRSXP, value.length);
+			this.protect();
+			value.map((e, i) => {
+				R.libR.SET_STRING_ELT(this.sexp, i, R.libR.Rf_mkChar(e));
 			});
 			this.unprotect();
 		}else{

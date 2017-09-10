@@ -12,9 +12,36 @@ const stringPtrPtr = ref.refType(stringPtr)				// char *** or string**
 const stringArr = refArray(ref.types.CString)			// char * [] or string[]
 const intPtr = ref.refType(ref.types.int)
 export const SEXP = ref.refType(ref.types.void);
-export const SEXPTYPE = ref.types.int;
 export const SEXPREC_ALIGN_SIZE = ref.types.double.size;
-export const REALSXP = 14;
+export const SEXPTYPE = {
+	NILSXP		: 0,	/* nil : NULL */
+	SYMSXP		: 1,	/* symbols */
+	LISTSXP		: 2,	/* lists of dotted pairs */
+	CLOSXP		: 3,	/* closures */
+	ENVSXP		: 4,	/* environments */
+	PROMSXP		: 5,	/* promises: [un]evaluated closure arguments */
+	LANGSXP		: 6,	/* language constructs (special lists) */
+	SPECIALSXP	: 7,	/* special forms */
+	BUILTINSXP	: 8,	/* builtin non-special forms */
+	CHARSXP		: 9,	/* "scalar" string type (internal only)*/
+	LGLSXP		: 10,	/* logical vectors */
+	INTSXP		: 13,	/* integer vectors */
+	REALSXP		: 14,	/* real variables */
+	CPLXSXP		: 15,	/* complex variables */
+	STRSXP		: 16,	/* string vectors */
+	DOTSXP		: 17,	/* dot-dot-dot object */
+	ANYSXP		: 18,	/* make "any" args work */
+	VECSXP		: 19,	/* generic vectors */
+	EXPRSXP		: 20,	/* expressions vectors */
+	BCODESXP	: 21,	/* byte code */
+	EXTPTRSXP	: 22,	/* external pointer */
+	WEAKREFSXP	: 23,	/* weak reference */
+	RAWSXP		: 24,	/* raw bytes */
+	S4SXP		: 25,	/* S4 non-vector */
+	NEWSXP		: 30,   /* fresh node creaed in new page */
+	FREESXP		: 31,   /* node released by GC */
+	FUNSXP		: 99	/* Closure or Builtin */
+};
 
 const apiList = {
 	"Rf_initialize_R": ["int", ["int", stringArr]],
@@ -28,7 +55,7 @@ const apiList = {
 	"Rf_mainloop": ["void", []], // void Rf_mainloop();
 	"R_PreserveObject": ["void", [SEXP]],
 	"R_ReleaseObject": ["void", [SEXP]],
-	"Rf_allocVector": [SEXP, [SEXPTYPE, "int"]], // SEXP Rf_allocVector(SEXPTYPE, int R_xlen_t);
+	"Rf_allocVector": [SEXP, ["int", "int"]], // SEXP Rf_allocVector(SEXPTYPE, int R_xlen_t);
 	"Rf_ScalarInteger": [SEXP, ["int"]],
 	"Rf_ScalarReal": [SEXP, ["double"]],		// SEXP ScalarReal(double x)	
 	"Rf_ScalarLogical": [SEXP, ["int"]],
@@ -40,6 +67,7 @@ const apiList = {
 	"Rf_asLogical": ["int", [SEXP]],
 	"Rf_asInteger": ["int", [SEXP]],
 	"Rf_asChar": [SEXP, [SEXP]],
+	"Rf_mkChar": [SEXP, ["string"]],
 	"R_CHAR": ["string", [SEXP]],
 	"Rf_asReal": ["double", [SEXP]],
 	"Rf_translateCharUTF8": ["string", [SEXP]],			// const char* Rf_translateCharUTF8(SEXP x)
