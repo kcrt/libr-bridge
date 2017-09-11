@@ -157,7 +157,7 @@ export default function createLibR(r_path = "auto"){
 				try{
 					libR = createLibR("buildin");
 				}catch(e){
-					throw "R not found. Please specify path manually."
+					throw new Error("R not found. Please specify path manually.")
 				}
 			}
 		}
@@ -174,12 +174,12 @@ export default function createLibR(r_path = "auto"){
 			ret = child_process.execSync(`Rscript -e "cat(Sys.getenv('R_HOME'))"`);
 			libR = createLibR(ret.toString())
 		}catch(e){
-			throw "Couldn't find installed R (RScript not found)";
+			throw new Error("Couldn't find installed R (RScript not found)");
 		}
 	}else if(r_path == "buildin"){
-		throw "NOT IMPLEMENTED.";
+		throw new Error("NOT IMPLEMENTED.");
 	}else if(r_path == ""){
-		throw "Please specify installed R.";
+		throw new Error("Please specify installed R.");
 	}else{
 		// assuming path of installed R is specified.
 		const delim = path.delimiter;
@@ -191,7 +191,7 @@ export default function createLibR(r_path = "auto"){
 	}
 
 	if(libR == undefined){
-		throw "Couldn't read libR";
+		throw new Error("Couldn't read libR");
 	}
 
 	return libR;

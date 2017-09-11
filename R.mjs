@@ -33,7 +33,7 @@ export default class R{
 			R_GlobalEnv.preserve();
 			R.R_NilValue = libR.Rf_GetRowNames(R.GlobalEnv);		// passing non vector returns Nil
 			if(!(new SEXPWrap(R.R_NilValue)).isNull()){
-				throw "Can not acquire NilValue"
+				throw new Error("Can not acquire NilValue");
 			}
 			R.R_UnboundValue = libR.Rf_findVar(libR.Rf_install("__non_existing_value_kcrt__"), R.GlobalEnv)
 			R.R_NamesSymbol = libR.Rf_install(ref.allocCString("names"))
@@ -175,7 +175,7 @@ export default class R{
 			ps.length() != 1){
 			s.unprotect(2);
 			debug(`Parse error.\n-----\n${code}\n-----`)
-			throw Error("Parse error of R code.")
+			throw new Error("Parse error of R code.")
 		}else{
 			const retval = new SEXPWrap(libR.Rf_eval(libR.VECTOR_ELT(ps.sexp, 0), R.GlobalEnv));
 			s.unprotect(2);
