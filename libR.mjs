@@ -52,8 +52,6 @@ const apiList = {
 	"R_NilValue": [SEXP, []],
 	"R_ParseEvalString": [SEXP, ["string", SEXP]],
 	"R_PreserveObject": ["void", [SEXP]],
-	"R_PreserveObject": ["void", [SEXP]],
-	"R_ReleaseObject": ["void", [SEXP]],
 	"R_ReleaseObject": ["void", [SEXP]],
 	"R_setStartTime": ["void", []],						// void R_setStartTime(void);
 	"R_sysframe": [SEXP, ["int", "pointer"]],
@@ -171,9 +169,9 @@ export default function createLibR(r_path = "auto"){
 	}else if(r_path == "buildin"){
 		throw "NOT IMPLEMENTED.";
 	}else if(r_path == ""){
-		throw "Please specify r_path of R_HOME.";
+		throw "Please specify installed R.";
 	}else{
-		// assuming path to R_HOME is specified.
+		// assuming path of installed R is specified.
 		const delim = path.delimiter;
 		if(r_path.slice(-1) == path.sep) r_path = r_path.slice(0, -1);	// remove trailing "/" (or "\")
 		process.env.R_HOME = r_path;
