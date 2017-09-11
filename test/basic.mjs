@@ -80,6 +80,9 @@ describe('Attribute', () => {
 		r.setVar("strvar", "kcrt");
 		r.setVarNames("strvar", "hello");
 		assert.equal("hello", r.eval("names(strvar)"))
+
+		r.setVar("no_name_var", "test");
+		assert.strictEqual(r.getVarNames("no_name_var"), void 0);
 	});
 });
 
@@ -137,6 +140,11 @@ describe('Long command', () => {
 	});
 })
 
+describe('Failing test', () => {
+	it('non existing variable', () => {
+		assert.strictEqual(r.getVar("non_exsisting_var"), void 0);
+	});
+});
 
 /*
  * vim: filetype=javascript

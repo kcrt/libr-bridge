@@ -7,6 +7,8 @@
 import ref from 'ref';
 import createLibR from './libR';
 import SEXPWrap from './SEXPWrap'
+import debug_ from 'debug'
+const debug = debug_("libr-bridge:class R")
 
 let R_isInitialized = false;
 let R_GlobalEnv = undefined;
@@ -22,6 +24,7 @@ export default class R{
 	 */
 	constructor(){
 		if(!R.isInitialized()){
+			debug("Initializing R...")
 			const argv = ["REmbeddedOnBridge", "--vanilla", "--gui=none", "--silent"].map((e) => ref.allocCString(e));
 			libR = createLibR();
 			libR.Rf_initEmbeddedR(argv.length, argv);
@@ -32,6 +35,7 @@ export default class R{
 			if(!(new SEXPWrap(R.R_NilValue)).isNull()){
 				throw "Can not acquire NilValue"
 			}
+			R.R_UnboundValue = libR.Rf_findVar(libR.Rf_install("__non_existing_value_kcrt__"), R.GlobalEnv)
 			R.R_NamesSymbol = libR.Rf_install(ref.allocCString("names"))
 			R_isInitialized = true;
 		}
@@ -195,6 +199,7 @@ export default class R{
 	 */
 	getVar(varname){
 		let varsexp = new SEXPWrap(libR.Rf_findVar(libR.Rf_install(varname), R.GlobalEnv));
+		if(varsexp.sexp.address() == R.R_UnboundValue.address()){ return undefined; }
 		varsexp.protect();
 		let value = varsexp.getValue();
 		varsexp.unprotect();

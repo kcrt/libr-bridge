@@ -100,8 +100,10 @@ export default class SEXPWrap {
 			return undefined;
 		}
 		const len = this.length()
-		if(this.sexp.address() == 0 || this.isNull() || len == 0){
-			return undefined;
+		if(this.isNull() || this.sexp.address() == 0){
+			return null;
+		}else if(len == 0){
+			return [];
 		}if(this.isList()){
 			// TODO: support this
 			/*
