@@ -44,12 +44,21 @@ export const SEXPTYPE = {
 	FUNSXP		: 99	/* Closure or Builtin */
 };
 
+export const ParseStatus = {
+    PARSE_NULL: 0,
+    PARSE_OK: 1,
+    PARSE_INCOMPLETE: 2,
+    PARSE_ERROR: 3,
+    PARSE_EOF: 4
+};
+
 const apiList = {
 	"CAR": [SEXP, [SEXP]],
 	"CDR": [SEXP, [SEXP]],
 	"NAMED": ["int", [SEXP]],
 	"R_CHAR": ["string", [SEXP]],
 	"R_NilValue": [SEXP, []],
+	"R_ParseVector": [SEXP, [SEXP, "int", "int*", SEXP]], // SEXP R_ParseVector(SEXP text, int n, ParseStatus *status, SEXP srcfile)
 	"R_ParseEvalString": [SEXP, ["string", SEXP]],
 	"R_PreserveObject": ["void", [SEXP]],
 	"R_ReleaseObject": ["void", [SEXP]],
@@ -77,6 +86,7 @@ const apiList = {
 	"Rf_initialize_R": ["int", ["int", stringArr]],
 	"Rf_install": [SEXP, ["string"]],
 	"Rf_isArray": ["int", [SEXP]],						// Rboolean Rf_isArray(SEXP);
+	"Rf_isExpression": ["int", [SEXP]],					// Rboolean Rf_isExpression(SEXP);
 	"Rf_isFactor": ["int", [SEXP]],						// Rboolean Rf_isFactor(SEXP);
 	"Rf_isFunction": ["int", [SEXP]],					// Rboolean Rf_isFunction(SEXP);
 	"Rf_isInteger": ["int", [SEXP]],					// Rboolean Rf_isInteger(SEXP);

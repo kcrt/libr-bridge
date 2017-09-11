@@ -2,6 +2,8 @@ import ref from 'ref';
 import refArray from 'ref-array';
 import R from './R';
 import {SEXPTYPE} from './libR';
+import debug_ from 'debug'
+const debug = debug_("libr-bridge:class SEXPWrap")
 
 var sexpSize = void 0;
 
@@ -9,7 +11,7 @@ export default class SEXPWrap {
 	constructor(value){
 		
 		if(value === void 0){
-			throw "SEXPWrap: Value not specified."	
+			throw new Error("SEXPWrap: Value not specified.")
 		}else if(value instanceof Buffer){
 			// This may be SEXP!
 			this.sexp = value;
@@ -73,6 +75,7 @@ export default class SEXPWrap {
 	length(){ return R.libR.Rf_length(this.sexp); }
 	/** Return true if this SEXP is null. */
 	isNull(){ return R.libR.Rf_isNull(this.sexp); }
+	isExpression(){ return R.libR.Rf_isExpression(this.sexp); }
 	isInteger(){ return R.libR.Rf_isInteger(this.sexp); }
 	isLogical(){ return R.libR.Rf_isLogical(this.sexp); }
 	isReal(){ return R.libR.Rf_isReal(this.sexp); }
@@ -132,6 +135,9 @@ export default class SEXPWrap {
 											const s = new SEXPWrap(e);
 											return s.asChar();
 										});
+			}else if(this.isExpression()){
+				debug("getValue() for RExpression")
+				values = ["(R Expression)"]
 			}else{
 				values = ["Unsupported vector item!"]
 			}

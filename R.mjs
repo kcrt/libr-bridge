@@ -5,7 +5,7 @@
  */
 
 import ref from 'ref';
-import createLibR from './libR';
+import createLibR, {ParseStatus} from './libR';
 import SEXPWrap from './SEXPWrap'
 import debug_ from 'debug'
 const debug = debug_("libr-bridge:class R")
@@ -158,22 +158,45 @@ export default class R{
 		return ret;
 	}
 	/**
-	 * Execute R code. Using {@link R#eval} is recommended.
+	 * Execute R code.
 	 * @param {string} code		R code
+	 * @throws {Error}			When execution fails.
 	 * @return {SEXPWrap}		SEXPWrap object of returned value. Returns undefined on error.
-	 * @see {@link eval}
+	 * @see {@link eval}, R_ParseEvalString(eval.c)
 	 */
 	eval_raw(code){
-		try{
-			return new SEXPWrap(libR.R_ParseEvalString(code, R.GlobalEnv));
-		}catch(e){
-			return undefined;
+		const s = new SEXPWrap(code);	
+		s.protect();
+		var status = ref.alloc(ref.types.int);
+		const ps = new SEXPWrap(libR.R_ParseVector(s.sexp, -1, status, R.R_NilValue));
+		ps.protect();
+		if(ref.deref(status) != ParseStatus.PARSE_OK ||
+			!(ps.isExpression()) || 
+			ps.length() != 1){
+			s.unprotect(2);
+			debug(`Parse error.\n-----\n${code}\n-----`)
+			throw Error("Parse error of R code.")
+		}else{
+			const retval = new SEXPWrap(libR.Rf_eval(libR.VECTOR_ELT(ps.sexp, 0), R.GlobalEnv));
+			s.unprotect(2);
+			return retval;
 		}
+	}
+	/**
+	 * Execute R code without error handling. App crashes when execution/parse failure.
+	 * Please use this function with care.
+	 * @param {string} code		R code
+	 * @return {SEXPWrap}		SEXPWrap object of returned value. Returns undefined on error.
+	 * @see {@link eval_raw}
+	 */
+	eval_direct(code){
+		return new SEXPWrap(libR.R_ParseEvalString(code, R.GlobalEnv));
 	}
 	/**
 	 * Execute R code.
 	 * @param {string} code		R code
-	 * @return					JavaScript compatible object of returned value. Returns undefined on error.
+	 * @throws {Error}			When execution fails.
+	 * @return					JavaScript compatible object of returned value.
 	 * @example
 	 *		let value = R.eval("sum(c(1, 2, 3))")		// value will be 6
 	 */
@@ -190,7 +213,7 @@ export default class R{
 	 * @return					Returned value. Returns undefined on error.
 	 */
 	evalWithTry(code){
-		return this.eval("try(" + code + ")")
+		return this.eval("try({" + code + "})")
 	}
 	/**
 	 * Acquire value of R variable
