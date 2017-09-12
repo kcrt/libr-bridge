@@ -29,15 +29,17 @@ export default class R{
 			libR = createLibR();
 			libR.Rf_initEmbeddedR(argv.length, argv);
 			libR.R_setStartTime();
-			R_GlobalEnv = new SEXPWrap(libR.R_sysframe(0, ref.NULL))
+            /* Initialize values */
+			R_GlobalEnv = new SEXPWrap(libR.R_sysframe(0, ref.NULL));
 			R_GlobalEnv.preserve();
 			R.R_NilValue = libR.Rf_GetRowNames(R.GlobalEnv);		// passing non vector returns Nil
 			if(!(new SEXPWrap(R.R_NilValue)).isNull()){
 				throw new Error("Can not acquire NilValue");
 			}
-			R.R_UnboundValue = libR.Rf_findVar(libR.Rf_install("__non_existing_value_kcrt__"), R.GlobalEnv)
-			R.R_NamesSymbol = libR.Rf_install(ref.allocCString("names"))
-			R_isInitialized = true;
+			R.R_UnboundValue = libR.Rf_findVar(libR.Rf_install("__non_existing_value_kcrt__"), R.GlobalEnv);
+			R.R_NamesSymbol = libR.Rf_install(ref.allocCString("names"));
+            R.R_NaInt = this.eval("as.integer(NA)");                // usually INT_MIN (-2147483648)
+            R_isInitialized = true;
 		}
 		this.__initializeRfunc();
 	}

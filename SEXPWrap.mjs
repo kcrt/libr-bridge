@@ -92,20 +92,18 @@ export default class SEXPWrap {
 	}
 	get names(){
 		let names = new SEXPWrap(R.libR.Rf_getAttrib(this.sexp, R.R_NamesSymbol));
-		return names.getValue();
+		return names.isNull() ? undefined : names.getValue();
 	}
 	set names(newtag){
 		if (newtag === void 0) return;
 		R.libR.Rf_setAttrib(this.sexp, R.R_NamesSymbol, (new SEXPWrap(newtag)).sexp);
 	}
 	getValue(){
-		if(this.isNull()){
-			return undefined;
+		if(this.sexp.address() == 0 || this.isNull()){
+			return null;
 		}
 		const len = this.length()
-		if(this.isNull() || this.sexp.address() == 0){
-			return null;
-		}else if(len == 0){
+		if(len == 0){
 			return [];
 		}if(this.isList()){
 			// TODO: support this
@@ -121,14 +119,25 @@ export default class SEXPWrap {
 		}else if(this.isVector()){		// be careful; is.vector(1) is even True
 			let itemtype;
 			let values = [];
-			if(this.isInteger() || this.isReal()){
-				itemtype = this.isInteger() ? ref.types.int : ref.types.double;
+			if(this.isInteger() || this.isLogical()){
+				itemtype = ref.types.int;
+                const f = this.isLogical() ? (e) => !!e : (e) => e;
 				const p = ref.reinterpret(this.dataptr(), itemtype.size * len);
-				values = R.range(0, len).map( (i) => ref.get(p, itemtype.size * i, itemtype) )
-			}else if(this.isLogical()){
-				itemtype = ref.types.bool;
+                values = R.range(0, len).map( (i) => ref.get(p, itemtype.size * i, itemtype) )
+                                        .map( (e) => e == R.R_NaInt ? undefined : f(e));
+            }else if(this.isReal()){
+				itemtype = ref.types.double;
 				const p = ref.reinterpret(this.dataptr(), itemtype.size * len);
-				values = R.range(0, len).map( (i) => ref.get(p, itemtype.size * i, itemtype) )
+                values = R.range(0, len).map( (i) => ref.get(p, itemtype.size * i, itemtype) )
+                /* Discriminate NA from NaN (1954; the year Ross Ihaka was born) */
+                /* see main/arithmetic.c for detail. */
+                itemtype = ref.types.uint;
+                const q = ref.reinterpret(this.dataptr(), itemtype.size * len * 2);
+                R.range(0, len).map( (i) => {
+                    if(isNaN(values[i])){
+                        if(ref.get(q, itemtype.size * i * 2, itemtype) == 1954) values[i] = undefined;
+                    }
+                });
 			}else if(this.isValidString()){
 				values = R.range(0, len).map((i) => R.libR.STRING_ELT(this.sexp, i))
 										.map((e) => {

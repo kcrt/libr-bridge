@@ -1,18 +1,9 @@
 import R from '../R';
 import assert from 'assert';
+import assert_ext from './assert_ext';
 
 var r;
-
-assert.almostEqual = (a, b, allow = 0.001) => assert.ok(Math.abs(a - b) < allow, `${a} is not equal to ${b}`)
-assert.arrayEqual = (a, b) => {
-	if(!Array.isArray(a) || !Array.isArray(b)){
-		assert.fail("not an array.")
-	}else if(a.length != b.length){
-		assert.fail("different length")
-	}else{
-		assert.ok(a.every((e, i) => (e == b[i])), `different item: ${a} !== ${b}`)
-	}
-}
+assert_ext(assert);
 
 describe('Initialize', () => {
 	it('Initialize', () => {
@@ -51,6 +42,26 @@ describe('Primitives', () => {
 	});
 });
 
+describe('Special values', () => {
+    it('Empty vector', () => {
+        assert.equal(r.eval('vector(mode="numeric", length=0)').length, 0);
+        r.setVar("empty_vector", []);
+        assert.equal(r.eval("length(empty_vector)"), 0);
+    });
+	it('NA', () => {
+		assert.strictEqual(r.eval("NA"), void 0);
+		assert.arrayEqual(r.eval("c(1.1, 2.1, NA)"), [1.1, 2.1, undefined]);
+		assert.arrayEqual(r.eval("c(1:2, NA)"), [1, 2, undefined]);
+	});
+	it('NaN', () => {
+		assert.ok(isNaN(r.eval("NaN")));
+		assert.ok(isNaN(r.eval("0 / 0")));
+	});
+	it('Inf', () => {
+		assert.strictEqual(r.eval("Inf"), Infinity);
+		assert.strictEqual(r.eval("-Inf"), -Infinity);
+	});
+});
 
 describe('Array', () => {
 	const arr_1to100 = R.range(1, 101)
