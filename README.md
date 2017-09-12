@@ -44,4 +44,14 @@ License
 
 Reference
 ----------------------------------------
-1. Reference will be here.
+### English
+1. [R Internals](https://cran.r-project.org/doc/manuals/r-release/R-ints.html)
+1. [Advanced R by Hadley Wickham](http://adv-r.had.co.nz)
+    - You can buy [Physical copy](https://www.amazon.com/dp/1466586966) of this material. Especially recommended!
+
+### Japanese
+1. [R入門 Ver.1.7.0](https://cran.r-project.org/doc/contrib/manuals-jp/R-intro-170.jp.pdf)
+1. [R言語定義 Ver.1.1.0 DRAFT](https://cran.r-project.org/doc/contrib/manuals-jp/R-lang.jp.v110.pdf)
+1. [Rの拡張を書く Ver2.1.0](https://cran.r-project.org/doc/contrib/manuals-jp/R-exts.jp.pdf)
+1. [R言語徹底解説 Hadley Wickham (著), 石田 基広ら (翻訳)](http://amzn.to/2xhIZtg) 特におすすめです。
+

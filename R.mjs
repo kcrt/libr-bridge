@@ -163,7 +163,7 @@ export default class R{
 	 * @param {boolean} silent	Suppress error message if true.
 	 * @throws {Error}			When execution fails.
 	 * @return {SEXPWrap}		SEXPWrap object of returned value. Returns undefined on error.
-	 * @see {@link eval}, R_ParseEvalString(eval.c)
+	 * @see {@link eval}, R_ParseEvalString
 	 */
 	eval_raw(code, silent=false){
 		const s = new SEXPWrap(code);	
@@ -217,8 +217,8 @@ export default class R{
 	}
 	/**
 	 * Execute R code with R try. This is more safe than {@link R#eval}.
-	 * @param {boolean} silent	Suppress error message if true.
 	 * @param {string} code		R code
+	 * @param {boolean} silent	Suppress error message if true.
 	 * @return					Returned value. Returns undefined on error.
 	 */
 	evalWithTry(code, silent=false){
