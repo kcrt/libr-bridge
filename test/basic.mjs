@@ -145,7 +145,11 @@ describe('Failing test', () => {
 		assert.strictEqual(r.getVar("non_exsisting_var"), void 0);
 	});
 	it('Syntax error in eval', () => {
-		assert.throws(() => {r.eval("2 *+* 4")}, Error);
+		assert.throws(() => {r.eval("2 *+* 4", true)}, Error);
+	});
+	it('Execution error in eval', () => {
+		assert.throws(() => {r.eval("1 <- 5", true)}, Error);
+		assert.ok(r.evalWithTry("1 <- 5", true).startsWith("Error"));
 	});
 });
 

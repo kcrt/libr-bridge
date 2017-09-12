@@ -65,6 +65,7 @@ const apiList = {
 	"R_setStartTime": ["void", []],						// void R_setStartTime(void);
 	"R_sysframe": [SEXP, ["int", "pointer"]],
 	"R_tryEval": [SEXP, [SEXP, SEXP, intPtr]],			// SEXP R_tryEval(SEXP e, SEXP env, int *ErrorOccurred)
+	"R_tryEvalSilent": [SEXP, [SEXP, SEXP, intPtr]],	// SEXP R_tryEvalSilent(SEXP e, SEXP env, int *ErrorOccurred)
 	"Rf_GetRowNames": [SEXP, [SEXP]],
 	"Rf_ScalarInteger": [SEXP, ["int"]],
 	"Rf_ScalarLogical": [SEXP, ["int"]],

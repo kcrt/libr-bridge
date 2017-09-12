@@ -160,11 +160,12 @@ export default class R{
 	/**
 	 * Execute R code.
 	 * @param {string} code		R code
+	 * @param {boolean} silent	Suppress error message if true.
 	 * @throws {Error}			When execution fails.
 	 * @return {SEXPWrap}		SEXPWrap object of returned value. Returns undefined on error.
 	 * @see {@link eval}, R_ParseEvalString(eval.c)
 	 */
-	eval_raw(code){
+	eval_raw(code, silent=false){
 		const s = new SEXPWrap(code);	
 		s.protect();
 		var status = ref.alloc(ref.types.int);
@@ -177,8 +178,14 @@ export default class R{
 			debug(`Parse error.\n-----\n${code}\n-----`)
 			throw new Error("Parse error of R code.")
 		}else{
-			const retval = new SEXPWrap(libR.Rf_eval(libR.VECTOR_ELT(ps.sexp, 0), R.GlobalEnv));
+			var errorOccurred = ref.alloc(ref.types.int, 0);
+			const f = silent ? libR.R_tryEvalSilent : libR.R_tryEval;
+			const retval = new SEXPWrap(f(libR.VECTOR_ELT(ps.sexp, 0), R.GlobalEnv, errorOccurred));
 			s.unprotect(2);
+			if(ref.deref(errorOccurred)){
+				debug(`Execution error.\n----\n${code}\n----`);
+				throw new Error("Execution error.");
+			}
 			return retval;
 		}
 	}
@@ -195,13 +202,14 @@ export default class R{
 	/**
 	 * Execute R code.
 	 * @param {string} code		R code
+	 * @param {boolean} silent	Suppress error message if true.
 	 * @throws {Error}			When execution fails.
 	 * @return					JavaScript compatible object of returned value.
 	 * @example
 	 *		let value = R.eval("sum(c(1, 2, 3))")		// value will be 6
 	 */
-	eval(code){
-		const ret = this.eval_raw(code);
+	eval(code, silent=false){
+		const ret = this.eval_raw(code, silent);
 		ret.protect();
 		const retval = ret.getValue();
 		ret.unprotect();
@@ -209,11 +217,13 @@ export default class R{
 	}
 	/**
 	 * Execute R code with R try. This is more safe than {@link R#eval}.
+	 * @param {boolean} silent	Suppress error message if true.
 	 * @param {string} code		R code
 	 * @return					Returned value. Returns undefined on error.
 	 */
-	evalWithTry(code){
-		return this.eval("try({" + code + "})")
+	evalWithTry(code, silent=false){
+		const f = silent ? "TRUE" : "FALSE";
+		return this.eval(`try({${code}}, silent=${f})`)
 	}
 	/**
 	 * Acquire value of R variable
