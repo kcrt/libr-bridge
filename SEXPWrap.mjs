@@ -28,7 +28,9 @@ export default class SEXPWrap {
 			// not an array.
 			// convert to array and try again.
 			// (You can use Rf_mkString, Rf_ScalarReal, Rf_ScalarLogical if you don't want SEXPWrap)
-			this.__initializeWithValue([value]);
+            this.__initializeWithValue([value]);
+        }else if(value.length == 0){
+            this.sexp = R.R_NilValue;
 		}else if(typeof(value[0]) == 'number'){
 			// assume this is array of numbers (e.g. [1, 2, 3, ...])
 			this.sexp = R.libR.Rf_allocVector(SEXPTYPE.REALSXP, value.length);
