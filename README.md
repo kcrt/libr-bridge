@@ -53,7 +53,7 @@ Reference
 ----------------------------------------
 ### English
 1. [R Internals](https://cran.r-project.org/doc/manuals/r-release/R-ints.html)
-1. [R internals (bu Hadley)](https://github.com/hadley/r-internals)
+1. [R internals (by Hadley)](https://github.com/hadley/r-internals)
 1. [Advanced R by Hadley Wickham](http://adv-r.had.co.nz)
 	- You can buy [Physical copy](https://www.amazon.com/dp/1466586966) of this material. Especially recommended!
 
