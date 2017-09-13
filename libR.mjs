@@ -72,6 +72,7 @@ const apiList = {
 	"CDR": [SEXP, [SEXP]],
 	"NAMED": ["int", [SEXP]],
 	"R_CHAR": ["string", [SEXP]],
+	"R_curErrorBuf": ["string", []],
 	"R_NilValue": [SEXP, []],
 	"R_ParseEvalString": [SEXP, ["string", SEXP]],
 	"R_ParseVector": [SEXP, [SEXP, "int", "int*", SEXP]], // SEXP R_ParseVector(SEXP text, int n, ParseStatus *status, SEXP srcfile)

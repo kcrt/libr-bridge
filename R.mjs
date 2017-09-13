@@ -181,16 +181,18 @@ export default class R{
 			!(ps.isExpression()) || 
 			ps.length() != 1){
 			s.unprotect(2);
+			const errmsg = libR.R_curErrorBuf();
 			debug(`Parse error.\n-----\n${code}\n-----`)
-			throw new Error("Parse error of R code.")
+			throw new Error(`Parse error of R code`)
 		}else{
 			var errorOccurred = ref.alloc(ref.types.int, 0);
 			const f = silent ? libR.R_tryEvalSilent : libR.R_tryEval;
 			const retval = new SEXPWrap(f(libR.VECTOR_ELT(ps.sexp, 0), R.GlobalEnv, errorOccurred));
 			s.unprotect(2);
 			if(ref.deref(errorOccurred)){
-				debug(`Execution error.\n----\n${code}\n----`);
-				throw new Error("Execution error.");
+				const errmsg = libR.R_curErrorBuf();
+				debug(`Execution error.\n----\n${code}\n\nReason: ${errmsg}----`);
+				throw new Error(`Execution error: ${errmsg}`);
 			}
 			return retval;
 		}
