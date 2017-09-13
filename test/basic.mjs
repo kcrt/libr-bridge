@@ -17,6 +17,9 @@ describe('Primitives', () => {
 		assert.equal(1, r.eval("as.integer(1)"));
 		assert.equal(0, r.eval("as.integer(0)"));
 		assert.equal(-1, r.eval("as.integer(-1)"));
+		r.setVar("numvar", 2017)
+		assert.equal(2017, r.getVar("numvar"))
+		assert.equal(2017, r.eval("numvar"))
 	});
 	it('Real', () => {
 		assert.equal(1.0, r.eval("1.0"));
@@ -24,6 +27,9 @@ describe('Primitives', () => {
 	});
 	it('String', () => {
 		assert.equal("abc", r.eval('"abc"'));
+		r.setVar("strvar", "kcrt")
+		assert.equal("kcrt", r.getVar("strvar"))
+		assert.equal("kcrt", r.eval("strvar"))
 	});
 	it('Logical (Boolean)', () => {
 		assert.equal(true, r.eval('T'));
