@@ -7,6 +7,7 @@
         "doc": "rm -R doc; ./node_modules/.bin/esdoc; cp ./logo.png doc",
         "jsdoc": "rm -R doc; ./node_modules/.bin/jsdoc -c jsdoc.conf",
         "test": "./node_modules/.bin/mocha --require @std/esm test/*.mjs",
+        "debug-test": "DEBUG=libr-bridge:* ./node_modules/.bin/mocha --require @std/esm test/*.mjs",
         "debug-develop": "node --inspect-brk -r @std/esm develop.mjs"
     },
     "author": "kcrt",

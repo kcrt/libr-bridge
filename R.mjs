@@ -27,6 +27,10 @@ export default class R{
 			debug("Initializing R...")
 			const argv = ["REmbeddedOnBridge", "--vanilla", "--gui=none", "--silent"].map((e) => ref.allocCString(e));
 			libR = createLibR();
+			if(libR === void 0){
+				debug("Failed to initialize");
+				throw new "R initialization failed.";
+			}
 			libR.Rf_initEmbeddedR(argv.length, argv);
 			libR.R_setStartTime();
 			/* Initialize values */

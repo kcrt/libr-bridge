@@ -2,7 +2,7 @@ import ref from 'ref';
 import refArray from 'ref-array';
 import Complex from 'Complex';
 import R from './R';
-import {SEXPTYPE, RComplex} from './libR';
+import {SEXPTYPE, RComplex, cetype_t} from './libR';
 import debug_ from 'debug'
 const debug = debug_("libr-bridge:class SEXPWrap")
 
@@ -55,7 +55,7 @@ export default class SEXPWrap {
 			this.sexp = R.libR.Rf_allocVector(SEXPTYPE.STRSXP, value.length);
 			this.protect();
 			value.map((e, i) => {
-				R.libR.SET_STRING_ELT(this.sexp, i, R.libR.Rf_mkChar(e));
+				R.libR.SET_STRING_ELT(this.sexp, i, R.libR.Rf_mkCharCE(e, cetype_t.CE_UTF8));
 			});
 			this.unprotect();
 		}else if(value[0] instanceof Complex){
@@ -94,7 +94,7 @@ export default class SEXPWrap {
 	isReal(){ return R.libR.Rf_isReal(this.sexp); }
 	isValidString(){ return R.libR.Rf_isValidString(this.sexp); }
 	dataptr(){ return R.libR.STRING_PTR(this.sexp); }
-	asChar(){ return R.libR.R_CHAR(R.libR.Rf_asChar(this.sexp)).slice(); }
+	asChar(){ return R.libR.Rf_translateCharUTF8(R.libR.Rf_asChar(this.sexp)).slice(); }
 	/** Return sizeof(SEXP) in byte. */
 	static get SEXPSize(){
 		if(sexpSize == void 0){
@@ -180,7 +180,7 @@ export default class SEXPWrap {
 		}else if(R.libR.Rf_isNumeric(sexp)){
 			return R.libR.Rf_asReal(sexp);
 		}else if(R.libR.Rf_isValidString(v)){
-			return R.libR.R_CHAR(R.libR.Rf_asChar(sexp)).slice();
+			return R.libR.Rf_translateCharUTF8(R.libR.Rf_asChar(sexp)).slice();
 		}else{
 			return "SEXPWRAP: unknown SEXP Type";
 		}

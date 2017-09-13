@@ -7,6 +7,9 @@ import ref from 'ref';
 import refArray from 'ref-array';
 import refStruct from 'ref-struct';
 
+import debug_ from 'debug'
+const debug = debug_("libr-bridge:libR")
+
 /* Type */
 const stringArr = refArray(ref.types.CString)			// char * [] or string[]
 export const SEXP = ref.refType(ref.types.void);
@@ -55,14 +58,23 @@ export const ParseStatus = {
     PARSE_EOF: 4
 };
 
+export const cetype_t = {
+	CE_NATIVE : 0,
+	CE_UTF8   : 1,
+	CE_LATIN1 : 2,
+	CE_BYTES  : 3,
+	CE_SYMBOL : 5,
+	CE_ANY    : 99
+};
+
 const apiList = {
 	"CAR": [SEXP, [SEXP]],
 	"CDR": [SEXP, [SEXP]],
 	"NAMED": ["int", [SEXP]],
 	"R_CHAR": ["string", [SEXP]],
 	"R_NilValue": [SEXP, []],
-	"R_ParseVector": [SEXP, [SEXP, "int", "int*", SEXP]], // SEXP R_ParseVector(SEXP text, int n, ParseStatus *status, SEXP srcfile)
 	"R_ParseEvalString": [SEXP, ["string", SEXP]],
+	"R_ParseVector": [SEXP, [SEXP, "int", "int*", SEXP]], // SEXP R_ParseVector(SEXP text, int n, ParseStatus *status, SEXP srcfile)
 	"R_PreserveObject": ["void", [SEXP]],
 	"R_ReleaseObject": ["void", [SEXP]],
 	"R_setStartTime": ["void", []],						// void R_setStartTime(void);
@@ -98,8 +110,6 @@ const apiList = {
 	"Rf_isList": ["int", [SEXP]],						// Rboolean Rf_isList(SEXP);
 	"Rf_isLogical": ["int", [SEXP]],					// Rboolean Rf_isLogical(SEXP);
 	"Rf_isMatrix": ["int", [SEXP]],						// Rboolean Rf_isMatrix(SEXP);
-	//"R_IsNA": ["int", [ieee_double]],					// Rboolean R_IsNA(double);
-	//"R_IsNaN": ["int", [ieee_double]],				// Rboolean R_IsNaN(double);
 	"Rf_isNull": ["int", [SEXP]],						// Rboolean Rf_isNull(SEXP);
 	"Rf_isNumber": ["int", [SEXP]],						// Rboolean Rf_isNumber(SEXP);
 	"Rf_isNumeric": ["int", [SEXP]],					// Rboolean Rf_isNumeric(SEXP);
@@ -120,7 +130,8 @@ const apiList = {
 	"Rf_lengthgets": [SEXP, [SEXP]],
 	"Rf_mainloop": ["void", []],						// void Rf_mainloop();
 	"Rf_mkChar": [SEXP, ["string"]],
-	"Rf_mkString": [SEXP, [stringPtr]],
+	"Rf_mkCharCE": [SEXP, ["string", "int"]],
+	"Rf_mkString": [SEXP, ["string"]],
 	"Rf_protect": [SEXP, [SEXP]],
 	"Rf_setAttrib": [SEXP, [SEXP, SEXP, SEXP]],
 	"Rf_setVar": [SEXP, [SEXP, SEXP, SEXP]],
@@ -134,6 +145,8 @@ const apiList = {
 	"TAG": [SEXP, [SEXP]],
 	"TYPEOF": ["int", [SEXP]],
 	"VECTOR_ELT": [SEXP, [SEXP, "int"]],
+	//"R_IsNA": ["int", [ieee_double]],					// Rboolean R_IsNA(double);
+	//"R_IsNaN": ["int", [ieee_double]],				// Rboolean R_IsNaN(double);
 };
 
 var libR = undefined;
@@ -153,6 +166,8 @@ export default function createLibR(r_path = "auto"){
 	if(libR !== void 0){
 		return libR;
 	}
+
+	debug(`creating libR: ${r_path}`);
 
 	if(r_path == "auto"){
 		try{
@@ -194,7 +209,7 @@ export default function createLibR(r_path = "auto"){
 		process.env.R_HOME = r_path;
 		process.env.LD_LIBRARY_PATH = `${r_path}${delim}${r_path}/lib${delim}` + process.env.LD_LIBRARY_PATH;
 		process.env.DYLD_LIBRARY_PATH = `${r_path}${delim}${r_path}/lib${delim}` + process.env.DYLD_LIBRARY_PATH;
-		libR = ffi.Library("libR", apiList)
+		libR = ffi.Library("libR", apiList);
 	}
 
 	if(libR == undefined){
