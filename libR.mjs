@@ -5,6 +5,7 @@ import path from 'path';
 import ffi from 'ffi';
 import ref from 'ref';
 import refArray from 'ref-array';
+import refStruct from 'ref-struct';
 
 /* Type */
 const stringPtr = ref.refType(ref.types.CString)		// char ** or string*
@@ -13,6 +14,11 @@ const stringArr = refArray(ref.types.CString)			// char * [] or string[]
 const intPtr = ref.refType(ref.types.int)
 export const SEXP = ref.refType(ref.types.void);
 export const SEXPREC_ALIGN_SIZE = ref.types.double.size;
+export const RComplex = refStruct({
+  r: ref.types.double,
+  i: ref.types.double
+})
+
 /** R SEXP type enums */
 export const SEXPTYPE = {
 	NILSXP		: 0,	/* nil : NULL */
@@ -87,6 +93,7 @@ const apiList = {
 	"Rf_initialize_R": ["int", ["int", stringArr]],
 	"Rf_install": [SEXP, ["string"]],
 	"Rf_isArray": ["int", [SEXP]],						// Rboolean Rf_isArray(SEXP);
+	"Rf_isComplex": ["int", [SEXP]],					// Rboolean Rf_isComplex(SEXP);
 	"Rf_isExpression": ["int", [SEXP]],					// Rboolean Rf_isExpression(SEXP);
 	"Rf_isFactor": ["int", [SEXP]],						// Rboolean Rf_isFactor(SEXP);
 	"Rf_isFunction": ["int", [SEXP]],					// Rboolean Rf_isFunction(SEXP);

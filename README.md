@@ -30,6 +30,13 @@ API
 ### `Document`
 Please see doc directory.
 
+Depended package
+----------------------------------------
+### npm
+1. [node-ffi: Node.js Foreign Function Interface](https://github.com/node-ffi/node-ffi)
+1. [ref * Turn Buffer instances into "pointers"](https://tootallnate.github.io/ref/)
+Calculations with Complex Numbers in JavaScript
+1. [arian/Complex: Calculations with Complex Numbers in JavaScript](https://github.com/arian/Complex)
 
 Author information
 ----------------------------------------
@@ -49,7 +56,6 @@ Reference
 1. [R internals (bu Hadley)](https://github.com/hadley/r-internals)
 1. [Advanced R by Hadley Wickham](http://adv-r.had.co.nz)
     - You can buy [Physical copy](https://www.amazon.com/dp/1466586966) of this material. Especially recommended!
-1. npm module: [ref * Turn Buffer instances into "pointers"](https://tootallnate.github.io/ref/)
 
 ### Japanese
 1. [R入門 Ver.1.7.0](https://cran.r-project.org/doc/contrib/manuals-jp/R-intro-170.jp.pdf)

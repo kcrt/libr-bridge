@@ -1,7 +1,8 @@
 import ref from 'ref';
 import refArray from 'ref-array';
+import Complex from 'Complex';
 import R from './R';
-import {SEXPTYPE} from './libR';
+import {SEXPTYPE, RComplex} from './libR';
 import debug_ from 'debug'
 const debug = debug_("libr-bridge:class SEXPWrap")
 
@@ -57,6 +58,15 @@ export default class SEXPWrap {
 				R.libR.SET_STRING_ELT(this.sexp, i, R.libR.Rf_mkChar(e));
 			});
 			this.unprotect();
+		}else if(value[0] instanceof Complex){
+			this.sexp = R.libR.Rf_allocVector(SEXPTYPE.CPLXSXP, value.length);
+			this.protect();
+			let p = ref.reinterpret(this.dataptr(), RComplex.size * value.length);
+			value.map((e) => new RComplex({r: e.real, i: e.im}))
+				 .map((e, i) => {
+					ref.set(p, RComplex.size * i, e, RComplex);
+				});
+			this.unprotect();
 		}else{
 			console.log("Cannot convert " + typeof(value) + " in JavaScript to R SEXP / " + value);
 		}
@@ -77,6 +87,7 @@ export default class SEXPWrap {
 	length(){ return R.libR.Rf_length(this.sexp); }
 	/** Return true if this SEXP is null. */
 	isNull(){ return R.libR.Rf_isNull(this.sexp); }
+	isComplex(){ return R.libR.Rf_isComplex(this.sexp); }
 	isExpression(){ return R.libR.Rf_isExpression(this.sexp); }
 	isInteger(){ return R.libR.Rf_isInteger(this.sexp); }
 	isLogical(){ return R.libR.Rf_isLogical(this.sexp); }
@@ -139,7 +150,12 @@ export default class SEXPWrap {
                     if(isNaN(values[i])){
                         if(ref.get(q, itemtype.size * i * 2, itemtype) == 1954) values[i] = undefined;
                     }
-                });
+				});
+			}else if(this.isComplex()){
+				itemtype = RComplex;
+				const p = ref.reinterpret(this.dataptr(), itemtype.size * len);
+				values = R.range(0, len).map( (i) => ref.get(p, itemtype.size * i, itemtype))
+										.map( (e) => new Complex(e.r, e.i));
 			}else if(this.isValidString()){
 				values = R.range(0, len).map((i) => R.libR.STRING_ELT(this.sexp, i))
 										.map((e) => {

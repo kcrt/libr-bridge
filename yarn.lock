@@ -6,6 +6,10 @@
   version "0.8.3"
   resolved "https://registry.yarnpkg.com/@std/esm/-/esm-0.8.3.tgz#7a3c3144ca0905c9b92d82b79987503ecb58a193"
 
+Complex@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/Complex/-/Complex-3.0.0.tgz#f06a402d59baa3e68c7b3513840e1a70a3f8eabf"
+
 abab@^1.0.0:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/abab/-/abab-1.0.3.tgz#b81de5f7274ec4e756d797cd834f303642724e5d"
@@ -1161,7 +1165,7 @@ ref-array@^1:
     debug "2"
     ref "1"
 
-ref-struct@1:
+ref-struct@1, ref-struct@^1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/ref-struct/-/ref-struct-1.1.0.tgz#5d5ee65ad41cefc3a5c5feb40587261e479edc13"
   dependencies:

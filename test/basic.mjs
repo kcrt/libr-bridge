@@ -1,6 +1,7 @@
 import R from '../R';
 import assert from 'assert';
 import assert_ext from './assert_ext';
+import Complex from 'Complex';
 
 var r;
 assert_ext(assert);
@@ -32,13 +33,11 @@ describe('Primitives', () => {
 		r.setVar("logvar", true)
 		assert.ok(r.eval("logvar"))
 	});
-	it('Variable', () => {
-		r.setVar("numvar", 2017)
-		assert.equal(2017, r.getVar("numvar"))
-		assert.equal(2017, r.eval("numvar"))
-		r.setVar("strvar", "kcrt")
-		assert.equal("kcrt", r.getVar("strvar"))
-		assert.equal("kcrt", r.eval("strvar"))
+    it('Complex', () => {
+        const cpxvar = new Complex(1, 2)
+        assert.ok(cpxvar.equals(r.eval("1+2i")));
+        r.setVar("cpxvar", cpxvar);
+        assert.ok(r.eval("cpxvar^2").equals(cpxvar.multiply(cpxvar)));
 	});
 });
 
