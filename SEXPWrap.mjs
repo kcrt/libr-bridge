@@ -47,7 +47,7 @@ export default class SEXPWrap {
 				ref.set(p, ref.types.bool.size * i, (e ? true : false) /* convert to boolean */, ref.types.bool);
 			});
 			this.unprotect();
-		}else if(typeof(value[0] == 'string')){
+		}else if(typeof(value[0]) == 'string'){
 			// assuming this is array of strings (e.g. ["abc", "def", ...])
 			this.sexp = R.libR.Rf_allocVector(SEXPTYPE.STRSXP, value.length);
 			this.protect();
