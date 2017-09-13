@@ -101,8 +101,8 @@ const apiList = {
 	"Rf_isList": ["int", [SEXP]],						// Rboolean Rf_isList(SEXP);
 	"Rf_isLogical": ["int", [SEXP]],					// Rboolean Rf_isLogical(SEXP);
 	"Rf_isMatrix": ["int", [SEXP]],						// Rboolean Rf_isMatrix(SEXP);
-    //"R_IsNA": ["int", [ieee_double]],					// Rboolean R_IsNA(double);
-    //"R_IsNaN": ["int", [ieee_double]],			   		// Rboolean R_IsNaN(double);
+	//"R_IsNA": ["int", [ieee_double]],					// Rboolean R_IsNA(double);
+	//"R_IsNaN": ["int", [ieee_double]],				// Rboolean R_IsNaN(double);
 	"Rf_isNull": ["int", [SEXP]],						// Rboolean Rf_isNull(SEXP);
 	"Rf_isNumber": ["int", [SEXP]],						// Rboolean Rf_isNumber(SEXP);
 	"Rf_isNumeric": ["int", [SEXP]],					// Rboolean Rf_isNumeric(SEXP);

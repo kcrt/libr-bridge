@@ -39,20 +39,20 @@ describe('Primitives', () => {
 		r.setVar("logvar", true)
 		assert.ok(r.eval("logvar"))
 	});
-    it('Complex', () => {
-        const cpxvar = new Complex(1, 2)
-        assert.ok(cpxvar.equals(r.eval("1+2i")));
-        r.setVar("cpxvar", cpxvar);
-        assert.ok(r.eval("cpxvar^2").equals(cpxvar.multiply(cpxvar)));
+	it('Complex', () => {
+		const cpxvar = new Complex(1, 2)
+		assert.ok(cpxvar.equals(r.eval("1+2i")));
+		r.setVar("cpxvar", cpxvar);
+		assert.ok(r.eval("cpxvar^2").equals(cpxvar.multiply(cpxvar)));
 	});
 });
 
 describe('Special values', () => {
-    it('Empty vector', () => {
-        assert.equal(r.eval('vector(mode="numeric", length=0)').length, 0);
-        r.setVar("empty_vector", []);
-        assert.equal(r.eval("length(empty_vector)"), 0);
-    });
+	it('Empty vector', () => {
+		assert.equal(r.eval('vector(mode="numeric", length=0)').length, 0);
+		r.setVar("empty_vector", []);
+		assert.equal(r.eval("length(empty_vector)"), 0);
+	});
 	it('NA', () => {
 		assert.strictEqual(r.eval("NA"), void 0);
 		assert.arrayEqual(r.eval("c(1.1, 2.1, NA)"), [1.1, 2.1, undefined]);

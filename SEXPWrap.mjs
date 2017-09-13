@@ -21,17 +21,17 @@ export default class SEXPWrap {
 		}
 	}
 	/**
-	 *  Initialize this instance with specified value.
-	 *  @private
+	 *	Initialize this instance with specified value.
+	 *	@private
 	 */
 	__initializeWithValue(value){
 		if(!Array.isArray(value)){
 			// not an array.
 			// convert to array and try again.
 			// (You can use Rf_mkString, Rf_ScalarReal, Rf_ScalarLogical if you don't want SEXPWrap)
-            this.__initializeWithValue([value]);
-        }else if(value.length == 0){
-            this.sexp = R.R_NilValue;
+			this.__initializeWithValue([value]);
+		}else if(value.length == 0){
+			this.sexp = R.R_NilValue;
 		}else if(typeof(value[0]) == 'number'){
 			// assume this is array of numbers (e.g. [1, 2, 3, ...])
 			this.sexp = R.libR.Rf_allocVector(SEXPTYPE.REALSXP, value.length);
@@ -134,22 +134,22 @@ export default class SEXPWrap {
 			let values = [];
 			if(this.isInteger() || this.isLogical()){
 				itemtype = ref.types.int;
-                const f = this.isLogical() ? (e) => !!e : (e) => e;
+				const f = this.isLogical() ? (e) => !!e : (e) => e;
 				const p = ref.reinterpret(this.dataptr(), itemtype.size * len);
-                values = R.range(0, len).map( (i) => ref.get(p, itemtype.size * i, itemtype) )
-                                        .map( (e) => e == R.R_NaInt ? undefined : f(e));
-            }else if(this.isReal()){
+				values = R.range(0, len).map( (i) => ref.get(p, itemtype.size * i, itemtype) )
+										.map( (e) => e == R.R_NaInt ? undefined : f(e));
+			}else if(this.isReal()){
 				itemtype = ref.types.double;
 				const p = ref.reinterpret(this.dataptr(), itemtype.size * len);
-                values = R.range(0, len).map( (i) => ref.get(p, itemtype.size * i, itemtype) )
-                /* Discriminate NA from NaN (1954; the year Ross Ihaka was born) */
-                /* see main/arithmetic.c for detail. */
-                itemtype = ref.types.uint;
-                const q = ref.reinterpret(this.dataptr(), itemtype.size * len * 2);
-                R.range(0, len).map( (i) => {
-                    if(isNaN(values[i])){
-                        if(ref.get(q, itemtype.size * i * 2, itemtype) == 1954) values[i] = undefined;
-                    }
+				values = R.range(0, len).map( (i) => ref.get(p, itemtype.size * i, itemtype) )
+				/* Discriminate NA from NaN (1954; the year Ross Ihaka was born) */
+				/* see main/arithmetic.c for detail. */
+				itemtype = ref.types.uint;
+				const q = ref.reinterpret(this.dataptr(), itemtype.size * len * 2);
+				R.range(0, len).map( (i) => {
+					if(isNaN(values[i])){
+						if(ref.get(q, itemtype.size * i * 2, itemtype) == 1954) values[i] = undefined;
+					}
 				});
 			}else if(this.isComplex()){
 				itemtype = RComplex;
