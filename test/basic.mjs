@@ -57,6 +57,7 @@ describe('Special values', () => {
 		assert.strictEqual(r.eval("NA"), void 0);
 		assert.arrayEqual(r.eval("c(1.1, 2.1, NA)"), [1.1, 2.1, undefined]);
 		assert.arrayEqual(r.eval("c(1:2, NA)"), [1, 2, undefined]);
+		assert.arrayEqual(r.eval("c('a', '', NA)"), ['a', '', undefined]);
 	});
 	it('NaN', () => {
 		assert.ok(isNaN(r.eval("NaN")));

@@ -94,7 +94,10 @@ export default class SEXPWrap {
 	isReal(){ return R.libR.Rf_isReal(this.sexp); }
 	isValidString(){ return R.libR.Rf_isValidString(this.sexp); }
 	dataptr(){ return R.libR.STRING_PTR(this.sexp); }
-	asChar(){ return R.libR.Rf_translateCharUTF8(R.libR.Rf_asChar(this.sexp)).slice(); }
+	asChar(){
+		if(this.sexp.address() == R.R_NaString.sexp.address()){ return void 0;}
+		return R.libR.Rf_translateCharUTF8(R.libR.Rf_asChar(this.sexp)).slice();
+	}
 	/** Return sizeof(SEXP) in byte. */
 	static get SEXPSize(){
 		if(sexpSize == void 0){
