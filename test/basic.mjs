@@ -150,6 +150,13 @@ describe('Math function', () => {
 	});
 })
 
+describe('Function call with named arguments', () => {
+	it('Named arguments', () => {
+		assert.strictEqual(r.f.mean([1, 2, 3, undefined]), void 0);
+		assert.strictEqual(r.f.mean([1, 2, 3, undefined], {"na.rm": true}), 2);
+	});
+});
+
 describe('Long command', () => {
 	it('factorial', () => {
 		r.eval(`

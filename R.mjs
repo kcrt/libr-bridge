@@ -138,8 +138,19 @@ export default class R{
 				lang = new SEXPWrap(libR.Rf_lcons(arguments[i].sexp, lang.sexp));
 				lang.unprotect(1);	// this frees old lang
 			}
+			if(arguments[i].argtag !== void 0){
+				libR.SET_TAG(lang.sexp, libR.Rf_install(arguments[i].argtag));
+			}
 		});
-		return this.__eval_langsxp(lang.sexp);
+		lang.protect();	// protect the most recent one.
+		try{
+			const ret = this.__eval_langsxp(lang.sexp);
+			lang.unprotect();
+			return ret;
+		}catch(e){
+			lang.protect();
+			throw e;
+		}
 	}
 	/**
 	 * Bridging function for R function.
@@ -151,17 +162,34 @@ export default class R{
 	__RFuncBridge(func){
 		// This receives normal Javascript value, and returns Javascript value
 		const argumentsArr = Array.apply(null, arguments).slice(1);
-		const argumentsSEXPWrap = argumentsArr.map((e) => {
-			const sw = new SEXPWrap(e);
-			sw.protect();
-			return sw;
+		let argumentsSEXPWrap = new Array();
+		argumentsArr.map((e) => {
+			if(e.constructor.name == "Object"){
+				// add all items
+				for(let key of Object.keys(e)){
+					const sw = new SEXPWrap(e[key]);
+					sw.protect();
+					sw.argtag = key;
+					argumentsSEXPWrap.push(sw);
+				}
+			}else{
+				// simply add
+				const sw = new SEXPWrap(e);
+				sw.protect();
+				argumentsSEXPWrap.push(sw);
+			}
 		});
-		let ret_sexp = this.__RFuncBridge_raw(func, ...argumentsSEXPWrap);
-		ret_sexp.protect();
-		let ret = ret_sexp.getValue();
-		ret_sexp.unprotect();
-		ret_sexp.unprotect(argumentsSEXPWrap.length);
-		return ret;
+		try {
+			let ret_sexp = this.__RFuncBridge_raw(func, ...argumentsSEXPWrap);
+			ret_sexp.protect();
+			let ret = ret_sexp.getValue();
+			ret_sexp.unprotect();
+			SEXPWrap.unprotect(argumentsSEXPWrap.length);
+			return ret;
+		}catch(e){
+			SEXPWrap.unprotect(argumentsSEXPWrap.length);
+			throw e;
+		}
 	}
 	/**
 	 * Execute R code.
@@ -190,6 +218,7 @@ export default class R{
 				ps.unprotect(2);
 				return ret;
 			} catch(e){
+				debug(`Execution error in eval_raw.\n----\n${code}\n\nReason: ${errmsg}----`);
 				ps.unprotect(2);
 				throw e;
 			}
@@ -205,7 +234,6 @@ export default class R{
 		const retval = new SEXPWrap(f(langsxp, R.GlobalEnv, errorOccurred));
 		if(ref.deref(errorOccurred)){
 			const errmsg = libR.R_curErrorBuf();
-			debug(`Execution error.\n----\n${code}\n\nReason: ${errmsg}----`);
 			throw new Error(`Execution error: ${errmsg}`);
 		}
 		return retval;

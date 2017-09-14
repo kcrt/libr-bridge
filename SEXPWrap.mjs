@@ -89,6 +89,7 @@ export default class SEXPWrap {
 	/** Protect this SEXP */
 	protect(){ R.libR.Rf_protect(this.sexp); }
 	/** Unprotect SEXPs */
+	static unprotect(depth=1){ R.libR.Rf_unprotect(depth); }
 	unprotect(depth=1){ R.libR.Rf_unprotect(depth); }
 	/** Preserve this SEXP. Please use protect() if you can. */
 	preserve(){ R.libR.R_PreserveObject(this.sexp); }
