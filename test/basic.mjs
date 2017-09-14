@@ -58,6 +58,15 @@ describe('Special values', () => {
 		assert.arrayEqual(r.eval("c(1.1, 2.1, NA)"), [1.1, 2.1, undefined]);
 		assert.arrayEqual(r.eval("c(1:2, NA)"), [1, 2, undefined]);
 		assert.arrayEqual(r.eval("c('a', '', NA)"), ['a', '', undefined]);
+
+		r.setVar("NASingle", void 0);
+		r.setVar("NAReal", [1.0, void 0]);
+		r.setVar("NAStr", ["a", void 0]);
+		r.setVar("NABool", [true, void 0]);
+		assert.ok(r.eval("is.na(NASingle) && !is.nan(NASingle)"));
+		assert.ok(r.eval("is.na(NAReal[2]) && !is.nan(NAReal[2])"));
+		assert.ok(r.eval("is.na(NAStr[2]) && !is.nan(NAStr[2])"));
+		assert.ok(r.eval("is.na(NABool[2]) && !is.nan(NABool[2])"));
 	});
 	it('NaN', () => {
 		assert.ok(isNaN(r.eval("NaN")));

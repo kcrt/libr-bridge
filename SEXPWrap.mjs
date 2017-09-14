@@ -11,9 +11,7 @@ var sexpSize = void 0;
 export default class SEXPWrap {
 	constructor(value){
 		
-		if(value === void 0){
-			throw new Error("SEXPWrap: Value not specified.")
-		}else if(value instanceof Buffer){
+		if(value instanceof Buffer){
 			// This may be SEXP!
 			this.sexp = value;
 		}else{
@@ -32,7 +30,7 @@ export default class SEXPWrap {
 			this.__initializeWithValue([value]);
 		}else if(value.length == 0){
 			this.sexp = R.R_NilValue;
-		}else if(typeof(value[0]) == 'number'){
+		}else if(typeof(value[0]) == 'number' || typeof(value[0]) == 'undefined'){
 			// assume this is array of numbers (e.g. [1, 2, 3, ...])
 			this.sexp = R.libR.Rf_allocVector(SEXPTYPE.REALSXP, value.length);
 			this.protect();
@@ -40,14 +38,27 @@ export default class SEXPWrap {
 			value.map((e, i) => {
 				ref.set(p, ref.types.double.size * i, 1.0 * e /* convert to double */, ref.types.double);
 			});
+			// Find NA and set 1954. (sizeof(double) = sizeof(int) * 2)
+			p = ref.reinterpret(this.dataptr(), ref.types.int.size * 2 * value.length);
+			value.map((e, i) => {
+				if(e === void 0){ ref.set(p, ref.types.int.size * i * 2, 1954, ref.types.int) }
+			});
 			this.unprotect();
 		}else if(typeof(value[0]) == 'boolean'){
 			// assume this is array of boolean (e.g. [false, true, true, ...])
+			// to handle NA, we use int instead of bool.
 			this.sexp = R.libR.Rf_allocVector(SEXPTYPE.LGLSXP, value.length);
 			this.protect();
-			let p = ref.reinterpret(this.dataptr(), ref.types.bool.size * value.length);
+			let p = ref.reinterpret(this.dataptr(), ref.types.int.size * value.length);
 			value.map((e, i) => {
-				ref.set(p, ref.types.bool.size * i, (e ? true : false) /* convert to boolean */, ref.types.bool);
+				let value;
+				if(e === void 0){
+					// It's NA
+					value = R.R_NaInt;
+				}else{
+					value = e ? 1 : 0;
+				}
+				ref.set(p, ref.types.int.size * i, value, ref.types.int);
 			});
 			this.unprotect();
 		}else if(typeof(value[0]) == 'string'){
@@ -55,7 +66,11 @@ export default class SEXPWrap {
 			this.sexp = R.libR.Rf_allocVector(SEXPTYPE.STRSXP, value.length);
 			this.protect();
 			value.map((e, i) => {
-				R.libR.SET_STRING_ELT(this.sexp, i, R.libR.Rf_mkCharCE(e, cetype_t.CE_UTF8));
+				if(e !== void 0){
+					R.libR.SET_STRING_ELT(this.sexp, i, R.libR.Rf_mkCharCE(e, cetype_t.CE_UTF8));
+				}else{
+					R.libR.SET_STRING_ELT(this.sexp, i, R.R_NaString.sexp);
+				}
 			});
 			this.unprotect();
 		}else if(value[0] instanceof Complex){
