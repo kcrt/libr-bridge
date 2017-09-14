@@ -139,8 +139,7 @@ export default class R{
 				lang.unprotect(1);	// this frees old lang
 			}
 		});
-		const ret = new SEXPWrap(libR.Rf_eval(lang.sexp, R.GlobalEnv));	// TODO: change to tryEval
-		return ret;
+		return this.__eval_langsxp(lang.sexp);
 	}
 	/**
 	 * Bridging function for R function.
@@ -181,22 +180,35 @@ export default class R{
 		if(ref.deref(status) != ParseStatus.PARSE_OK ||
 			!(ps.isExpression()) || 
 			ps.length() != 1){
-			s.unprotect(2);
+			ps.unprotect(2);
 			const errmsg = libR.R_curErrorBuf();
 			debug(`Parse error.\n-----\n${code}\n-----`)
 			throw new Error(`Parse error of R code`)
 		}else{
-			var errorOccurred = ref.alloc(ref.types.int, 0);
-			const f = silent ? libR.R_tryEvalSilent : libR.R_tryEval;
-			const retval = new SEXPWrap(f(libR.VECTOR_ELT(ps.sexp, 0), R.GlobalEnv, errorOccurred));
-			s.unprotect(2);
-			if(ref.deref(errorOccurred)){
-				const errmsg = libR.R_curErrorBuf();
-				debug(`Execution error.\n----\n${code}\n\nReason: ${errmsg}----`);
-				throw new Error(`Execution error: ${errmsg}`);
+			try {
+				const ret = this.__eval_langsxp(libR.VECTOR_ELT(ps.sexp, 0), silent);
+				ps.unprotect(2);
+				return ret;
+			} catch(e){
+				ps.unprotect(2);
+				throw e;
 			}
-			return retval;
 		}
+	}
+	/**
+	 * Execute R code with LANGSXP
+	 * @private
+	 */
+	__eval_langsxp(langsxp, silent=false){
+		var errorOccurred = ref.alloc(ref.types.int, 0);
+		const f = silent ? libR.R_tryEvalSilent : libR.R_tryEval;
+		const retval = new SEXPWrap(f(langsxp, R.GlobalEnv, errorOccurred));
+		if(ref.deref(errorOccurred)){
+			const errmsg = libR.R_curErrorBuf();
+			debug(`Execution error.\n----\n${code}\n\nReason: ${errmsg}----`);
+			throw new Error(`Execution error: ${errmsg}`);
+		}
+		return retval;
 	}
 	/**
 	 * Execute R code without error handling. App crashes when execution/parse failure.

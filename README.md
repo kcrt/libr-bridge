@@ -56,10 +56,15 @@ Reference
 1. [R internals (by Hadley)](https://github.com/hadley/r-internals)
 1. [Advanced R by Hadley Wickham](http://adv-r.had.co.nz)
 	- You can buy [Physical copy](https://www.amazon.com/dp/1466586966) of this material. Especially recommended!
+1. [Rccp: Seamless R anc C++ Integration](https://github.com/RcppCore/Rcpp)
+1. [Rcpp documentation](http://dirk.eddelbuettel.com/code/rcpp/html/index.html)
+1. [Rcpp for everyone (Masaki E. Tsuda)](https://teuder.github.io/rcpp4everyone_en/)
 
 ### Japanese
 1. [R入門 Ver.1.7.0](https://cran.r-project.org/doc/contrib/manuals-jp/R-intro-170.jp.pdf)
 1. [R言語定義 Ver.1.1.0 DRAFT](https://cran.r-project.org/doc/contrib/manuals-jp/R-lang.jp.v110.pdf)
 1. [Rの拡張を書く Ver2.1.0](https://cran.r-project.org/doc/contrib/manuals-jp/R-exts.jp.pdf)
 1. [R言語徹底解説 Hadley Wickham (著), 石田 基広ら (翻訳)](http://amzn.to/2xhIZtg) 特におすすめです。
+1. [みんなのRcpp (Masaki E. Tsuda)](https://teuder.github.io/rcpp4everyone_ja/)
+
 
