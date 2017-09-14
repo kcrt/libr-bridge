@@ -185,7 +185,7 @@ describe('Failing test', () => {
 		assert.ok(r.evalWithTry("1 <- 5", true).startsWith("Error"));
 	});
 	it('Execution error in function call', () => {
-		assert.throws(() => {r.f.cor(0)}, Error);
+		assert.throws(() => {r.func['stop']("Test Error")}, Error);
 	});
 });
 

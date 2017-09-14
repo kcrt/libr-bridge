@@ -35,7 +35,6 @@ Depended package
 ### npm
 1. [node-ffi: Node.js Foreign Function Interface](https://github.com/node-ffi/node-ffi)
 1. [ref * Turn Buffer instances into "pointers"](https://tootallnate.github.io/ref/)
-Calculations with Complex Numbers in JavaScript
 1. [arian/Complex: Calculations with Complex Numbers in JavaScript](https://github.com/arian/Complex)
 
 Author information
