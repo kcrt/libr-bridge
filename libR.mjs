@@ -2,6 +2,7 @@ import child_process from 'child_process';
 import process from 'process';
 import path from 'path';
 
+import windowsRegistry from 'windows-registry';
 import ffi from 'ffi';
 import ref from 'ref';
 import refArray from 'ref-array';
@@ -68,18 +69,18 @@ export const cetype_t = {
 };
 
 const apiList = {
-	"CAR": [SEXP, [SEXP]],
+	"CAR": [SEXP, [SEXP]], 
 	"CDR": [SEXP, [SEXP]],
 	"NAMED": ["int", [SEXP]],
 	"R_CHAR": ["string", [SEXP]],
 	"R_curErrorBuf": ["string", []],
 	"R_NilValue": [SEXP, []],
-	"R_ParseEvalString": [SEXP, ["string", SEXP]],
+	// "R_ParseEvalString": [SEXP, ["string", SEXP]],	- I don't know why, but Windows dll doesn't have this function.
 	"R_ParseVector": [SEXP, [SEXP, "int", "int*", SEXP]], // SEXP R_ParseVector(SEXP text, int n, ParseStatus *status, SEXP srcfile)
 	"R_PreserveObject": ["void", [SEXP]],
 	"R_ReleaseObject": ["void", [SEXP]],
 	"R_setStartTime": ["void", []],						// void R_setStartTime(void);
-	"R_sysframe": [SEXP, ["int", "pointer"]],
+	// "R_sysframe": [SEXP, ["int", "pointer"]],
 	"R_tryEval": [SEXP, [SEXP, SEXP, "int*"]],			// SEXP R_tryEval(SEXP e, SEXP env, int *ErrorOccurred)
 	"R_tryEvalSilent": [SEXP, [SEXP, SEXP, "int*"]],	// SEXP R_tryEvalSilent(SEXP e, SEXP env, int *ErrorOccurred)
 	"Rf_GetRowNames": [SEXP, [SEXP]],
@@ -146,8 +147,8 @@ const apiList = {
 	"TAG": [SEXP, [SEXP]],
 	"TYPEOF": ["int", [SEXP]],
 	"VECTOR_ELT": [SEXP, [SEXP, "int"]],
-	"ptr_R_WriteConsole": ["void", []],
-	"R_GlobalEnv": [SEXP, undefined],
+	// "ptr_R_WriteConsole": ["void", []],
+	"R_GlobalEnv": [SEXP, undefined], 
 	//"R_IsNA": ["int", [ieee_double]],					// Rboolean R_IsNA(double);
 	//"R_IsNaN": ["int", [ieee_double]],				// Rboolean R_IsNaN(double);
 };
@@ -192,14 +193,27 @@ export default function createLibR(r_path = "auto"){
 			libR = createLibR(process.env.R_HOME);
 		}
 	}else if(r_path == "system"){
-	// Rscript -e "cat(Sys.getenv('R_HOME'))"
-		// TODO: Windows registory
-		let ret;
+		let my_path;
 		try {
-			ret = child_process.execSync(`Rscript -e "cat(Sys.getenv('R_HOME'))"`);
-			libR = createLibR(ret.toString())
+			if (process.platform == "win32") {
+				const windef = windowsRegistry.windef;
+				let k;
+				try {
+					k = new windowsRegistry.Key(windef.HKEY.HKEY_LOCAL_MACHINE, 'SOFTWARE\\R-core\\R', windef.KEY_ACCESS.KEY_READ);
+				}catch(e){
+					debug("No key in HLM, finding HCU.")
+					k = new windowsRegistry.Key(windef.HKEY.HKEY_CURRENT_USER, 'SOFTWARE\\R-core\\R', windef.KEY_ACCESS.KEY_READ);
+				}
+				my_path = k.getValue("InstallPath");
+				k.close();
+			}else{
+				const ret = child_process.execSync(`Rscript -e "cat(Sys.getenv('R_HOME'))"`);
+				my_path = ret.toString();
+			}
+			libR = createLibR(my_path)
 		}catch(e){
-			throw new Error("Couldn't find installed R (RScript not found)");
+			debug("Loading system R failure: " + e);
+			throw new Error("Couldn't load installed R (RScript not found or bad registry)");
 		}
 	}else if(r_path == "buildin"){
 		throw new Error("NOT IMPLEMENTED.");
@@ -210,9 +224,14 @@ export default function createLibR(r_path = "auto"){
 		const delim = path.delimiter;
 		if(r_path.slice(-1) == path.sep) r_path = r_path.slice(0, -1);	// remove trailing "/" (or "\")
 		process.env.R_HOME = r_path;
-		process.env.LD_LIBRARY_PATH = `${r_path}${delim}${r_path}/lib${delim}` + process.env.LD_LIBRARY_PATH;
-		process.env.DYLD_LIBRARY_PATH = `${r_path}${delim}${r_path}/lib${delim}` + process.env.DYLD_LIBRARY_PATH;
-		libR = ffi.Library("libR", apiList);
+		if (process.platform == "win32") {
+			process.env.PATH = `${r_path}\\bin\\x64${delim}` + process.env.PATH;
+			libR = ffi.Library(`${r_path}\\bin\\x64\\R.dll`, apiList);
+		}else{
+			process.env.LD_LIBRARY_PATH = `${r_path}${delim}${r_path}/lib${delim}` + process.env.LD_LIBRARY_PATH;
+			process.env.DYLD_LIBRARY_PATH = `${r_path}${delim}${r_path}/lib${delim}` + process.env.DYLD_LIBRARY_PATH;
+			libR = ffi.Library("libR", apiList);
+		}
 	}
 
 	if(libR == undefined){
