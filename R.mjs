@@ -43,7 +43,9 @@ export default class R{
 			R.R_UnboundValue = libR.Rf_findVar(libR.Rf_install("__non_existing_value_kcrt__"), R.GlobalEnv);
 			R.R_NamesSymbol = libR.Rf_install(ref.allocCString("names"));
 			R.R_NaInt = this.eval("as.integer(NA)");				// usually INT_MIN (-2147483648)
-			R.R_NaString = new SEXPWrap(libR.STRING_ELT(this.eval_raw("as.character(NA)").sexp, 0));
+			//R.R_NaString = new SEXPWrap(libR.STRING_ELT(this.eval_raw("as.character(NA)").sexp, 0));
+			R.R_NaString = new SEXPWrap(libR.R_NaString.deref());
+			R.R_BlankString = new SEXPWrap(libR.R_BlankString.deref());
 			R_isInitialized = true;
 		}
 		this.__initializeRfunc();

@@ -30,6 +30,7 @@ describe('Primitives', () => {
 		r.setVar("strvar", "kcrt")
 		assert.equal("kcrt", r.getVar("strvar"))
 		assert.equal("kcrt", r.eval("strvar"))
+		assert.equal("", r.eval('""'))
 	});
 	it('Logical (Boolean)', () => {
 		assert.equal(true, r.eval('T'));

@@ -1,0 +1,14 @@
+language: node_js
+os:
+    - linux
+    - osx
+node_js:
+    - "8"
+addons:
+    apt:
+        packages:
+            - r-base
+before_install:
+    - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update          ; fi
+    - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install r       ; fi
+       

@@ -148,6 +148,8 @@ const apiList = {
 	"VECTOR_ELT": [SEXP, [SEXP, "int"]],
 	// "ptr_R_WriteConsole": ["void", []],
 	"R_GlobalEnv": [SEXP, undefined], 
+	"R_NaString": [SEXP, undefined], 
+	"R_BlankString": [SEXP, undefined], 
 	//"R_IsNA": ["int", [ieee_double]],					// Rboolean R_IsNA(double);
 	//"R_IsNaN": ["int", [ieee_double]],				// Rboolean R_IsNaN(double);
 };
