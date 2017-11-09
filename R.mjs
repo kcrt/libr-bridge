@@ -69,7 +69,7 @@ export default class R{
 		return R_isInitialized;
 	}
 	/**
-	 * Aquire global environment in R.
+	 * Acquire global environment in R.
 	 * @return {boolean} SEXP of global environment.
 	 */
 	static get GlobalEnv(){

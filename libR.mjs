@@ -2,7 +2,6 @@ import child_process from 'child_process';
 import process from 'process';
 import path from 'path';
 
-import windowsRegistry from 'windows-registry';
 import ffi from 'ffi';
 import ref from 'ref';
 import refArray from 'ref-array';
@@ -196,6 +195,9 @@ export default function createLibR(r_path = "auto"){
 		let my_path;
 		try {
 			if (process.platform == "win32") {
+				const windowsRegistry = (async () => {
+					return (await import('windows-registry')).default;
+				})()
 				const windef = windowsRegistry.windef;
 				let k;
 				try {
