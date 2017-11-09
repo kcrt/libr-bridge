@@ -113,7 +113,6 @@ export default class SEXPWrap {
 	asChar(){
 		if(this.sexp.address() == R.R_NaString.sexp.address()){ return void 0;}
 		if(this.sexp.address() == R.R_BlankString.sexp.address()){ return "";}
-		debug(R.libR.Rf_asChar(this.sexp))
 		return R.libR.Rf_translateCharUTF8(R.libR.Rf_asChar(this.sexp)).slice();
 	}
 	/** Return sizeof(SEXP) in byte. */
