@@ -1,3 +1,4 @@
+"use strict";
 import child_process from 'child_process';
 import process from 'process';
 import path from 'path';

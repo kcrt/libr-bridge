@@ -1,3 +1,4 @@
+"use strict";
 
 import ref from 'ref';
 import refArray from 'ref-array';

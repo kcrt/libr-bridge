@@ -1,3 +1,4 @@
+"use strict";
 /**
  *	@file libr-bridge: Bridging module between JavaScript and R
  *	@author TAKAHASHI, Kyohei <kcrt@kcrt.net>
