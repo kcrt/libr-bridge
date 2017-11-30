@@ -24,7 +24,7 @@
   </span>
     <ul class="search-result"></ul>
   </div>
-</header>
+<a style="position:relative; top:3px;" href="https://github.com/kcrt/libr-bridge.git"><img width="20px" src="./image/github.png"></a></header>
 
 <nav class="navigation" data-ice="nav"><div>
   <ul>
@@ -44,7 +44,8 @@
 </nav>
 
 <div class="content" data-ice="content"><h1 data-ice="title">libr-bridge/libR.mjs</h1>
-<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">import child_process from &apos;child_process&apos;;
+<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">&quot;use strict&quot;;
+import child_process from &apos;child_process&apos;;
 import process from &apos;process&apos;;
 import path from &apos;path&apos;;
 
@@ -52,6 +53,8 @@ import ffi from &apos;ffi&apos;;
 import ref from &apos;ref&apos;;
 import refArray from &apos;ref-array&apos;;
 import refStruct from &apos;ref-struct&apos;;
+
+import { default as windowsRegistry } from &apos;./safe-windows-registry.js&apos;
 
 import debug_ from &apos;debug&apos;
 const debug = debug_(&quot;libr-bridge:libR&quot;)
@@ -114,18 +117,18 @@ export const cetype_t = {
 };
 
 const apiList = {
-	&quot;CAR&quot;: [SEXP, [SEXP]],
+	&quot;CAR&quot;: [SEXP, [SEXP]], 
 	&quot;CDR&quot;: [SEXP, [SEXP]],
 	&quot;NAMED&quot;: [&quot;int&quot;, [SEXP]],
 	&quot;R_CHAR&quot;: [&quot;string&quot;, [SEXP]],
 	&quot;R_curErrorBuf&quot;: [&quot;string&quot;, []],
 	&quot;R_NilValue&quot;: [SEXP, []],
-	&quot;R_ParseEvalString&quot;: [SEXP, [&quot;string&quot;, SEXP]],
+	// &quot;R_ParseEvalString&quot;: [SEXP, [&quot;string&quot;, SEXP]],	- I don&apos;t know why, but Windows dll doesn&apos;t have this function.
 	&quot;R_ParseVector&quot;: [SEXP, [SEXP, &quot;int&quot;, &quot;int*&quot;, SEXP]], // SEXP R_ParseVector(SEXP text, int n, ParseStatus *status, SEXP srcfile)
 	&quot;R_PreserveObject&quot;: [&quot;void&quot;, [SEXP]],
 	&quot;R_ReleaseObject&quot;: [&quot;void&quot;, [SEXP]],
 	&quot;R_setStartTime&quot;: [&quot;void&quot;, []],						// void R_setStartTime(void);
-	&quot;R_sysframe&quot;: [SEXP, [&quot;int&quot;, &quot;pointer&quot;]],
+	// &quot;R_sysframe&quot;: [SEXP, [&quot;int&quot;, &quot;pointer&quot;]],
 	&quot;R_tryEval&quot;: [SEXP, [SEXP, SEXP, &quot;int*&quot;]],			// SEXP R_tryEval(SEXP e, SEXP env, int *ErrorOccurred)
 	&quot;R_tryEvalSilent&quot;: [SEXP, [SEXP, SEXP, &quot;int*&quot;]],	// SEXP R_tryEvalSilent(SEXP e, SEXP env, int *ErrorOccurred)
 	&quot;Rf_GetRowNames&quot;: [SEXP, [SEXP]],
@@ -192,8 +195,10 @@ const apiList = {
 	&quot;TAG&quot;: [SEXP, [SEXP]],
 	&quot;TYPEOF&quot;: [&quot;int&quot;, [SEXP]],
 	&quot;VECTOR_ELT&quot;: [SEXP, [SEXP, &quot;int&quot;]],
-	&quot;ptr_R_WriteConsole&quot;: [&quot;void&quot;, []],
-	&quot;R_GlobalEnv&quot;: [SEXP, undefined],
+	// &quot;ptr_R_WriteConsole&quot;: [&quot;void&quot;, []],
+	&quot;R_GlobalEnv&quot;: [SEXP, undefined], 
+	&quot;R_NaString&quot;: [SEXP, undefined], 
+	&quot;R_BlankString&quot;: [SEXP, undefined], 
 	//&quot;R_IsNA&quot;: [&quot;int&quot;, [ieee_double]],					// Rboolean R_IsNA(double);
 	//&quot;R_IsNaN&quot;: [&quot;int&quot;, [ieee_double]],				// Rboolean R_IsNaN(double);
 };
@@ -238,14 +243,27 @@ export default function createLibR(r_path = &quot;auto&quot;){
 			libR = createLibR(process.env.R_HOME);
 		}
 	}else if(r_path == &quot;system&quot;){
-	// Rscript -e &quot;cat(Sys.getenv(&apos;R_HOME&apos;))&quot;
-		// TODO: Windows registory
-		let ret;
+		let my_path;
 		try {
-			ret = child_process.execSync(`Rscript -e &quot;cat(Sys.getenv(&apos;R_HOME&apos;))&quot;`);
-			libR = createLibR(ret.toString())
+			if (process.platform == &quot;win32&quot;) {
+				const windef = windowsRegistry.windef;
+				let k;
+				try {
+					k = new windowsRegistry.Key(windef.HKEY.HKEY_LOCAL_MACHINE, &apos;SOFTWARE\\R-core\\R&apos;, windef.KEY_ACCESS.KEY_READ);
+				}catch(e){
+					debug(&quot;No key in HLM, finding HCU.&quot;)
+					k = new windowsRegistry.Key(windef.HKEY.HKEY_CURRENT_USER, &apos;SOFTWARE\\R-core\\R&apos;, windef.KEY_ACCESS.KEY_READ);
+				}
+				my_path = k.getValue(&quot;InstallPath&quot;);
+				k.close();
+			}else{
+				const ret = child_process.execSync(`Rscript -e &quot;cat(Sys.getenv(&apos;R_HOME&apos;))&quot;`);
+				my_path = ret.toString();
+			}
+			libR = createLibR(my_path)
 		}catch(e){
-			throw new Error(&quot;Couldn&apos;t find installed R (RScript not found)&quot;);
+			debug(&quot;Loading system R failure: &quot; + e);
+			throw new Error(&quot;Couldn&apos;t load installed R (RScript not found or bad registry)&quot;);
 		}
 	}else if(r_path == &quot;buildin&quot;){
 		throw new Error(&quot;NOT IMPLEMENTED.&quot;);
@@ -256,9 +274,14 @@ export default function createLibR(r_path = &quot;auto&quot;){
 		const delim = path.delimiter;
 		if(r_path.slice(-1) == path.sep) r_path = r_path.slice(0, -1);	// remove trailing &quot;/&quot; (or &quot;\&quot;)
 		process.env.R_HOME = r_path;
-		process.env.LD_LIBRARY_PATH = `${r_path}${delim}${r_path}/lib${delim}` + process.env.LD_LIBRARY_PATH;
-		process.env.DYLD_LIBRARY_PATH = `${r_path}${delim}${r_path}/lib${delim}` + process.env.DYLD_LIBRARY_PATH;
-		libR = ffi.Library(&quot;libR&quot;, apiList);
+		if (process.platform == &quot;win32&quot;) {
+			process.env.PATH = `${r_path}\\bin\\x64${delim}` + process.env.PATH;
+			libR = ffi.Library(`${r_path}\\bin\\x64\\R.dll`, apiList);
+		}else{
+			process.env.LD_LIBRARY_PATH = `${r_path}${delim}${r_path}/lib${delim}` + process.env.LD_LIBRARY_PATH;
+			process.env.DYLD_LIBRARY_PATH = `${r_path}${delim}${r_path}/lib${delim}` + process.env.DYLD_LIBRARY_PATH;
+			libR = ffi.Library(&quot;libR&quot;, apiList);
+		}
 	}
 
 	if(libR == undefined){
@@ -276,7 +299,7 @@ export default function createLibR(r_path = &quot;auto&quot;){
 </div>
 
 <footer class="footer">
-  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(1.0.2)</span><img src="./image/esdoc-logo-mini-black.png"></a>
+  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(1.0.3)</span><img src="./image/esdoc-logo-mini-black.png"></a>
 </footer>
 
 <script src="script/search_index.js"></script>

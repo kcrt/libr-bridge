@@ -1,38 +1,30 @@
 {
-  "coverage": "44.73%",
-  "expectCount": 76,
+  "coverage": "46.57%",
+  "expectCount": 73,
   "actualCount": 34,
   "files": {
     "libr-bridge/R.mjs": {
       "expectCount": 28,
       "actualCount": 22,
       "undocumentLines": [
-        11,
-        13,
+        12,
         14,
         15,
         16,
-        61
-      ]
-    },
-    "libr-bridge/RObject.mjs": {
-      "expectCount": 1,
-      "actualCount": 0,
-      "undocumentLines": [
-        8
+        17,
+        64
       ]
     },
     "libr-bridge/SEXPWrap.mjs": {
       "expectCount": 28,
       "actualCount": 10,
       "undocumentLines": [
-        7,
-        9,
-        11,
+        8,
+        10,
         12,
-        16,
-        93,
-        106,
+        13,
+        17,
+        94,
         107,
         108,
         109,
@@ -40,44 +32,37 @@
         111,
         112,
         113,
-        125,
-        129,
-        133,
-        195
-      ]
-    },
-    "libr-bridge/develop.mjs": {
-      "expectCount": 2,
-      "actualCount": 0,
-      "undocumentLines": [
-        4,
-        11
+        114,
+        127,
+        131,
+        135,
+        197
       ]
     },
     "libr-bridge/example.mjs": {
       "expectCount": 5,
       "actualCount": 0,
       "undocumentLines": [
-        11,
-        13,
+        12,
         14,
-        31,
-        43
+        15,
+        32,
+        44
       ]
     },
     "libr-bridge/libR.mjs": {
       "expectCount": 11,
       "actualCount": 2,
       "undocumentLines": [
-        11,
         14,
-        15,
-        16,
         17,
-        53,
-        61,
-        70,
-        155
+        18,
+        19,
+        20,
+        56,
+        64,
+        73,
+        160
       ]
     },
     "libr-bridge/test/assert_ext.mjs": {

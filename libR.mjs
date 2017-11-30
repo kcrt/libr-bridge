@@ -200,9 +200,6 @@ export default function createLibR(r_path = "auto"){
 		let my_path;
 		try {
 			if (process.platform == "win32") {
-				const windowsRegistry = (async () => {
-					return (await import('windows-registry')).default;
-				})()
 				const windef = windowsRegistry.windef;
 				let k;
 				try {

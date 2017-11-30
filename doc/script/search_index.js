@@ -480,12 +480,6 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
-    "libr-bridge/robject.mjs",
-    "file/libr-bridge/RObject.mjs.html",
-    "libr-bridge/RObject.mjs",
-    "file"
-  ],
-  [
     "libr-bridge/sexpwrap.mjs",
     "file/libr-bridge/SEXPWrap.mjs.html",
     "libr-bridge/SEXPWrap.mjs",
@@ -642,12 +636,6 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
-    "libr-bridge/develop.mjs",
-    "file/libr-bridge/develop.mjs.html",
-    "libr-bridge/develop.mjs",
-    "file"
-  ],
-  [
     "libr-bridge/example.mjs",
     "file/libr-bridge/example.mjs.html",
     "libr-bridge/example.mjs",
@@ -675,6 +663,12 @@ window.esdocSearchIndex = [
     "libr-bridge/license.js",
     "file/libr-bridge/license.js.html",
     "libr-bridge/license.js",
+    "file"
+  ],
+  [
+    "libr-bridge/safe-windows-registry.js",
+    "file/libr-bridge/safe-windows-registry.js.html",
+    "libr-bridge/safe-windows-registry.js",
     "file"
   ],
   [
