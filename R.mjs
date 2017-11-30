@@ -61,8 +61,7 @@ export default class R{
 						'range', 'fisher.test', 't.test', 'wilcox.test', 'prop.test', 'var.test', 'p.adjust',
 						'sin', 'cos', 'tan', 'sum', 'c',
 						'is.na', 'is.nan', 'write.csv'];
-		this.f = {};
-		funclist.map((e) => {this.f[e] = this.func(e)});
+		funclist.map((e) => {this[e] = this.func(e)});
 	}
 	/**
 	 * Check whether R class is globally initialized or not.

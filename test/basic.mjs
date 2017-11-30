@@ -83,7 +83,7 @@ describe('Array', () => {
 	const arr_1to100 = R.range(1, 101)
 	it('ES Array <-> R Array', () => {
 		assert.arrayEqual([3, 2, 1], r.eval("as.integer(c(3, 2, 1))"));
-		assert.arrayEqual([1, 2, 3], r.f.c(1, 2, 3));
+		assert.arrayEqual([1, 2, 3], r.c(1, 2, 3));
 		assert.arrayEqual(arr_1to100, r.eval("1:100"));
 		r.setVar('myarr', arr_1to100);
 		assert.ok(r.eval('all.equal(myarr, 1:100)'));
@@ -136,25 +136,25 @@ describe('Basic calculation', () => {
 
 describe('Math function', () => {
 	it('Trigonometric functions', () => {
-		assert.almostEqual(Math.sin(0), r.f.sin(0));
-		assert.almostEqual(Math.sin(0.5), r.f.sin(0.5));
-		assert.almostEqual(Math.cos(0), r.f.cos(0));
-		assert.almostEqual(Math.cos(0.5), r.f.cos(0.5));
-		assert.almostEqual(Math.tan(0), r.f.tan(0));
-		assert.almostEqual(Math.tan(0.5), r.f.tan(0.5));
+		assert.almostEqual(Math.sin(0), r.sin(0));
+		assert.almostEqual(Math.sin(0.5), r.sin(0.5));
+		assert.almostEqual(Math.cos(0), r.cos(0));
+		assert.almostEqual(Math.cos(0.5), r.cos(0.5));
+		assert.almostEqual(Math.tan(0), r.tan(0));
+		assert.almostEqual(Math.tan(0.5), r.tan(0.5));
 	});
 	it('Array and functions', () => {
 		const arr_1to100 = R.range(1, 101)
 		const sum_1to100 = arr_1to100.reduce((pre, v) => pre + v);
-		assert.almostEqual(sum_1to100, r.f.sum(arr_1to100));
-		assert.almostEqual(sum_1to100 / 100, r.f.mean(arr_1to100));
+		assert.almostEqual(sum_1to100, r.sum(arr_1to100));
+		assert.almostEqual(sum_1to100 / 100, r.mean(arr_1to100));
 	});
 })
 
 describe('Function call with named arguments', () => {
 	it('Named arguments', () => {
-		assert.strictEqual(r.f.mean([1, 2, 3, undefined]), void 0);
-		assert.strictEqual(r.f.mean([1, 2, 3, undefined], {"na.rm": true}), 2);
+		assert.strictEqual(r.mean([1, 2, 3, undefined]), void 0);
+		assert.strictEqual(r.mean([1, 2, 3, undefined], {"na.rm": true}), 2);
 	});
 });
 
