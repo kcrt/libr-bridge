@@ -8,6 +8,8 @@ import ref from 'ref';
 import refArray from 'ref-array';
 import refStruct from 'ref-struct';
 
+import { default as windowsRegistry } from './safe-windows-registry.js'
+
 import debug_ from 'debug'
 const debug = debug_("libr-bridge:libR")
 
