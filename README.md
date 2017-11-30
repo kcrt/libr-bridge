@@ -60,7 +60,7 @@ r.eval(`
 		}
 	}
 `);
-let factorial_50 = r.func("myfactorial")(10);
+let factorial_50 = r.func("myfactorial")(50);
 console.log(factorial_50);
 ```
 
@@ -69,12 +69,22 @@ API
 ### `Document`
 Please see doc directory.
 
-Depended package
+Depending package
 ----------------------------------------
 ### npm
 1. [node-ffi: Node.js Foreign Function Interface](https://github.com/node-ffi/node-ffi)
 1. [ref * Turn Buffer instances into "pointers"](https://tootallnate.github.io/ref/)
 1. [arian/Complex: Calculations with Complex Numbers in JavaScript](https://github.com/arian/Complex)
+
+My TODO list
+----------------------------------------
+
+ - [ ] Factor
+ - [ ] Dataframe
+ - [ ] Console handling
+ - [ ] S3 class
+ - [ ] S4 class
+ - [ ] Graphic handling
 
 Author information
 ----------------------------------------
