@@ -145,7 +145,10 @@ const apiList = {
 	"SET_STRING_ELT": [SEXP, [SEXP, "int", SEXP]],		// memory.c
 	"SET_TAG": ["void", [SEXP, SEXP]],
 	"STRING_ELT": [SEXP, [SEXP, "int"]],				// memory.c
-	"STRING_PTR": ["pointer", [SEXP]],					// we use this instead of DATAPTR
+	"STRING_PTR": ["pointer", [SEXP]],					// memory.c
+	"ALTVEC_DATAPTR": ["pointer", [SEXP]],
+	"STDVEC_DATAPTR": ["pointer", [SEXP]],
+	"DATAPTR": ["pointer", [SEXP]],
 	"TAG": [SEXP, [SEXP]],
 	"TYPEOF": ["int", [SEXP]],
 	"VECTOR_ELT": [SEXP, [SEXP, "int"]],

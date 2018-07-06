@@ -110,7 +110,7 @@ export default class SEXPWrap {
 	isLogical(){ return R.libR.Rf_isLogical(this.sexp); }
 	isReal(){ return R.libR.Rf_isReal(this.sexp); }
 	isValidString(){ return R.libR.Rf_isValidString(this.sexp); }
-	dataptr(){ return R.libR.STRING_PTR(this.sexp); }
+	dataptr(){ return R.libR.DATAPTR(this.sexp); }
 	asChar(){
 		if(this.sexp.address() == R.R_NaString.sexp.address()){ return void 0;}
 		if(this.sexp.address() == R.R_BlankString.sexp.address()){ return "";}

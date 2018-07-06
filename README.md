@@ -26,7 +26,7 @@ How to Use
 ----------------------------------------
 
 Following samples and **libr-bridge** are written with ECMAScript 6 modules syntex (import/export).
-Please use [**@std/esm**](https://github.com/standard-things/esm) or **--experimental-modules**.
+Please use [**esm**](https://github.com/standard-things/esm) or **--experimental-modules**.
 
 ```javascript
 let r = new R();
