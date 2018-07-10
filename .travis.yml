@@ -2,14 +2,16 @@ language: node_js
 os:
     - linux
     - osx
-osx_image: xcode9.1
+sudo: required
+osx_image: xcode9.4
 node_js:
-    - "8"
-addons:
-    apt:
-        packages:
-            - r-base
+    - "stable"
 before_install:
-    - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update          ; fi
-    - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install r       ; fi
-       
+    - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update                          ; fi
+    - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install gcc || echo "done."     ; fi
+    - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew link --overwrite gcc            ; fi
+    - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install r                       ; fi
+    - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then echo "deb https://cloud.r-project.org/bin/linux/ubuntu trusty-cran35/" | sudo tee -a /etc/apt/sources.list ; fi
+    - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get update                 ; fi
+    - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install r-base -y --allow-unauthenticated      ; fi
+    - R --version
