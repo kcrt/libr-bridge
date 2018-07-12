@@ -211,7 +211,6 @@ export default class R{
 			!(ps.isExpression()) || 
 			ps.length() != 1){
 			ps.unprotect(2);
-			const errmsg = libR.R_curErrorBuf();
 			debug(`Parse error.\n-----\n${code}\n-----`)
 			throw new Error(`Parse error of R code`)
 		}else{
@@ -219,7 +218,8 @@ export default class R{
 				const ret = this.__eval_langsxp(libR.VECTOR_ELT(ps.sexp, 0), silent);
 				ps.unprotect(2);
 				return ret;
-			} catch(e){
+			}catch(e){
+				const errmsg = libR.R_curErrorBuf();
 				debug(`Execution error in eval_raw.\n----\n${code}\n\nReason: ${errmsg}----`);
 				ps.unprotect(2);
 				throw e;
