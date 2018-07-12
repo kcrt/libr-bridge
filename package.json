@@ -1,6 +1,6 @@
 {
     "name": "libr-bridge",
-    "version": "0.1.2",
+    "version": "0.1.3",
     "description": "Use libR from node.js",
     "main": "index",
     "scripts": {
@@ -27,6 +27,7 @@
     },
     "devDependencies": {
         "esdoc": "^1",
+        "esdoc-ecmascript-proposal-plugin": "^1.0.0",
         "esdoc-importpath-plugin": "^1",
         "esdoc-standard-plugin": "^1",
         "mocha": "^3",

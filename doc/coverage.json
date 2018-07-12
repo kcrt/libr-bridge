@@ -1,6 +1,6 @@
 {
-  "coverage": "46.57%",
-  "expectCount": 73,
+  "coverage": "43.58%",
+  "expectCount": 78,
   "actualCount": 34,
   "files": {
     "libr-bridge/R.mjs": {
@@ -39,6 +39,17 @@
         197
       ]
     },
+    "libr-bridge/develop.mjs": {
+      "expectCount": 5,
+      "actualCount": 0,
+      "undocumentLines": [
+        12,
+        14,
+        15,
+        32,
+        44
+      ]
+    },
     "libr-bridge/example.mjs": {
       "expectCount": 5,
       "actualCount": 0,
@@ -62,7 +73,7 @@
         56,
         64,
         73,
-        160
+        163
       ]
     },
     "libr-bridge/test/assert_ext.mjs": {

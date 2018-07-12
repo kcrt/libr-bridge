@@ -3,7 +3,7 @@ libr-bridge
 
 ![Travis CI](https://travis-ci.org/kcrt/libr-bridge.svg?branch=master)
 
-Bridging module: JavaScript <-> R
+Bridging module: JavaScript < - > R
 
 ![🄬🌉⬢](./logo.png)
 

@@ -348,6 +348,12 @@ window.esdocSearchIndex = [
     "file"
   ],
   [
+    "libr-bridge/r.mjs~r#[e]",
+    "class/libr-bridge/R.mjs~R.html#instance-member-[e]",
+    "libr-bridge/R.mjs~R#[e]",
+    "member"
+  ],
+  [
     "libr-bridge/r.mjs~r#__rfuncbridge",
     "class/libr-bridge/R.mjs~R.html#instance-method-__RFuncBridge",
     "libr-bridge/R.mjs~R#__RFuncBridge",
@@ -406,12 +412,6 @@ window.esdocSearchIndex = [
     "class/libr-bridge/R.mjs~R.html#instance-method-eval_raw",
     "libr-bridge/R.mjs~R#eval_raw",
     "method"
-  ],
-  [
-    "libr-bridge/r.mjs~r#f",
-    "class/libr-bridge/R.mjs~R.html#instance-member-f",
-    "libr-bridge/R.mjs~R#f",
-    "member"
   ],
   [
     "libr-bridge/r.mjs~r#func",
@@ -634,6 +634,12 @@ window.esdocSearchIndex = [
     "class/libr-bridge/SEXPWrap.mjs~SEXPWrap.html#static-method-unprotect",
     "libr-bridge/SEXPWrap.mjs~SEXPWrap.unprotect",
     "method"
+  ],
+  [
+    "libr-bridge/develop.mjs",
+    "file/libr-bridge/develop.mjs.html",
+    "libr-bridge/develop.mjs",
+    "file"
   ],
   [
     "libr-bridge/example.mjs",
