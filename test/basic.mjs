@@ -44,6 +44,10 @@ describe('Primitives', () => {
 		const cpxvar = new Complex(1, 2)
 		assert.ok(cpxvar.equals(r.eval("1+2i")));
 		r.setVar("cpxvar", cpxvar);
+		assert.equal(r.eval("Re(cpxvar)"), cpxvar.real);
+		assert.equal(r.eval("Im(cpxvar)"), cpxvar.im);
+		assert.equal(r.eval("abs(cpxvar)"), cpxvar.abs());
+		assert.equal(r.eval("Arg(cpxvar)"), cpxvar.angle());
 		assert.ok(r.eval("cpxvar^2").equals(cpxvar.multiply(cpxvar)));
 	});
 });
