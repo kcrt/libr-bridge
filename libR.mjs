@@ -1,16 +1,16 @@
 "use strict";
-import child_process from 'child_process';
-import process from 'process';
-import path from 'path';
+import child_process from "child_process";
+import process from "process";
+import path from "path";
 
-import ffi from 'ffi';
-import ref from 'ref';
-import refArray from 'ref-array';
-import refStruct from 'ref-struct';
+import ffi from "ffi";
+import ref from "ref";
+import refArray from "ref-array";
+import refStruct from "ref-struct";
 
-import { default as windowsRegistry } from './safe-windows-registry.js';
+import { default as windowsRegistry } from "./safe-windows-registry.js";
 
-import debug_ from 'debug';
+import debug_ from "debug";
 const debug = debug_("libr-bridge:libR");
 
 /* Type */
@@ -18,13 +18,9 @@ const stringArr = refArray(ref.types.CString);			// char * [] or string[]
 export const SEXP = ref.refType(ref.types.void);
 export const SEXPREC_ALIGN_SIZE = ref.types.double.size;
 export const RComplex = refStruct({
-  r: ref.types.double,
-  i: ref.types.double
+	r: ref.types.double,
+	i: ref.types.double
 });
-const funcShowMessage = ffi.Function('void', [ref.types.CString]);
-const funcReadConsole = ffi.Function('int', [ref.types.CString, 'pointer', 'int', 'int']);
-const funcWriteConsole = ffi.Function('void', [ref.types.CString, 'int']);
-const funcWriteConsoleEx = ffi.Function('void', [ref.types.CString, 'int', 'int']);
 
 /** R SEXP type enums */
 export const SEXPTYPE = {
@@ -58,11 +54,11 @@ export const SEXPTYPE = {
 };
 
 export const ParseStatus = {
-    PARSE_NULL: 0,
-    PARSE_OK: 1,
-    PARSE_INCOMPLETE: 2,
-    PARSE_ERROR: 3,
-    PARSE_EOF: 4
+	PARSE_NULL: 0,
+	PARSE_OK: 1,
+	PARSE_INCOMPLETE: 2,
+	PARSE_ERROR: 3,
+	PARSE_EOF: 4
 };
 
 export const cetype_t = {
@@ -156,18 +152,17 @@ const apiList = {
 	"TAG": [SEXP, [SEXP]],
 	"TYPEOF": ["int", [SEXP]],
 	"VECTOR_ELT": [SEXP, [SEXP, "int"]],
-	"ptr_R_Busy": ['pointer', undefined],	// void R_Busy (int which)
-	"ptr_R_ShowMessage": ['pointer', undefined],	// void R_ShowMessage(const char *s)
-	"ptr_R_ReadConsole": ['pointer', undefined],	// int R_ReadConsole(const char *prompt, unsigned char *buf, int len, int addtohistory);
-	"ptr_R_WriteConsole": ['pointer', undefined],		// void R_WriteConsole(const char *buf, int len)
-	"ptr_R_WriteConsoleEx": ['pointer', undefined],	// void R_WriteConsoleEx(const char *buf, int len, int otype)
+	"ptr_R_Busy": ["pointer", undefined],	// void R_Busy (int which)
+	"ptr_R_ShowMessage": ["pointer", undefined],	// void R_ShowMessage(const char *s)
+	"ptr_R_ReadConsole": ["pointer", undefined],	// int R_ReadConsole(const char *prompt, unsigned char *buf, int len, int addtohistory);
+	"ptr_R_WriteConsole": ["pointer", undefined],		// void R_WriteConsole(const char *buf, int len)
+	"ptr_R_WriteConsoleEx": ["pointer", undefined],	// void R_WriteConsoleEx(const char *buf, int len, int otype)
 	"R_GlobalEnv": [SEXP, undefined], 
 	"R_NaString": [SEXP, undefined], 
 	"R_BlankString": [SEXP, undefined], 
 	//"R_IsNA": ["int", [ieee_double]],					// Rboolean R_IsNA(double);
 	//"R_IsNaN": ["int", [ieee_double]],				// Rboolean R_IsNaN(double);
 };
-var funcPtr = ffi.Function('void', ['int']);
 
 var libR = undefined;
 
@@ -199,7 +194,7 @@ export default function createLibR(r_path = "auto"){
 				try{
 					libR = createLibR("buildin");
 				}catch(e){
-					throw new Error("R not found. Please specify path manually.")
+					throw new Error("R not found. Please specify path manually.");
 				}
 			}
 		}
@@ -215,18 +210,18 @@ export default function createLibR(r_path = "auto"){
 				const windef = windowsRegistry.windef;
 				let k;
 				try {
-					k = new windowsRegistry.Key(windef.HKEY.HKEY_LOCAL_MACHINE, 'SOFTWARE\\R-core\\R', windef.KEY_ACCESS.KEY_READ);
+					k = new windowsRegistry.Key(windef.HKEY.HKEY_LOCAL_MACHINE, "SOFTWARE\\R-core\\R", windef.KEY_ACCESS.KEY_READ);
 				}catch(e){
-					debug("No key in HLM, finding HCU.")
-					k = new windowsRegistry.Key(windef.HKEY.HKEY_CURRENT_USER, 'SOFTWARE\\R-core\\R', windef.KEY_ACCESS.KEY_READ);
+					debug("No key in HLM, finding HCU.");
+					k = new windowsRegistry.Key(windef.HKEY.HKEY_CURRENT_USER, "SOFTWARE\\R-core\\R", windef.KEY_ACCESS.KEY_READ);
 				}
 				my_path = k.getValue("InstallPath");
 				k.close();
 			}else{
-				const ret = child_process.execSync(`Rscript -e "cat(Sys.getenv('R_HOME'))"`);
+				const ret = child_process.execSync("Rscript -e \"cat(Sys.getenv('R_HOME'))\"");
 				my_path = ret.toString();
 			}
-			libR = createLibR(my_path)
+			libR = createLibR(my_path);
 		}catch(e){
 			debug("Loading system R failure: " + e);
 			throw new Error("Couldn't load installed R (RScript not found or bad registry)");

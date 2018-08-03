@@ -1,11 +1,10 @@
 "use strict";
-import ref from 'ref';
-import refArray from 'ref-array';
-import Complex from 'Complex';
-import R from './R';
-import {SEXPTYPE, RComplex, cetype_t} from './libR';
-import debug_ from 'debug'
-const debug = debug_("libr-bridge:class SEXPWrap")
+import ref from "ref";
+import Complex from "Complex";
+import R from "./R";
+import {SEXPTYPE, RComplex, cetype_t} from "./libR";
+import debug_ from "debug";
+const debug = debug_("libr-bridge:class SEXPWrap");
 
 var sexpSize = void 0;
 
@@ -31,7 +30,7 @@ export default class SEXPWrap {
 			this.__initializeWithValue([value]);
 		}else if(value.length == 0){
 			this.sexp = R.R_NilValue;
-		}else if(typeof(value[0]) == 'number' || typeof(value[0]) == 'undefined'){
+		}else if(typeof(value[0]) == "number" || typeof(value[0]) == "undefined"){
 			// assume this is array of numbers (e.g. [1, 2, 3, ...])
 			this.sexp = R.libR.Rf_allocVector(SEXPTYPE.REALSXP, value.length);
 			this.protect();
@@ -42,10 +41,10 @@ export default class SEXPWrap {
 			// Find NA and set 1954. (sizeof(double) = sizeof(int) * 2)
 			p = ref.reinterpret(this.dataptr(), ref.types.int.size * 2 * value.length);
 			value.map((e, i) => {
-				if(e === void 0){ ref.set(p, ref.types.int.size * i * 2, 1954, ref.types.int) }
+				if(e === void 0){ ref.set(p, ref.types.int.size * i * 2, 1954, ref.types.int); }
 			});
 			this.unprotect();
-		}else if(typeof(value[0]) == 'boolean'){
+		}else if(typeof(value[0]) == "boolean"){
 			// assume this is array of boolean (e.g. [false, true, true, ...])
 			// to handle NA, we use int instead of bool.
 			this.sexp = R.libR.Rf_allocVector(SEXPTYPE.LGLSXP, value.length);
@@ -62,7 +61,7 @@ export default class SEXPWrap {
 				ref.set(p, ref.types.int.size * i, value, ref.types.int);
 			});
 			this.unprotect();
-		}else if(typeof(value[0]) == 'string'){
+		}else if(typeof(value[0]) == "string"){
 			// assuming this is array of strings (e.g. ["abc", "def", ...])
 			this.sexp = R.libR.Rf_allocVector(SEXPTYPE.STRSXP, value.length);
 			this.protect();
@@ -78,8 +77,9 @@ export default class SEXPWrap {
 			this.sexp = R.libR.Rf_allocVector(SEXPTYPE.CPLXSXP, value.length);
 			this.protect();
 			let p = ref.reinterpret(this.dataptr(), RComplex.size * value.length);
-			value.map((e) => new RComplex({r: e.real, i: e.im}))
-				 .map((e, i) => {
+			value.map(
+				(e) => new RComplex({r: e.real, i: e.im})).map(
+				(e, i) => {
 					ref.set(p, RComplex.size * i, e, RComplex);
 				});
 			this.unprotect();
@@ -119,7 +119,7 @@ export default class SEXPWrap {
 	/** Return sizeof(SEXP) in byte. */
 	static get SEXPSize(){
 		if(sexpSize == void 0){
-			const intSEXP = new SEXPWrap(0)
+			const intSEXP = new SEXPWrap(0);
 			sexpSize = intSEXP.dataptr().address() - intSEXP.sexp.address();
 		}
 		return sexpSize;
@@ -136,7 +136,7 @@ export default class SEXPWrap {
 		if(this.sexp.address() == 0 || this.isNull()){
 			return null;
 		}
-		const len = this.length()
+		const len = this.length();
 		if(len == 0){
 			return [];
 		}if(this.isList()){
@@ -148,7 +148,7 @@ export default class SEXPWrap {
 				v = R.libR.CDR(v);
 				return this._getValue_scalar(a);
 			});*/
-			console.log("LIST NOT SUPPORTED")
+			console.log("LIST NOT SUPPORTED");
 			return undefined;
 		}else if(this.isVector()){		// be careful; is.vector(1) is even True
 			let itemtype;
@@ -158,11 +158,11 @@ export default class SEXPWrap {
 				const f = this.isLogical() ? (e) => !!e : (e) => e;
 				const p = ref.reinterpret(this.dataptr(), itemtype.size * len);
 				values = R.range(0, len).map( (i) => ref.get(p, itemtype.size * i, itemtype) )
-										.map( (e) => e == R.R_NaInt ? undefined : f(e));
+					.map( (e) => e == R.R_NaInt ? undefined : f(e));
 			}else if(this.isReal()){
 				itemtype = ref.types.double;
 				const p = ref.reinterpret(this.dataptr(), itemtype.size * len);
-				values = R.range(0, len).map( (i) => ref.get(p, itemtype.size * i, itemtype) )
+				values = R.range(0, len).map( (i) => ref.get(p, itemtype.size * i, itemtype) );
 				/* Discriminate NA from NaN (1954; the year Ross Ihaka was born) */
 				/* see main/arithmetic.c for detail. */
 				itemtype = ref.types.uint;
@@ -176,22 +176,22 @@ export default class SEXPWrap {
 				itemtype = RComplex;
 				const p = ref.reinterpret(this.dataptr(), itemtype.size * len);
 				values = R.range(0, len).map( (i) => ref.get(p, itemtype.size * i, itemtype))
-										.map( (e) => new Complex(e.r, e.i));
+					.map( (e) => new Complex(e.r, e.i));
 			}else if(this.isValidString()){
 				values = R.range(0, len).map((i) => R.libR.STRING_ELT(this.sexp, i))
-										.map((e) => {
-											const s = new SEXPWrap(e);
-											return s.asChar();
-										});
+					.map((e) => {
+						const s = new SEXPWrap(e);
+						return s.asChar();
+					});
 			}else if(this.isExpression()){
-				debug("getValue() for RExpression")
-				values = ["(R Expression)"]
+				debug("getValue() for RExpression");
+				values = ["(R Expression)"];
 			}else{
-				values = ["Unsupported vector item!"]
+				values = ["Unsupported vector item!"];
 			}
 			return values.length == 1 ? values[0] : values;
 		}else{
-			return "unknown type!"
+			return "unknown type!";
 		}
 	}
 	_getValue_scalar(sexp){
@@ -200,7 +200,7 @@ export default class SEXPWrap {
 			return R.libR.Rf_asInteger(sexp);
 		}else if(R.libR.Rf_isNumeric(sexp)){
 			return R.libR.Rf_asReal(sexp);
-		}else if(R.libR.Rf_isValidString(v)){
+		}else if(R.libR.Rf_isValidString(sexp)){
 			return R.libR.Rf_translateCharUTF8(R.libR.Rf_asChar(sexp)).slice();
 		}else{
 			return "SEXPWRAP: unknown SEXP Type";

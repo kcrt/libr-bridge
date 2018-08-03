@@ -1,5 +1,5 @@
 "use strict";
-import R from './R';
+import R from "./R";
 
 /* Execute this script with:
  *   node -r @std/esm example.mjs
@@ -24,12 +24,13 @@ console.log("Peason's correlation coefficient: " + r.cor(arrA, arrB));
 r.setVar("a", arrA);
 
 /* And data can be used in R */
-console.log(r.eval('sum(a)'));
-r.eval('b <- a / 2');
-console.log(r.eval('b'));
+console.log(r.eval("sum(a)"));
+r.eval("b <- a / 2");
+console.log(r.eval("b"));
 
 /* You can receive data from R */
-let b = r.getVar("b");
+const b = r.getVar("b");
+console.log(b);
 
 /* Execute complex command with eval. */
 r.eval(`

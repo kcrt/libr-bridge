@@ -1,13 +1,14 @@
 {
     "name": "libr-bridge",
-    "version": "0.1.4",
+    "version": "0.1.5",
     "description": "Use libR from node.js",
     "main": "index",
     "scripts": {
         "doc": "rm -R doc; ./node_modules/.bin/esdoc; cp ./logo.png doc",
         "test": "./node_modules/.bin/mocha-esm test/*.mjs",
         "debug-test": "DEBUG=libr-bridge:* ./node_modules/.bin/mocha-esm  test/*.mjs",
-        "debug-develop": "node --inspect-brk -r esm develop.mjs"
+        "debug-develop": "node --inspect-brk -r esm develop.mjs",
+		"lint": "./node_modules/.bin/eslint --ext .js,.mjs ."
     },
     "repository": {
         "type": "git",
@@ -29,6 +30,7 @@
         "esdoc-ecmascript-proposal-plugin": "^1.0.0",
         "esdoc-importpath-plugin": "^1",
         "esdoc-standard-plugin": "^1",
+        "eslint": "^5.2.0",
         "mocha": "^3",
         "mocha-esm": "^1.0.2"
     }

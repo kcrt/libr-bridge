@@ -5,12 +5,12 @@
  *	@version XXXX
  */
 
-import ref from 'ref';
-import ffi from 'ffi';
-import createLibR, {ParseStatus} from './libR';
-import SEXPWrap from './SEXPWrap'
-import debug_ from 'debug'
-const debug = debug_("libr-bridge:class R")
+import ref from "ref";
+import ffi from "ffi";
+import createLibR, {ParseStatus} from "./libR";
+import SEXPWrap from "./SEXPWrap";
+import debug_ from "debug";
+const debug = debug_("libr-bridge:class R");
 
 let R_isInitialized = false;
 let R_GlobalEnv = undefined;
@@ -26,7 +26,7 @@ export default class R{
 	 */
 	constructor(){
 		if(!R.isInitialized()){
-			debug("Initializing R...")
+			debug("Initializing R...");
 			const argv = ["REmbeddedOnBridge", "--vanilla", "--gui=none", "--silent"].map((e) => ref.allocCString(e));
 			libR = createLibR();
 			if(libR === void 0){
@@ -58,11 +58,11 @@ export default class R{
 	 *	@private
 	 */
 	__initializeRfunc(){
-		let funclist = ['print', 'require', 'mean', 'cor', 'var', 'sd', 'sqrt', 'IQR', 'min', 'max',
-						'range', 'fisher.test', 't.test', 'wilcox.test', 'prop.test', 'var.test', 'p.adjust',
-						'sin', 'cos', 'tan', 'sum', 'c',
-						'is.na', 'is.nan', 'write.csv'];
-		funclist.map((e) => {this[e] = this.func(e)});
+		let funclist = ["print", "require", "mean", "cor", "var", "sd", "sqrt", "IQR", "min", "max",
+			"range", "fisher.test", "t.test", "wilcox.test", "prop.test", "var.test", "p.adjust",
+			"sin", "cos", "tan", "sum", "c",
+			"is.na", "is.nan", "write.csv"];
+		funclist.map((e) => {this[e] = this.func(e);});
 	}
 	/**
 	 * Check whether R class is globally initialized or not.
@@ -95,7 +95,7 @@ export default class R{
 	 *	console.log(sum([1, 2, 3]))		// prints 6
 	 */
 	func(name){
-		return this.__RFuncBridge.bind(this, this.__func_sexp(name))
+		return this.__RFuncBridge.bind(this, this.__func_sexp(name));
 	}
 	/**
 	 * Acquire bridging function to access R function.
@@ -106,7 +106,7 @@ export default class R{
 	 * @see {@link R#func}
 	 */
 	func_raw(name){
-		return this._RFuncBridgeRaw.bind(this, this.__func_sexp(name))
+		return this._RFuncBridgeRaw.bind(this, this.__func_sexp(name));
 	}
 	/**
 	 * Find functions in R environment.
@@ -117,10 +117,10 @@ export default class R{
 	 */
 	__func_sexp(name){
 		if(!(name in func_cached)){
-			func_cached[name] = new SEXPWrap(libR.Rf_findFun(libR.Rf_install(ref.allocCString(name)), R.GlobalEnv))
+			func_cached[name] = new SEXPWrap(libR.Rf_findFun(libR.Rf_install(ref.allocCString(name)), R.GlobalEnv));
 			func_cached[name].preserve();			// Unfortunately, we have no destructor in JavaScript....
 		}
-		return func_cached[name]
+		return func_cached[name];
 	}
 	/**
 	 * Bridging function for R function.
@@ -130,7 +130,7 @@ export default class R{
 	 * @param {function} func	SEXPWrap object of R function
 	 * @return {SEXPWrap}		SEXPWrap object of returned value
 	 */
-	__RFuncBridge_raw(func){
+	__RFuncBridge_raw(_func){
 		// Function name with "raw" receives SEXP, and returns SEXP
 		let lang;
 		R.range(0, arguments.length).reverse().map((i) => {
@@ -212,8 +212,8 @@ export default class R{
 			!(ps.isExpression()) || 
 			ps.length() != 1){
 			ps.unprotect(2);
-			debug(`Parse error.\n-----\n${code}\n-----`)
-			throw new Error(`Parse error of R code`)
+			debug(`Parse error.\n-----\n${code}\n-----`);
+			throw new Error("Parse error of R code");
 		}else{
 			try {
 				const ret = this.__eval_langsxp(libR.VECTOR_ELT(ps.sexp, 0), silent);
@@ -275,7 +275,7 @@ export default class R{
 	 */
 	evalWithTry(code, silent=false){
 		const f = silent ? "TRUE" : "FALSE";
-		return this.eval(`try({${code}}, silent=${f})`)
+		return this.eval(`try({${code}}, silent=${f})`);
 	}
 	/**
 	 * Acquire value of R variable
@@ -324,7 +324,7 @@ export default class R{
 	 * @param {function} onMessage	Function on showing message
 	 */
 	overrideShowMessage(onMessage){
-		const ShowMessage = ffi.Callback('void', [ref.types.CString], (msg) => onMessage(msg) );
+		const ShowMessage = ffi.Callback("void", [ref.types.CString], (msg) => onMessage(msg) );
 		ref.writePointer(libR.ptr_R_ShowMessage, 0, ShowMessage);
 	}
 	/**
@@ -332,22 +332,22 @@ export default class R{
 	 * @param {function} onReadConsole		Function on console read
 	 */
 	overrideReadConsole(onReadConsole){
-		const ReadConsole = ffi.Callback('int', [ref.types.CString, ref.refType(ref.types.char), 'int', 'int'],
-											(prompt, buf, len, addtohistory) => {
-												debug("Read console start: " + prompt);
-												const ret = onReadConsole(prompt) + "\n";
-												const rebuf = ref.reinterpret(buf, len, 0);
-												if(ret.length + 1 > len){
-													/* too large! */
-													debug("Too long input for ReadConsole");
-													ref.writeCString(rebuf, 0, "ERROR");
-												}else{
-													debug("Writedown to buffer.");
-													ref.writeCString(rebuf, 0, ret);
-												}
-												debug("Read console fin");
-												return 1;
-											});
+		const ReadConsole = ffi.Callback("int", [ref.types.CString, ref.refType(ref.types.char), "int", "int"],
+			(prompt, buf, len, _addtohistory) => {
+				debug("Read console start: " + prompt);
+				const ret = onReadConsole(prompt) + "\n";
+				const rebuf = ref.reinterpret(buf, len, 0);
+				if(ret.length + 1 > len){
+					/* too large! */
+					debug("Too long input for ReadConsole");
+					ref.writeCString(rebuf, 0, "ERROR");
+				}else{
+					debug("Writedown to buffer.");
+					ref.writeCString(rebuf, 0, ret);
+				}
+				debug("Read console fin");
+				return 1;
+			});
 		ref.writePointer(libR.ptr_R_ReadConsole, 0, ReadConsole);
 	}
 	/**
@@ -355,9 +355,11 @@ export default class R{
 	 * @param {function} onWriteConsole		Function on console write
 	 */
 	overrideWriteConsole(onWriteConsole){
-		const WriteConsole = ffi.Callback('void', [ref.types.CString, 'int'], (output, len) => onWriteConsole(output) );
-		const WriteConsoleEx = ffi.Callback('void', [ref.types.CString, 'int', 'int'],
-										  (output, len, otype) => onWriteConsole(output, otype) );
+		const WriteConsole = ffi.Callback("void", [ref.types.CString, "int"], (output, _len) => onWriteConsole(output) );
+		const WriteConsoleEx = ffi.Callback(
+			"void", [ref.types.CString, "int", "int"],
+			(output, len, otype) => onWriteConsole(output, otype)
+		);
 		ref.writePointer(libR.ptr_R_WriteConsole, 0, WriteConsole);
 		ref.writePointer(libR.ptr_R_WriteConsoleEx, 0, WriteConsoleEx);
 	}
@@ -366,14 +368,14 @@ export default class R{
 	 * @param {function} onBusy				Function called on busy/job finish
 	 */
 	overrideBusy(onBusy){
-		const Busy = ffi.Callback('void', ['int'], (which) => onBusy(which));
+		const Busy = ffi.Callback("void", ["int"], (which) => onBusy(which));
 		ref.writePointer(libR.ptr_R_Busy, 0, Busy);
 	}
 	/**
 	 * Finish using R.
 	 */
 	release(){
-		libR.Rf_endEmbeddedR(0)
+		libR.Rf_endEmbeddedR(0);
 	}
 	/**
 	 * Python like range function.

@@ -1,2 +1,1 @@
-require = require("esm")(module)
-module.exports = require("./R.mjs").default
+module.exports = require("esm")(module)("./R.mjs").default;
