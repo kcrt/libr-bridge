@@ -1,16 +1,63 @@
-"use strict";
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <base data-ice="baseUrl" href="../../">
+  <title data-ice="title">libr-bridge/R.mjs | libr-bridge</title>
+  <link type="text/css" rel="stylesheet" href="css/style.css">
+  <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
+  <script src="script/prettify/prettify.js"></script>
+  <script src="script/manual.js"></script>
+<meta name="description" content="Use libR from node.js"><meta property="twitter:card" content="summary"><meta property="twitter:title" content="libr-bridge"><meta property="twitter:description" content="Use libR from node.js"></head>
+<body class="layout-container" data-ice="rootContainer">
+
+<header>
+  <a href="./">Home</a>
+  
+  <a href="identifiers.html">Reference</a>
+  <a href="source.html">Source</a>
+  
+  <div class="search-box">
+  <span>
+    <img src="./image/search.png">
+    <span class="search-input-edge"></span><input class="search-input"><span class="search-input-edge"></span>
+  </span>
+    <ul class="search-result"></ul>
+  </div>
+<a style="position:relative; top:3px;" href="https://github.com/kcrt/libr-bridge.git"><img width="20px" src="./image/github.png"></a></header>
+
+<nav class="navigation" data-ice="nav"><div>
+  <ul>
+    
+  <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/libr-bridge/R.mjs~R.html">R</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/libr-bridge/RObject.mjs~RFactor.html">RFactor</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/libr-bridge/SEXPWrap.mjs~SEXPWrap.html">SEXPWrap</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-createLibR">createLibR</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-ParseStatus">ParseStatus</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-RComplex">RComplex</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-SEXP">SEXP</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-SEXPREC_ALIGN_SIZE">SEXPREC_ALIGN_SIZE</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-SEXPTYPE">SEXPTYPE</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-cetype_t">cetype_t</a></span></span></li>
+<li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#test">test</a><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-assert_ext">assert_ext</a></span></span></li>
+</ul>
+</div>
+</nav>
+
+<div class="content" data-ice="content"><h1 data-ice="title">libr-bridge/R.mjs</h1>
+<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">&quot;use strict&quot;;
 /**
  *	@file libr-bridge: Bridging module between JavaScript and R
- *	@author TAKAHASHI, Kyohei <kcrt@kcrt.net>
+ *	@author TAKAHASHI, Kyohei &lt;kcrt@kcrt.net&gt;
  *	@version XXXX
  */
 
-import ref from "ref";
-import ffi from "ffi";
-import createLibR, {ParseStatus} from "./libR";
-import SEXPWrap from "./SEXPWrap";
-import debug_ from "debug";
-const debug = debug_("libr-bridge:class R");
+import ref from &quot;ref&quot;;
+import ffi from &quot;ffi&quot;;
+import createLibR, {ParseStatus} from &quot;./libR&quot;;
+import SEXPWrap from &quot;./SEXPWrap&quot;;
+import debug_ from &quot;debug&quot;;
+const debug = debug_(&quot;libr-bridge:class R&quot;);
 
 let R_isInitialized = false;
 let R_GlobalEnv = undefined;
@@ -26,12 +73,12 @@ export default class R{
 	 */
 	constructor(){
 		if(!R.isInitialized()){
-			debug("Initializing R...");
-			const argv = ["REmbeddedOnBridge", "--vanilla", "--gui=none", "--silent"].map((e) => ref.allocCString(e));
+			debug(&quot;Initializing R...&quot;);
+			const argv = [&quot;REmbeddedOnBridge&quot;, &quot;--vanilla&quot;, &quot;--gui=none&quot;, &quot;--silent&quot;].map((e) =&gt; ref.allocCString(e));
 			libR = createLibR();
 			if(libR === void 0){
-				debug("Failed to initialize");
-				throw new "R initialization failed.";
+				debug(&quot;Failed to initialize&quot;);
+				throw new &quot;R initialization failed.&quot;;
 			}
 			libR.Rf_initEmbeddedR(argv.length, argv);
 			libR.R_setStartTime();
@@ -40,12 +87,12 @@ export default class R{
 			// R_GlobalEnv.preserve();
 			R.R_NilValue = libR.Rf_GetRowNames(R.GlobalEnv);		// passing non vector returns Nil
 			if(!(new SEXPWrap(R.R_NilValue)).isNull()){
-				throw new Error("Can not acquire NilValue");
+				throw new Error(&quot;Can not acquire NilValue&quot;);
 			}
-			R.R_UnboundValue = libR.Rf_findVar(libR.Rf_install("__non_existing_value_kcrt__"), R.GlobalEnv);
-			R.R_NamesSymbol = libR.Rf_install(ref.allocCString("names"));
-			R.R_NaInt = this.eval("as.integer(NA)");				// usually INT_MIN (-2147483648)
-			//R.R_NaString = new SEXPWrap(libR.STRING_ELT(this.eval_raw("as.character(NA)").sexp, 0));
+			R.R_UnboundValue = libR.Rf_findVar(libR.Rf_install(&quot;__non_existing_value_kcrt__&quot;), R.GlobalEnv);
+			R.R_NamesSymbol = libR.Rf_install(ref.allocCString(&quot;names&quot;));
+			R.R_NaInt = this.eval(&quot;as.integer(NA)&quot;);				// usually INT_MIN (-2147483648)
+			//R.R_NaString = new SEXPWrap(libR.STRING_ELT(this.eval_raw(&quot;as.character(NA)&quot;).sexp, 0));
 			R.R_NaString = new SEXPWrap(libR.R_NaString.deref());
 			R.R_BlankString = new SEXPWrap(libR.R_BlankString.deref());
 			R_isInitialized = true;
@@ -58,11 +105,11 @@ export default class R{
 	 *	@private
 	 */
 	__initializeRfunc(){
-		let funclist = ["print", "require", "mean", "cor", "var", "sd", "sqrt", "IQR", "min", "max",
-			"range", "fisher.test", "t.test", "wilcox.test", "prop.test", "var.test", "p.adjust",
-			"sin", "cos", "tan", "sum", "c",
-			"is.na", "is.nan", "write.csv"];
-		funclist.map((e) => {this[e] = this.func(e);});
+		let funclist = [&quot;print&quot;, &quot;require&quot;, &quot;mean&quot;, &quot;cor&quot;, &quot;var&quot;, &quot;sd&quot;, &quot;sqrt&quot;, &quot;IQR&quot;, &quot;min&quot;, &quot;max&quot;,
+			&quot;range&quot;, &quot;fisher.test&quot;, &quot;t.test&quot;, &quot;wilcox.test&quot;, &quot;prop.test&quot;, &quot;var.test&quot;, &quot;p.adjust&quot;,
+			&quot;sin&quot;, &quot;cos&quot;, &quot;tan&quot;, &quot;sum&quot;, &quot;c&quot;,
+			&quot;is.na&quot;, &quot;is.nan&quot;, &quot;write.csv&quot;];
+		funclist.map((e) =&gt; {this[e] = this.func(e);});
 	}
 	/**
 	 * Check whether R class is globally initialized or not.
@@ -91,7 +138,7 @@ export default class R{
 	 * @param {string} name		name of R function
 	 * @return {function}		Bridging function
 	 * @example
-	 *	const sum = R.func("sum")
+	 *	const sum = R.func(&quot;sum&quot;)
 	 *	console.log(sum([1, 2, 3]))		// prints 6
 	 */
 	func(name){
@@ -99,7 +146,7 @@ export default class R{
 	}
 	/**
 	 * Acquire bridging function to access R function.
-	 * This function doesn't convert to/from SEXP.
+	 * This function doesn&apos;t convert to/from SEXP.
 	 * Receives SEXPWrap, and returns SEXPWrap. Please use carefully.
 	 * @param {string} name		name of R function
 	 * @return {function}		Bridging function
@@ -124,16 +171,16 @@ export default class R{
 	}
 	/**
 	 * Bridging function for R function.
-	 * This bridging function doesn't handle SEXP.
+	 * This bridging function doesn&apos;t handle SEXP.
 	 * Please do not call this function manually.
 	 * @private
 	 * @param {function} _func	SEXPWrap object of R function
 	 * @return {SEXPWrap}		SEXPWrap object of returned value
 	 */
 	__RFuncBridge_raw(_func){
-		// Function name with "raw" receives SEXP, and returns SEXP
+		// Function name with &quot;raw&quot; receives SEXP, and returns SEXP
 		let lang;
-		R.range(0, arguments.length).reverse().map((i) => {
+		R.range(0, arguments.length).reverse().map((i) =&gt; {
 			if(lang === void 0){
 				lang = new SEXPWrap(libR.Rf_lcons(arguments[i].sexp, R.R_NilValue));
 			}else{
@@ -166,8 +213,8 @@ export default class R{
 		// This receives normal Javascript value, and returns Javascript value
 		const argumentsArr = Array.apply(null, arguments).slice(1);
 		let argumentsSEXPWrap = new Array();
-		argumentsArr.map((e) => {
-			if(e.constructor.name == "Object"){
+		argumentsArr.map((e) =&gt; {
+			if(e.constructor.name == &quot;Object&quot;){
 				// add all items
 				for(let key of Object.keys(e)){
 					const sw = new SEXPWrap(e[key]);
@@ -213,7 +260,7 @@ export default class R{
 			ps.length() != 1){
 			ps.unprotect(2);
 			debug(`Parse error.\n-----\n${code}\n-----`);
-			throw new Error("Parse error of R code");
+			throw new Error(&quot;Parse error of R code&quot;);
 		}else{
 			try {
 				const ret = this.__eval_langsxp(libR.VECTOR_ELT(ps.sexp, 0), silent);
@@ -258,7 +305,7 @@ export default class R{
 	 * @throws {Error}			When execution fails.
 	 * @return					JavaScript compatible object of returned value.
 	 * @example
-	 *		let value = R.eval("sum(c(1, 2, 3))")		// value will be 6
+	 *		let value = R.eval(&quot;sum(c(1, 2, 3))&quot;)		// value will be 6
 	 */
 	eval(code, silent=false){
 		const ret = this.eval_raw(code, silent);
@@ -274,7 +321,7 @@ export default class R{
 	 * @return					Returned value. Returns undefined on error.
 	 */
 	evalWithTry(code, silent=false){
-		const f = silent ? "TRUE" : "FALSE";
+		const f = silent ? &quot;TRUE&quot; : &quot;FALSE&quot;;
 		return this.eval(`try({${code}}, silent=${f})`);
 	}
 	/**
@@ -320,55 +367,55 @@ export default class R{
 		varsexp.names = value;
 	}
 	/**
-	 * Use your own console input/output instead of R's default one.
+	 * Use your own console input/output instead of R&apos;s default one.
 	 * @param {function} onMessage	Function on showing message
 	 */
 	overrideShowMessage(onMessage){
-		const ShowMessage = ffi.Callback("void", [ref.types.CString], (msg) => onMessage(msg) );
+		const ShowMessage = ffi.Callback(&quot;void&quot;, [ref.types.CString], (msg) =&gt; onMessage(msg) );
 		ref.writePointer(libR.ptr_R_ShowMessage, 0, ShowMessage);
 	}
 	/**
-	 * Use your own console input/output instead of R's default one.
+	 * Use your own console input/output instead of R&apos;s default one.
 	 * @param {function} onReadConsole		Function on console read
 	 */
 	overrideReadConsole(onReadConsole){
-		const ReadConsole = ffi.Callback("int", [ref.types.CString, ref.refType(ref.types.char), "int", "int"],
-			(prompt, buf, len, _addtohistory) => {
-				debug("Read console start: " + prompt);
-				const ret = onReadConsole(prompt) + "\n";
+		const ReadConsole = ffi.Callback(&quot;int&quot;, [ref.types.CString, ref.refType(ref.types.char), &quot;int&quot;, &quot;int&quot;],
+			(prompt, buf, len, _addtohistory) =&gt; {
+				debug(&quot;Read console start: &quot; + prompt);
+				const ret = onReadConsole(prompt) + &quot;\n&quot;;
 				const rebuf = ref.reinterpret(buf, len, 0);
-				if(ret.length + 1 > len){
+				if(ret.length + 1 &gt; len){
 					/* too large! */
-					debug("Too long input for ReadConsole");
-					ref.writeCString(rebuf, 0, "ERROR");
+					debug(&quot;Too long input for ReadConsole&quot;);
+					ref.writeCString(rebuf, 0, &quot;ERROR&quot;);
 				}else{
-					debug("Writedown to buffer.");
+					debug(&quot;Writedown to buffer.&quot;);
 					ref.writeCString(rebuf, 0, ret);
 				}
-				debug("Read console fin");
+				debug(&quot;Read console fin&quot;);
 				return 1;
 			});
 		ref.writePointer(libR.ptr_R_ReadConsole, 0, ReadConsole);
 	}
 	/**
-	 * Use your own console input/output instead of R's default one.
+	 * Use your own console input/output instead of R&apos;s default one.
 	 * @param {function} onWriteConsole		Function on console write
 	 */
 	overrideWriteConsole(onWriteConsole){
-		const WriteConsole = ffi.Callback("void", [ref.types.CString, "int"], (output, _len) => onWriteConsole(output) );
+		const WriteConsole = ffi.Callback(&quot;void&quot;, [ref.types.CString, &quot;int&quot;], (output, _len) =&gt; onWriteConsole(output) );
 		const WriteConsoleEx = ffi.Callback(
-			"void", [ref.types.CString, "int", "int"],
-			(output, len, otype) => onWriteConsole(output, otype)
+			&quot;void&quot;, [ref.types.CString, &quot;int&quot;, &quot;int&quot;],
+			(output, len, otype) =&gt; onWriteConsole(output, otype)
 		);
 		ref.writePointer(libR.ptr_R_WriteConsole, 0, WriteConsole);
 		ref.writePointer(libR.ptr_R_WriteConsoleEx, 0, WriteConsoleEx);
 	}
 	/**
-	 * Set callback on R's computation.
+	 * Set callback on R&apos;s computation.
 	 * @param {function} onBusy				Function called on busy/job finish
 	 */
 	overrideBusy(onBusy){
-		const Busy = ffi.Callback("void", ["int"], (which) => onBusy(which));
+		const Busy = ffi.Callback(&quot;void&quot;, [&quot;int&quot;], (which) =&gt; onBusy(which));
 		ref.writePointer(libR.ptr_R_Busy, 0, Busy);
 	}
 	/**
@@ -379,18 +426,35 @@ export default class R{
 	}
 	/**
 	 * Python like range function.
-	 * Be careful, this is not R ':' operator
+	 * Be careful, this is not R &apos;:&apos; operator
 	 * range(0, 3) == [0, 1, 2], which is not eq. to 0:3
 	 * @param {integer} a	from
-	 * @param {integer} b	to (this value won't be included)
-	 * @return {Array}		value in a <= x < b. range(0, 3) == [0, 1, 2]
+	 * @param {integer} b	to (this value won&apos;t be included)
+	 * @return {Array}		value in a &lt;= x &lt; b. range(0, 3) == [0, 1, 2]
 	 */
 	static range(a, b){
 		let len = (b - a);
-		return [...Array(len)].map((e, i) => i + a);
+		return [...Array(len)].map((e, i) =&gt; i + a);
 	}
 }
 
 /*
  * vim: filetype=javascript
  */
+</code></pre>
+
+</div>
+
+<footer class="footer">
+  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(1.1.0)</span><img src="./image/esdoc-logo-mini-black.png"></a>
+</footer>
+
+<script src="script/search_index.js"></script>
+<script src="script/search.js"></script>
+<script src="script/pretty-print.js"></script>
+<script src="script/inherited-summary.js"></script>
+<script src="script/test-summary.js"></script>
+<script src="script/inner-link.js"></script>
+<script src="script/patch-for-local.js"></script>
+</body>
+</html>

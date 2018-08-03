@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <base data-ice="baseUrl" href="../../../">
+  <title data-ice="title">libr-bridge/test/basic.mjs | libr-bridge</title>
+  <link type="text/css" rel="stylesheet" href="css/style.css">
+  <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
+  <script src="script/prettify/prettify.js"></script>
+  <script src="script/manual.js"></script>
+<meta name="description" content="Use libR from node.js"><meta property="twitter:card" content="summary"><meta property="twitter:title" content="libr-bridge"><meta property="twitter:description" content="Use libR from node.js"></head>
+<body class="layout-container" data-ice="rootContainer">
+
+<header>
+  <a href="./">Home</a>
+  
+  <a href="identifiers.html">Reference</a>
+  <a href="source.html">Source</a>
+  
+  <div class="search-box">
+  <span>
+    <img src="./image/search.png">
+    <span class="search-input-edge"></span><input class="search-input"><span class="search-input-edge"></span>
+  </span>
+    <ul class="search-result"></ul>
+  </div>
+<a style="position:relative; top:3px;" href="https://github.com/kcrt/libr-bridge.git"><img width="20px" src="./image/github.png"></a></header>
+
+<nav class="navigation" data-ice="nav"><div>
+  <ul>
+    
+  <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/libr-bridge/R.mjs~R.html">R</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/libr-bridge/RObject.mjs~RFactor.html">RFactor</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/libr-bridge/SEXPWrap.mjs~SEXPWrap.html">SEXPWrap</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-createLibR">createLibR</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-ParseStatus">ParseStatus</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-RComplex">RComplex</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-SEXP">SEXP</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-SEXPREC_ALIGN_SIZE">SEXPREC_ALIGN_SIZE</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-SEXPTYPE">SEXPTYPE</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-cetype_t">cetype_t</a></span></span></li>
+<li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#test">test</a><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-assert_ext">assert_ext</a></span></span></li>
+</ul>
+</div>
+</nav>
+
+<div class="content" data-ice="content"><h1 data-ice="title">libr-bridge/test/basic.mjs</h1>
+<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">import R from &quot;../R&quot;;
+import assert from &quot;assert&quot;;
+import assert_ext from &quot;./assert_ext&quot;;
+import Complex from &quot;Complex&quot;;
+
+var r;
+assert_ext(assert);
+
+describe(&quot;Initialize&quot;, () =&gt; {
+	it(&quot;Initialize&quot;, () =&gt; {
+		r = new R();
+	});
+});
+
+describe(&quot;Primitives&quot;, () =&gt; {
+	it(&quot;Integer&quot;, () =&gt; {
+		assert.equal(1, r.eval(&quot;as.integer(1)&quot;));
+		assert.equal(0, r.eval(&quot;as.integer(0)&quot;));
+		assert.equal(-1, r.eval(&quot;as.integer(-1)&quot;));
+		r.setVar(&quot;numvar&quot;, 2017);
+		assert.equal(2017, r.getVar(&quot;numvar&quot;));
+		assert.equal(2017, r.eval(&quot;numvar&quot;));
+	});
+	it(&quot;Real&quot;, () =&gt; {
+		assert.equal(1.0, r.eval(&quot;1.0&quot;));
+		assert.equal(0.5, r.eval(&quot;0.5&quot;));
+	});
+	it(&quot;String&quot;, () =&gt; {
+		assert.equal(&quot;abc&quot;, r.eval(&quot;\&quot;abc\&quot;&quot;));
+		r.setVar(&quot;strvar&quot;, &quot;kcrt&quot;);
+		assert.equal(&quot;kcrt&quot;, r.getVar(&quot;strvar&quot;));
+		assert.equal(&quot;kcrt&quot;, r.eval(&quot;strvar&quot;));
+		assert.equal(&quot;&quot;, r.eval(&quot;\&quot;\&quot;&quot;));
+	});
+	it(&quot;Logical (Boolean)&quot;, () =&gt; {
+		assert.equal(true, r.eval(&quot;T&quot;));
+		assert.equal(false, r.eval(&quot;F&quot;));
+		assert.notEqual(false, r.eval(&quot;T&quot;));
+		assert.notEqual(true, r.eval(&quot;F&quot;));
+		r.setVar(&quot;logvar&quot;, true);
+		assert.ok(r.eval(&quot;logvar&quot;));
+	});
+	it(&quot;Complex&quot;, () =&gt; {
+		const cpxvar = new Complex(1, 2);
+		assert.ok(cpxvar.equals(r.eval(&quot;1+2i&quot;)));
+		r.setVar(&quot;cpxvar&quot;, cpxvar);
+		assert.equal(r.eval(&quot;Re(cpxvar)&quot;), cpxvar.real);
+		assert.equal(r.eval(&quot;Im(cpxvar)&quot;), cpxvar.im);
+		assert.equal(r.eval(&quot;abs(cpxvar)&quot;), cpxvar.abs());
+		assert.equal(r.eval(&quot;Arg(cpxvar)&quot;), cpxvar.angle());
+		assert.ok(r.eval(&quot;cpxvar^2&quot;).equals(cpxvar.multiply(cpxvar)));
+	});
+});
+
+describe(&quot;Special values&quot;, () =&gt; {
+	it(&quot;Empty vector&quot;, () =&gt; {
+		assert.equal(r.eval(&quot;vector(mode=\&quot;numeric\&quot;, length=0)&quot;).length, 0);
+		r.setVar(&quot;empty_vector&quot;, []);
+		assert.equal(r.eval(&quot;length(empty_vector)&quot;), 0);
+	});
+	it(&quot;NA&quot;, () =&gt; {
+		assert.strictEqual(r.eval(&quot;NA&quot;), void 0);
+		assert.arrayEqual(r.eval(&quot;c(1.1, 2.1, NA)&quot;), [1.1, 2.1, undefined]);
+		assert.arrayEqual(r.eval(&quot;c(1:2, NA)&quot;), [1, 2, undefined]);
+		assert.arrayEqual(r.eval(&quot;c(&apos;a&apos;, &apos;&apos;, NA)&quot;), [&quot;a&quot;, &quot;&quot;, undefined]);
+
+		r.setVar(&quot;NASingle&quot;, void 0);
+		r.setVar(&quot;NAReal&quot;, [1.0, void 0]);
+		r.setVar(&quot;NAStr&quot;, [&quot;a&quot;, void 0]);
+		r.setVar(&quot;NABool&quot;, [true, void 0]);
+		assert.ok(r.eval(&quot;is.na(NASingle) &amp;&amp; !is.nan(NASingle)&quot;));
+		assert.ok(r.eval(&quot;is.na(NAReal[2]) &amp;&amp; !is.nan(NAReal[2])&quot;));
+		assert.ok(r.eval(&quot;is.na(NAStr[2]) &amp;&amp; !is.nan(NAStr[2])&quot;));
+		assert.ok(r.eval(&quot;is.na(NABool[2]) &amp;&amp; !is.nan(NABool[2])&quot;));
+	});
+	it(&quot;NaN&quot;, () =&gt; {
+		assert.ok(isNaN(r.eval(&quot;NaN&quot;)));
+		assert.ok(isNaN(r.eval(&quot;0 / 0&quot;)));
+	});
+	it(&quot;Inf&quot;, () =&gt; {
+		assert.strictEqual(r.eval(&quot;Inf&quot;), Infinity);
+		assert.strictEqual(r.eval(&quot;-Inf&quot;), -Infinity);
+	});
+});
+
+describe(&quot;Array&quot;, () =&gt; {
+	const arr_1to100 = R.range(1, 101);
+	it(&quot;ES Array &lt;-&gt; R Array&quot;, () =&gt; {
+		assert.arrayEqual([3, 2, 1], r.eval(&quot;as.integer(c(3, 2, 1))&quot;));
+		assert.arrayEqual([1, 2, 3], r.c(1, 2, 3));
+		assert.arrayEqual(arr_1to100, r.eval(&quot;1:100&quot;));
+		r.setVar(&quot;myarr&quot;, arr_1to100);
+		assert.ok(r.eval(&quot;all.equal(myarr, 1:100)&quot;));
+		assert.ok(!r.eval(&quot;isTRUE(all.equal(myarr, 2:101))&quot;));
+		assert.arrayEqual(arr_1to100, r.getVar(&quot;myarr&quot;));
+	});
+	it(&quot;String Array&quot;, () =&gt; {
+		var strArr = [&quot;abc&quot;, &quot;def&quot;, &quot;ghi&quot;, &quot;jkl&quot;, &quot;mno&quot;];
+		assert.arrayEqual(strArr, r.eval(&quot;c(\&quot;abc\&quot;, \&quot;def\&quot;, \&quot;ghi\&quot;, \&quot;jkl\&quot;, \&quot;mno\&quot;)&quot;));
+		r.setVar(&quot;strArr&quot;, strArr);
+		assert.arrayEqual(strArr, r.getVar(&quot;strArr&quot;));
+	});
+});
+
+describe(&quot;Attribute&quot;, () =&gt; {
+	it(&quot;Names&quot;, () =&gt; {
+		r.setVar(&quot;numvar&quot;, 2017);
+		r.eval(&quot;names(numvar) = \&quot;hello\&quot;&quot;);
+		assert.equal(&quot;hello&quot;, r.getVarNames(&quot;numvar&quot;));
+
+		r.setVar(&quot;strvar&quot;, &quot;kcrt&quot;);
+		r.setVarNames(&quot;strvar&quot;, &quot;hello&quot;);
+		assert.equal(&quot;hello&quot;, r.eval(&quot;names(strvar)&quot;));
+
+		r.setVar(&quot;no_name_var&quot;, &quot;test&quot;);
+		assert.strictEqual(r.getVarNames(&quot;no_name_var&quot;), void 0);
+	});
+});
+
+describe(&quot;Basic calculation&quot;, () =&gt; {
+	it(&quot;+-*/&quot;, () =&gt; {
+		const expression = [
+			&quot;1 + 1&quot;, &quot;10 + 20&quot;, &quot;1984 + 2017&quot;, &quot;-1 + 3&quot;,
+			&quot;1 - 1&quot;, &quot;2 - 30&quot;, &quot;0 - 5&quot;, &quot;1 - (-3)&quot;,
+			&quot;1 * 1&quot;, &quot;2 * 10&quot;, &quot;1984 * 2017&quot;, &quot;0 * 99999&quot;, &quot;99999 * 99999&quot;,
+			&quot;8 / 4&quot;, &quot;200 / 5&quot;, &quot;4 / 3&quot;, &quot;22 / 7&quot;, &quot;0 / 100&quot;
+		];
+		expression.map((e) =&gt; {
+			assert.almostEqual(eval(e), r.eval(e));
+		});
+	}),
+	it(&quot;pow&quot;, () =&gt; {
+		assert.almostEqual(Math.pow(3, 15), r.eval(&quot;3^15&quot;));
+	}),
+	it(&quot;modulo&quot;, () =&gt; {
+		assert.almostEqual(1549 % 8, r.eval(&quot;1549 %% 8&quot;));
+	});
+});
+
+describe(&quot;Math function&quot;, () =&gt; {
+	it(&quot;Trigonometric functions&quot;, () =&gt; {
+		assert.almostEqual(Math.sin(0), r.sin(0));
+		assert.almostEqual(Math.sin(0.5), r.sin(0.5));
+		assert.almostEqual(Math.cos(0), r.cos(0));
+		assert.almostEqual(Math.cos(0.5), r.cos(0.5));
+		assert.almostEqual(Math.tan(0), r.tan(0));
+		assert.almostEqual(Math.tan(0.5), r.tan(0.5));
+	});
+	it(&quot;Array and functions&quot;, () =&gt; {
+		const arr_1to100 = R.range(1, 101);
+		const sum_1to100 = arr_1to100.reduce((pre, v) =&gt; pre + v);
+		assert.almostEqual(sum_1to100, r.sum(arr_1to100));
+		assert.almostEqual(sum_1to100 / 100, r.mean(arr_1to100));
+	});
+});
+
+describe(&quot;Function call with named arguments&quot;, () =&gt; {
+	it(&quot;Named arguments&quot;, () =&gt; {
+		assert.strictEqual(r.mean([1, 2, 3, undefined]), void 0);
+		assert.strictEqual(r.mean([1, 2, 3, undefined], {&quot;na.rm&quot;: true}), 2);
+	});
+});
+
+describe(&quot;Long command&quot;, () =&gt; {
+	it(&quot;factorial&quot;, () =&gt; {
+		r.eval(`
+			myfactorial &lt;- function(x) {
+				if (x == 0) {
+					return(1)
+				} else {
+					return(x * myfactorial(x - 1))
+				}
+			}
+		`);
+		let factorial_50 = r.func(&quot;myfactorial&quot;)(50);
+		assert.equal(factorial_50, R.range(1, 51).reduce((pre, v) =&gt; pre * v));
+	});
+});
+
+describe(&quot;Failing test&quot;, () =&gt; {
+	it(&quot;non existing variable&quot;, () =&gt; {
+		assert.strictEqual(r.getVar(&quot;non_exsisting_var&quot;), void 0);
+	});
+	it(&quot;Syntax error in eval&quot;, () =&gt; {
+		assert.throws(() =&gt; {r.eval(&quot;2 *+* 4&quot;, true);}, Error);
+	});
+	it(&quot;Execution error in eval&quot;, () =&gt; {
+		assert.throws(() =&gt; {r.eval(&quot;1 &lt;- 5&quot;, true);}, Error);
+		assert.ok(r.evalWithTry(&quot;1 &lt;- 5&quot;, true).startsWith(&quot;Error&quot;));
+	});
+	it(&quot;Execution error in function call&quot;, () =&gt; {
+		assert.throws(() =&gt; {r.func[&quot;stop&quot;](&quot;Test Error&quot;);}, Error);
+	});
+});
+
+/*
+ * vim: filetype=javascript
+ */
+</code></pre>
+
+</div>
+
+<footer class="footer">
+  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(1.1.0)</span><img src="./image/esdoc-logo-mini-black.png"></a>
+</footer>
+
+<script src="script/search_index.js"></script>
+<script src="script/search.js"></script>
+<script src="script/pretty-print.js"></script>
+<script src="script/inherited-summary.js"></script>
+<script src="script/test-summary.js"></script>
+<script src="script/inner-link.js"></script>
+<script src="script/patch-for-local.js"></script>
+</body>
+</html>

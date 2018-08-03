@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <base data-ice="baseUrl" href="../../">
+  <title data-ice="title">libr-bridge/SEXPWrap.mjs | libr-bridge</title>
+  <link type="text/css" rel="stylesheet" href="css/style.css">
+  <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
+  <script src="script/prettify/prettify.js"></script>
+  <script src="script/manual.js"></script>
+<meta name="description" content="Use libR from node.js"><meta property="twitter:card" content="summary"><meta property="twitter:title" content="libr-bridge"><meta property="twitter:description" content="Use libR from node.js"></head>
+<body class="layout-container" data-ice="rootContainer">
+
+<header>
+  <a href="./">Home</a>
+  
+  <a href="identifiers.html">Reference</a>
+  <a href="source.html">Source</a>
+  
+  <div class="search-box">
+  <span>
+    <img src="./image/search.png">
+    <span class="search-input-edge"></span><input class="search-input"><span class="search-input-edge"></span>
+  </span>
+    <ul class="search-result"></ul>
+  </div>
+<a style="position:relative; top:3px;" href="https://github.com/kcrt/libr-bridge.git"><img width="20px" src="./image/github.png"></a></header>
+
+<nav class="navigation" data-ice="nav"><div>
+  <ul>
+    
+  <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/libr-bridge/R.mjs~R.html">R</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/libr-bridge/RObject.mjs~RFactor.html">RFactor</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/libr-bridge/SEXPWrap.mjs~SEXPWrap.html">SEXPWrap</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-createLibR">createLibR</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-ParseStatus">ParseStatus</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-RComplex">RComplex</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-SEXP">SEXP</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-SEXPREC_ALIGN_SIZE">SEXPREC_ALIGN_SIZE</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-SEXPTYPE">SEXPTYPE</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-cetype_t">cetype_t</a></span></span></li>
+<li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#test">test</a><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-assert_ext">assert_ext</a></span></span></li>
+</ul>
+</div>
+</nav>
+
+<div class="content" data-ice="content"><h1 data-ice="title">libr-bridge/SEXPWrap.mjs</h1>
+<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">&quot;use strict&quot;;
+import ref from &quot;ref&quot;;
+import Complex from &quot;Complex&quot;;
+import R from &quot;./R&quot;;
+import {SEXPTYPE, RComplex, cetype_t} from &quot;./libR&quot;;
+import debug_ from &quot;debug&quot;;
+const debug = debug_(&quot;libr-bridge:class SEXPWrap&quot;);
+
+var sexpSize = void 0;
+
+export default class SEXPWrap {
+	constructor(value){
+		
+		if(value instanceof Buffer){
+			// This may be SEXP!
+			this.sexp = value;
+		}else{
+			this.__initializeWithValue(value);
+		}
+	}
+	/**
+	 *	Initialize this instance with specified value.
+	 *	@private
+	 */
+	__initializeWithValue(value){
+		if(!Array.isArray(value)){
+			// not an array.
+			// convert to array and try again.
+			// (You can use Rf_mkString, Rf_ScalarReal, Rf_ScalarLogical if you don&apos;t want SEXPWrap)
+			this.__initializeWithValue([value]);
+		}else if(value.length == 0){
+			this.sexp = R.R_NilValue;
+		}else if(typeof(value[0]) == &quot;number&quot; || typeof(value[0]) == &quot;undefined&quot;){
+			// assume this is array of numbers (e.g. [1, 2, 3, ...])
+			this.sexp = R.libR.Rf_allocVector(SEXPTYPE.REALSXP, value.length);
+			this.protect();
+			let p = ref.reinterpret(this.dataptr(), ref.types.double.size * value.length);
+			value.map((e, i) =&gt; {
+				ref.set(p, ref.types.double.size * i, 1.0 * e /* convert to double */, ref.types.double);
+			});
+			// Find NA and set 1954. (sizeof(double) = sizeof(int) * 2)
+			p = ref.reinterpret(this.dataptr(), ref.types.int.size * 2 * value.length);
+			value.map((e, i) =&gt; {
+				if(e === void 0){ ref.set(p, ref.types.int.size * i * 2, 1954, ref.types.int); }
+			});
+			this.unprotect();
+		}else if(typeof(value[0]) == &quot;boolean&quot;){
+			// assume this is array of boolean (e.g. [false, true, true, ...])
+			// to handle NA, we use int instead of bool.
+			this.sexp = R.libR.Rf_allocVector(SEXPTYPE.LGLSXP, value.length);
+			this.protect();
+			let p = ref.reinterpret(this.dataptr(), ref.types.int.size * value.length);
+			value.map((e, i) =&gt; {
+				let value;
+				if(e === void 0){
+					// It&apos;s NA
+					value = R.R_NaInt;
+				}else{
+					value = e ? 1 : 0;
+				}
+				ref.set(p, ref.types.int.size * i, value, ref.types.int);
+			});
+			this.unprotect();
+		}else if(typeof(value[0]) == &quot;string&quot;){
+			// assuming this is array of strings (e.g. [&quot;abc&quot;, &quot;def&quot;, ...])
+			this.sexp = R.libR.Rf_allocVector(SEXPTYPE.STRSXP, value.length);
+			this.protect();
+			value.map((e, i) =&gt; {
+				if(e !== void 0){
+					R.libR.SET_STRING_ELT(this.sexp, i, R.libR.Rf_mkCharCE(e, cetype_t.CE_UTF8));
+				}else{
+					R.libR.SET_STRING_ELT(this.sexp, i, R.R_NaString.sexp);
+				}
+			});
+			this.unprotect();
+		}else if(value[0] instanceof Complex){
+			this.sexp = R.libR.Rf_allocVector(SEXPTYPE.CPLXSXP, value.length);
+			this.protect();
+			let p = ref.reinterpret(this.dataptr(), RComplex.size * value.length);
+			value.map(
+				(e) =&gt; new RComplex({r: e.real, i: e.im})).map(
+				(e, i) =&gt; {
+					ref.set(p, RComplex.size * i, e, RComplex);
+				});
+			this.unprotect();
+		}else{
+			console.log(&quot;Cannot convert &quot; + typeof(value) + &quot; in JavaScript to R SEXP / &quot; + value);
+		}
+	}
+	/** Protect this SEXP */
+	protect(){ R.libR.Rf_protect(this.sexp); }
+	/** Unprotect SEXPs */
+	static unprotect(depth=1){ R.libR.Rf_unprotect(depth); }
+	unprotect(depth=1){ R.libR.Rf_unprotect(depth); }
+	/** Preserve this SEXP. Please use protect() if you can. */
+	preserve(){ R.libR.R_PreserveObject(this.sexp); }
+	/** Release preserved SEXP. protect()ed SEXP should be releaseed with unprotect() */
+	release(){ R.libR.R_ReleaseObject(this.sexp); }
+	/** Return true if this SEXP is List. */
+	isList(){ return R.libR.Rf_isList(this.sexp); }
+	/** Return true if this SEXP is Vector. Please note single scalar value in R is vector. */
+	isVector(){ return R.libR.Rf_isVector(this.sexp); }
+	/** Return the length of vector. */
+	length(){ return R.libR.Rf_length(this.sexp); }
+	/** Return true if this SEXP is null. */
+	isNull(){ return R.libR.Rf_isNull(this.sexp); }
+	isComplex(){ return R.libR.Rf_isComplex(this.sexp); }
+	isExpression(){ return R.libR.Rf_isExpression(this.sexp); }
+	isInteger(){ return R.libR.Rf_isInteger(this.sexp); }
+	isLogical(){ return R.libR.Rf_isLogical(this.sexp); }
+	isReal(){ return R.libR.Rf_isReal(this.sexp); }
+	isValidString(){ return R.libR.Rf_isValidString(this.sexp); }
+	dataptr(){ return R.libR.DATAPTR(this.sexp); }
+	asChar(){
+		if(this.sexp.address() == R.R_NaString.sexp.address()){ return void 0;}
+		if(this.sexp.address() == R.R_BlankString.sexp.address()){ return &quot;&quot;;}
+		return R.libR.Rf_translateCharUTF8(R.libR.Rf_asChar(this.sexp)).slice();
+	}
+	/** Return sizeof(SEXP) in byte. */
+	static get SEXPSize(){
+		if(sexpSize == void 0){
+			const intSEXP = new SEXPWrap(0);
+			sexpSize = intSEXP.dataptr().address() - intSEXP.sexp.address();
+		}
+		return sexpSize;
+	}
+	get names(){
+		let names = new SEXPWrap(R.libR.Rf_getAttrib(this.sexp, R.R_NamesSymbol));
+		return names.isNull() ? undefined : names.getValue();
+	}
+	set names(newtag){
+		if (newtag === void 0) return;
+		R.libR.Rf_setAttrib(this.sexp, R.R_NamesSymbol, (new SEXPWrap(newtag)).sexp);
+	}
+	getValue(){
+		if(this.sexp.address() == 0 || this.isNull()){
+			return null;
+		}
+		const len = this.length();
+		if(len == 0){
+			return [];
+		}if(this.isList()){
+			// TODO: support this
+			/*
+			let v = this.sexp;
+			return R.range(0, len).map( (e) =&gt; {
+				let a = R.libR.CAR(v);
+				v = R.libR.CDR(v);
+				return this._getValue_scalar(a);
+			});*/
+			console.log(&quot;LIST NOT SUPPORTED&quot;);
+			return undefined;
+		}else if(this.isVector()){		// be careful; is.vector(1) is even True
+			let itemtype;
+			let values = [];
+			if(this.isInteger() || this.isLogical()){
+				itemtype = ref.types.int;
+				const f = this.isLogical() ? (e) =&gt; !!e : (e) =&gt; e;
+				const p = ref.reinterpret(this.dataptr(), itemtype.size * len);
+				values = R.range(0, len).map( (i) =&gt; ref.get(p, itemtype.size * i, itemtype) )
+					.map( (e) =&gt; e == R.R_NaInt ? undefined : f(e));
+			}else if(this.isReal()){
+				itemtype = ref.types.double;
+				const p = ref.reinterpret(this.dataptr(), itemtype.size * len);
+				values = R.range(0, len).map( (i) =&gt; ref.get(p, itemtype.size * i, itemtype) );
+				/* Discriminate NA from NaN (1954; the year Ross Ihaka was born) */
+				/* see main/arithmetic.c for detail. */
+				itemtype = ref.types.uint;
+				const q = ref.reinterpret(this.dataptr(), itemtype.size * len * 2);
+				R.range(0, len).map( (i) =&gt; {
+					if(isNaN(values[i])){
+						if(ref.get(q, itemtype.size * i * 2, itemtype) == 1954) values[i] = undefined;
+					}
+				});
+			}else if(this.isComplex()){
+				itemtype = RComplex;
+				const p = ref.reinterpret(this.dataptr(), itemtype.size * len);
+				values = R.range(0, len).map( (i) =&gt; ref.get(p, itemtype.size * i, itemtype))
+					.map( (e) =&gt; new Complex(e.r, e.i));
+			}else if(this.isValidString()){
+				values = R.range(0, len).map((i) =&gt; R.libR.STRING_ELT(this.sexp, i))
+					.map((e) =&gt; {
+						const s = new SEXPWrap(e);
+						return s.asChar();
+					});
+			}else if(this.isExpression()){
+				debug(&quot;getValue() for RExpression&quot;);
+				values = [&quot;(R Expression)&quot;];
+			}else{
+				values = [&quot;Unsupported vector item!&quot;];
+			}
+			return values.length == 1 ? values[0] : values;
+		}else{
+			return &quot;unknown type!&quot;;
+		}
+	}
+	_getValue_scalar(sexp){
+		// &apos;Number&apos; includes complex, &apos;Vector&apos; includes Array and Matrix
+		if(R.libR.Rf_isInteger(sexp)){
+			return R.libR.Rf_asInteger(sexp);
+		}else if(R.libR.Rf_isNumeric(sexp)){
+			return R.libR.Rf_asReal(sexp);
+		}else if(R.libR.Rf_isValidString(sexp)){
+			return R.libR.Rf_translateCharUTF8(R.libR.Rf_asChar(sexp)).slice();
+		}else{
+			return &quot;SEXPWRAP: unknown SEXP Type&quot;;
+		}
+	}
+}
+
+/*
+ * vim: filetype=javascript
+ */
+</code></pre>
+
+</div>
+
+<footer class="footer">
+  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(1.1.0)</span><img src="./image/esdoc-logo-mini-black.png"></a>
+</footer>
+
+<script src="script/search_index.js"></script>
+<script src="script/search.js"></script>
+<script src="script/pretty-print.js"></script>
+<script src="script/inherited-summary.js"></script>
+<script src="script/test-summary.js"></script>
+<script src="script/inner-link.js"></script>
+<script src="script/patch-for-local.js"></script>
+</body>
+</html>

@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <base data-ice="baseUrl" href="../../">
+  <title data-ice="title">libr-bridge/libR.mjs | libr-bridge</title>
+  <link type="text/css" rel="stylesheet" href="css/style.css">
+  <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
+  <script src="script/prettify/prettify.js"></script>
+  <script src="script/manual.js"></script>
+<meta name="description" content="Use libR from node.js"><meta property="twitter:card" content="summary"><meta property="twitter:title" content="libr-bridge"><meta property="twitter:description" content="Use libR from node.js"></head>
+<body class="layout-container" data-ice="rootContainer">
+
+<header>
+  <a href="./">Home</a>
+  
+  <a href="identifiers.html">Reference</a>
+  <a href="source.html">Source</a>
+  
+  <div class="search-box">
+  <span>
+    <img src="./image/search.png">
+    <span class="search-input-edge"></span><input class="search-input"><span class="search-input-edge"></span>
+  </span>
+    <ul class="search-result"></ul>
+  </div>
+<a style="position:relative; top:3px;" href="https://github.com/kcrt/libr-bridge.git"><img width="20px" src="./image/github.png"></a></header>
+
+<nav class="navigation" data-ice="nav"><div>
+  <ul>
+    
+  <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/libr-bridge/R.mjs~R.html">R</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/libr-bridge/RObject.mjs~RFactor.html">RFactor</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/libr-bridge/SEXPWrap.mjs~SEXPWrap.html">SEXPWrap</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-createLibR">createLibR</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-ParseStatus">ParseStatus</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-RComplex">RComplex</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-SEXP">SEXP</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-SEXPREC_ALIGN_SIZE">SEXPREC_ALIGN_SIZE</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-SEXPTYPE">SEXPTYPE</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-cetype_t">cetype_t</a></span></span></li>
+<li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#test">test</a><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-assert_ext">assert_ext</a></span></span></li>
+</ul>
+</div>
+</nav>
+
+<div class="content" data-ice="content"><h1 data-ice="title">libr-bridge/libR.mjs</h1>
+<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">&quot;use strict&quot;;
+import child_process from &quot;child_process&quot;;
+import process from &quot;process&quot;;
+import path from &quot;path&quot;;
+
+import ffi from &quot;ffi&quot;;
+import ref from &quot;ref&quot;;
+import refArray from &quot;ref-array&quot;;
+import refStruct from &quot;ref-struct&quot;;
+
+import { default as windowsRegistry } from &quot;./safe-windows-registry.js&quot;;
+
+import debug_ from &quot;debug&quot;;
+const debug = debug_(&quot;libr-bridge:libR&quot;);
+
+/* Type */
+const stringArr = refArray(ref.types.CString);			// char * [] or string[]
+export const SEXP = ref.refType(ref.types.void);
+export const SEXPREC_ALIGN_SIZE = ref.types.double.size;
+export const RComplex = refStruct({
+	r: ref.types.double,
+	i: ref.types.double
+});
+
+/** R SEXP type enums */
+export const SEXPTYPE = {
+	NILSXP		: 0,	/* nil : NULL */
+	SYMSXP		: 1,	/* symbols */
+	LISTSXP		: 2,	/* lists of dotted pairs */
+	CLOSXP		: 3,	/* closures */
+	ENVSXP		: 4,	/* environments */
+	PROMSXP		: 5,	/* promises: [un]evaluated closure arguments */
+	LANGSXP		: 6,	/* language constructs (special lists) */
+	SPECIALSXP	: 7,	/* special forms */
+	BUILTINSXP	: 8,	/* builtin non-special forms */
+	CHARSXP		: 9,	/* &quot;scalar&quot; string type (internal only)*/
+	LGLSXP		: 10,	/* logical vectors */
+	INTSXP		: 13,	/* integer vectors */
+	REALSXP		: 14,	/* real variables */
+	CPLXSXP		: 15,	/* complex variables */
+	STRSXP		: 16,	/* string vectors */
+	DOTSXP		: 17,	/* dot-dot-dot object */
+	ANYSXP		: 18,	/* make &quot;any&quot; args work */
+	VECSXP		: 19,	/* generic vectors */
+	EXPRSXP		: 20,	/* expressions vectors */
+	BCODESXP	: 21,	/* byte code */
+	EXTPTRSXP	: 22,	/* external pointer */
+	WEAKREFSXP	: 23,	/* weak reference */
+	RAWSXP		: 24,	/* raw bytes */
+	S4SXP		: 25,	/* S4 non-vector */
+	NEWSXP		: 30,   /* fresh node creaed in new page */
+	FREESXP		: 31,   /* node released by GC */
+	FUNSXP		: 99	/* Closure or Builtin */
+};
+
+export const ParseStatus = {
+	PARSE_NULL: 0,
+	PARSE_OK: 1,
+	PARSE_INCOMPLETE: 2,
+	PARSE_ERROR: 3,
+	PARSE_EOF: 4
+};
+
+export const cetype_t = {
+	CE_NATIVE : 0,
+	CE_UTF8   : 1,
+	CE_LATIN1 : 2,
+	CE_BYTES  : 3,
+	CE_SYMBOL : 5,
+	CE_ANY    : 99
+};
+
+const apiList = {
+	&quot;CAR&quot;: [SEXP, [SEXP]], 
+	&quot;CDR&quot;: [SEXP, [SEXP]],
+	&quot;NAMED&quot;: [&quot;int&quot;, [SEXP]],
+	&quot;R_CHAR&quot;: [&quot;string&quot;, [SEXP]],
+	&quot;R_curErrorBuf&quot;: [&quot;string&quot;, []],
+	&quot;R_NilValue&quot;: [SEXP, []],
+	// &quot;R_ParseEvalString&quot;: [SEXP, [&quot;string&quot;, SEXP]],	- I don&apos;t know why, but Windows dll doesn&apos;t have this function.
+	&quot;R_ParseVector&quot;: [SEXP, [SEXP, &quot;int&quot;, &quot;int*&quot;, SEXP]], // SEXP R_ParseVector(SEXP text, int n, ParseStatus *status, SEXP srcfile)
+	&quot;R_PreserveObject&quot;: [&quot;void&quot;, [SEXP]],
+	&quot;R_ReleaseObject&quot;: [&quot;void&quot;, [SEXP]],
+	&quot;R_setStartTime&quot;: [&quot;void&quot;, []],						// void R_setStartTime(void);
+	// &quot;R_sysframe&quot;: [SEXP, [&quot;int&quot;, &quot;pointer&quot;]],
+	&quot;R_tryEval&quot;: [SEXP, [SEXP, SEXP, &quot;int*&quot;]],			// SEXP R_tryEval(SEXP e, SEXP env, int *ErrorOccurred)
+	&quot;R_tryEvalSilent&quot;: [SEXP, [SEXP, SEXP, &quot;int*&quot;]],	// SEXP R_tryEvalSilent(SEXP e, SEXP env, int *ErrorOccurred)
+	&quot;Rf_GetRowNames&quot;: [SEXP, [SEXP]],
+	&quot;Rf_ScalarInteger&quot;: [SEXP, [&quot;int&quot;]],
+	&quot;Rf_ScalarLogical&quot;: [SEXP, [&quot;int&quot;]],
+	&quot;Rf_ScalarReal&quot;: [SEXP, [&quot;double&quot;]],				// SEXP ScalarReal(double x)	
+	&quot;Rf_allocVector&quot;: [SEXP, [&quot;int&quot;, &quot;int&quot;]],			// SEXP Rf_allocVector(SEXPTYPE, int R_xlen_t);
+	&quot;Rf_asChar&quot;: [SEXP, [SEXP]],
+	&quot;Rf_asInteger&quot;: [&quot;int&quot;, [SEXP]],
+	&quot;Rf_asLogical&quot;: [&quot;int&quot;, [SEXP]],
+	&quot;Rf_asReal&quot;: [&quot;double&quot;, [SEXP]],
+	&quot;Rf_cons&quot;: [SEXP, [SEXP, SEXP]],
+	&quot;Rf_defineVar&quot;: [&quot;void&quot;, [SEXP, SEXP, &quot;pointer&quot;]],
+	&quot;Rf_elt&quot;: [SEXP, [SEXP, &quot;int&quot;]],
+	&quot;Rf_endEmbeddedR&quot;: [&quot;void&quot;, [&quot;int&quot;]],				// void Rf_endEmbeddedR(int fatal);
+	&quot;Rf_eval&quot;: [SEXP, [SEXP, &quot;int*&quot;]],
+	&quot;Rf_findFun&quot;: [SEXP, [SEXP, SEXP]],					// SEXP Rf_findFun(SEXP, SEXP)
+	&quot;Rf_findVar&quot;: [SEXP, [SEXP, SEXP]],					// SEXP Rf_findVar(SEXP, SEXP)
+	&quot;Rf_getAttrib&quot;: [SEXP, [SEXP, SEXP]],
+	&quot;Rf_initEmbeddedR&quot;: [&quot;int&quot;, [&quot;int&quot;, stringArr]],	// int Rf_initEmbeddedR(int argc, char *argv[]);
+	&quot;Rf_initialize_R&quot;: [&quot;int&quot;, [&quot;int&quot;, stringArr]],
+	&quot;Rf_install&quot;: [SEXP, [&quot;string&quot;]],
+	&quot;Rf_isArray&quot;: [&quot;int&quot;, [SEXP]],						// Rboolean Rf_isArray(SEXP);
+	&quot;Rf_isComplex&quot;: [&quot;int&quot;, [SEXP]],					// Rboolean Rf_isComplex(SEXP);
+	&quot;Rf_isExpression&quot;: [&quot;int&quot;, [SEXP]],					// Rboolean Rf_isExpression(SEXP);
+	&quot;Rf_isFactor&quot;: [&quot;int&quot;, [SEXP]],						// Rboolean Rf_isFactor(SEXP);
+	&quot;Rf_isFunction&quot;: [&quot;int&quot;, [SEXP]],					// Rboolean Rf_isFunction(SEXP);
+	&quot;Rf_isInteger&quot;: [&quot;int&quot;, [SEXP]],					// Rboolean Rf_isInteger(SEXP);
+	&quot;Rf_isList&quot;: [&quot;int&quot;, [SEXP]],						// Rboolean Rf_isList(SEXP);
+	&quot;Rf_isLogical&quot;: [&quot;int&quot;, [SEXP]],					// Rboolean Rf_isLogical(SEXP);
+	&quot;Rf_isMatrix&quot;: [&quot;int&quot;, [SEXP]],						// Rboolean Rf_isMatrix(SEXP);
+	&quot;Rf_isNull&quot;: [&quot;int&quot;, [SEXP]],						// Rboolean Rf_isNull(SEXP);
+	&quot;Rf_isNumber&quot;: [&quot;int&quot;, [SEXP]],						// Rboolean Rf_isNumber(SEXP);
+	&quot;Rf_isNumeric&quot;: [&quot;int&quot;, [SEXP]],					// Rboolean Rf_isNumeric(SEXP);
+	&quot;Rf_isPrimitive&quot;: [&quot;int&quot;, [SEXP]],					// Rboolean Rf_isPrimitive(SEXP);
+	&quot;Rf_isReal&quot;: [&quot;int&quot;, [SEXP]],						// Rboolean Rf_isReal(SEXP);
+	&quot;Rf_isS4&quot;: [&quot;int&quot;, [SEXP]],							// Rboolean Rf_isS4(SEXP);
+	&quot;Rf_isString&quot;: [&quot;int&quot;, [SEXP]],						// Rboolean Rf_isString(SEXP);
+	&quot;Rf_isValidString&quot;: [&quot;int&quot;, [SEXP]],				// Rboolean Rf_isValidString(SEXP);
+	&quot;Rf_isVector&quot;: [&quot;int&quot;, [SEXP]],						// Rboolean Rf_isVector(SEXP);
+	&quot;Rf_lang1&quot;: [SEXP, [SEXP]],
+	&quot;Rf_lang2&quot;: [SEXP, [SEXP, SEXP]],
+	&quot;Rf_lang3&quot;: [SEXP, [SEXP, SEXP, SEXP]],
+	&quot;Rf_lang4&quot;: [SEXP, [SEXP, SEXP, SEXP, SEXP]],
+	&quot;Rf_lang5&quot;: [SEXP, [SEXP, SEXP, SEXP, SEXP, SEXP]],
+	&quot;Rf_lang6&quot;: [SEXP, [SEXP, SEXP, SEXP, SEXP, SEXP, SEXP]],
+	&quot;Rf_lcons&quot;: [SEXP, [SEXP, SEXP]],
+	&quot;Rf_length&quot;: [&quot;int&quot;, [SEXP]],
+	&quot;Rf_lengthgets&quot;: [SEXP, [SEXP]],
+	&quot;Rf_mainloop&quot;: [&quot;void&quot;, []],						// void Rf_mainloop();
+	&quot;Rf_mkChar&quot;: [SEXP, [&quot;string&quot;]],
+	&quot;Rf_mkCharCE&quot;: [SEXP, [&quot;string&quot;, &quot;int&quot;]],
+	&quot;Rf_mkString&quot;: [SEXP, [&quot;string&quot;]],
+	&quot;Rf_protect&quot;: [SEXP, [SEXP]],
+	&quot;Rf_setAttrib&quot;: [SEXP, [SEXP, SEXP, SEXP]],
+	&quot;Rf_setVar&quot;: [SEXP, [SEXP, SEXP, SEXP]],
+	&quot;Rf_translateCharUTF8&quot;: [&quot;string&quot;, [SEXP]],			// const char* Rf_translateCharUTF8(SEXP x)
+	&quot;Rf_unprotect&quot;: [&quot;void&quot;, [&quot;int&quot;]],
+	&quot;SET_NAMED&quot;: [&quot;void&quot;, [SEXP, &quot;int&quot;]],
+	&quot;SET_STRING_ELT&quot;: [SEXP, [SEXP, &quot;int&quot;, SEXP]],		// memory.c
+	&quot;SET_TAG&quot;: [&quot;void&quot;, [SEXP, SEXP]],
+	&quot;STRING_ELT&quot;: [SEXP, [SEXP, &quot;int&quot;]],				// memory.c
+	&quot;STRING_PTR&quot;: [&quot;pointer&quot;, [SEXP]],					// memory.c
+	&quot;ALTVEC_DATAPTR&quot;: [&quot;pointer&quot;, [SEXP]],
+	&quot;STDVEC_DATAPTR&quot;: [&quot;pointer&quot;, [SEXP]],
+	&quot;DATAPTR&quot;: [&quot;pointer&quot;, [SEXP]],
+	&quot;TAG&quot;: [SEXP, [SEXP]],
+	&quot;TYPEOF&quot;: [&quot;int&quot;, [SEXP]],
+	&quot;VECTOR_ELT&quot;: [SEXP, [SEXP, &quot;int&quot;]],
+	&quot;ptr_R_Busy&quot;: [&quot;pointer&quot;, undefined],	// void R_Busy (int which)
+	&quot;ptr_R_ShowMessage&quot;: [&quot;pointer&quot;, undefined],	// void R_ShowMessage(const char *s)
+	&quot;ptr_R_ReadConsole&quot;: [&quot;pointer&quot;, undefined],	// int R_ReadConsole(const char *prompt, unsigned char *buf, int len, int addtohistory);
+	&quot;ptr_R_WriteConsole&quot;: [&quot;pointer&quot;, undefined],		// void R_WriteConsole(const char *buf, int len)
+	&quot;ptr_R_WriteConsoleEx&quot;: [&quot;pointer&quot;, undefined],	// void R_WriteConsoleEx(const char *buf, int len, int otype)
+	&quot;R_GlobalEnv&quot;: [SEXP, undefined], 
+	&quot;R_NaString&quot;: [SEXP, undefined], 
+	&quot;R_BlankString&quot;: [SEXP, undefined], 
+	//&quot;R_IsNA&quot;: [&quot;int&quot;, [ieee_double]],					// Rboolean R_IsNA(double);
+	//&quot;R_IsNaN&quot;: [&quot;int&quot;, [ieee_double]],				// Rboolean R_IsNaN(double);
+};
+
+var libR = undefined;
+
+/**
+ * Load libR from appropriate place.
+ *	@constructor
+ *	@param r_path			&quot;auto&quot; (default) || &quot;environment&quot; || &quot;system&quot; || &quot;buildin&quot; || path to R_HOME
+ *							&quot;auto&quot; - try &quot;environment&quot; -&gt; &quot;system&quot; -&gt; &quot;buildin&quot;
+ *							&quot;environment&quot; - use environmental R_HOME and LD_LIBRARY_PATH. libr-bridge handles nothing.
+ *							&quot;system&quot; - find system installed R
+ *							&quot;buildin&quot; - (NOT IMPLEMENTED) use redistributed binary attached with libr-bridge-bin
+ *	@returns libR object which enables access to dynamic link library.
+ */
+export default function createLibR(r_path = &quot;auto&quot;){
+
+	if(libR !== void 0){
+		return libR;
+	}
+
+	debug(`creating libR: ${r_path}`);
+
+	if(r_path == &quot;auto&quot;){
+		try{
+			libR = createLibR(&quot;environment&quot;);
+		}catch(e){
+			try{
+				libR = createLibR(&quot;system&quot;);
+			}catch(e){
+				try{
+					libR = createLibR(&quot;buildin&quot;);
+				}catch(e){
+					throw new Error(&quot;R not found. Please specify path manually.&quot;);
+				}
+			}
+		}
+	}else if(r_path == &quot;environment&quot;){
+		// use environmental R_HOME
+		if(process.env.R_HOME !== void 0){
+			libR = createLibR(process.env.R_HOME);
+		}
+	}else if(r_path == &quot;system&quot;){
+		let my_path;
+		try {
+			if (process.platform == &quot;win32&quot;) {
+				const windef = windowsRegistry.windef;
+				let k;
+				try {
+					k = new windowsRegistry.Key(windef.HKEY.HKEY_LOCAL_MACHINE, &quot;SOFTWARE\\R-core\\R&quot;, windef.KEY_ACCESS.KEY_READ);
+				}catch(e){
+					debug(&quot;No key in HLM, finding HCU.&quot;);
+					k = new windowsRegistry.Key(windef.HKEY.HKEY_CURRENT_USER, &quot;SOFTWARE\\R-core\\R&quot;, windef.KEY_ACCESS.KEY_READ);
+				}
+				my_path = k.getValue(&quot;InstallPath&quot;);
+				k.close();
+			}else{
+				const ret = child_process.execSync(&quot;Rscript -e \&quot;cat(Sys.getenv(&apos;R_HOME&apos;))\&quot;&quot;);
+				my_path = ret.toString();
+			}
+			libR = createLibR(my_path);
+		}catch(e){
+			debug(&quot;Loading system R failure: &quot; + e);
+			throw new Error(&quot;Couldn&apos;t load installed R (RScript not found or bad registry)&quot;);
+		}
+	}else if(r_path == &quot;buildin&quot;){
+		throw new Error(&quot;NOT IMPLEMENTED.&quot;);
+	}else if(r_path == &quot;&quot;){
+		throw new Error(&quot;Please specify installed R.&quot;);
+	}else{
+		// assuming path of installed R is specified.
+		const delim = path.delimiter;
+		if(r_path.slice(-1) == path.sep) r_path = r_path.slice(0, -1);	// remove trailing &quot;/&quot; (or &quot;\&quot;)
+		process.env.R_HOME = r_path;
+		if (process.platform == &quot;win32&quot;) {
+			process.env.PATH = `${r_path}\\bin\\x64${delim}` + process.env.PATH;
+			libR = ffi.Library(`${r_path}\\bin\\x64\\R.dll`, apiList);
+		}else{
+			process.env.LD_LIBRARY_PATH = `${r_path}${delim}${r_path}/lib${delim}` + process.env.LD_LIBRARY_PATH;
+			process.env.DYLD_LIBRARY_PATH = `${r_path}${delim}${r_path}/lib${delim}` + process.env.DYLD_LIBRARY_PATH;
+			libR = ffi.Library(&quot;libR&quot;, apiList);
+		}
+	}
+
+	if(libR == undefined){
+		throw new Error(&quot;Couldn&apos;t read libR&quot;);
+	}
+
+	return libR;
+
+}
+/*
+ * vim: filetype=javascript
+ */
+</code></pre>
+
+</div>
+
+<footer class="footer">
+  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(1.1.0)</span><img src="./image/esdoc-logo-mini-black.png"></a>
+</footer>
+
+<script src="script/search_index.js"></script>
+<script src="script/search.js"></script>
+<script src="script/pretty-print.js"></script>
+<script src="script/inherited-summary.js"></script>
+<script src="script/test-summary.js"></script>
+<script src="script/inner-link.js"></script>
+<script src="script/patch-for-local.js"></script>
+</body>
+</html>
