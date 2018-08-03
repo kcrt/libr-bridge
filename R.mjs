@@ -324,7 +324,7 @@ export default class R{
 	 * @param {function} onMessage	Function on showing message
 	 */
 	overrideShowMessage(onMessage){
-		let ShowMessage = ffi.Callback('void', [ref.types.CString], (msg) => onMessage(msg) );
+		const ShowMessage = ffi.Callback('void', [ref.types.CString], (msg) => onMessage(msg) );
 		ref.writePointer(libR.ptr_R_ShowMessage, 0, ShowMessage);
 	}
 	/**
@@ -332,22 +332,22 @@ export default class R{
 	 * @param {function} onReadConsole		Function on console read
 	 */
 	overrideReadConsole(onReadConsole){
-		let ReadConsole = ffi.Callback('int', [ref.types.CString, ref.refType(ref.types.char), 'int', 'int'],
-										(prompt, buf, len, addtohistory) => {
-											debug("Read console start: " + prompt);
-											const ret = onReadConsole(prompt) + "\n";
-											const rebuf = ref.reinterpret(buf, len, 0);
-											if(ret.length + 1 > len){
-												/* too large! */
-												debug("Too long input for ReadConsole");
-												ref.writeCString(rebuf, 0, "ERROR");
-											}else{
-												debug("Writedown to buffer.");
-												ref.writeCString(rebuf, 0, ret);
-											}
-											debug("Read console fin");
-											return 1;
-										});
+		const ReadConsole = ffi.Callback('int', [ref.types.CString, ref.refType(ref.types.char), 'int', 'int'],
+											(prompt, buf, len, addtohistory) => {
+												debug("Read console start: " + prompt);
+												const ret = onReadConsole(prompt) + "\n";
+												const rebuf = ref.reinterpret(buf, len, 0);
+												if(ret.length + 1 > len){
+													/* too large! */
+													debug("Too long input for ReadConsole");
+													ref.writeCString(rebuf, 0, "ERROR");
+												}else{
+													debug("Writedown to buffer.");
+													ref.writeCString(rebuf, 0, ret);
+												}
+												debug("Read console fin");
+												return 1;
+											});
 		ref.writePointer(libR.ptr_R_ReadConsole, 0, ReadConsole);
 	}
 	/**
@@ -355,11 +355,19 @@ export default class R{
 	 * @param {function} onWriteConsole		Function on console write
 	 */
 	overrideWriteConsole(onWriteConsole){
-		let WriteConsole = ffi.Callback('void', [ref.types.CString, 'int'], (output, len) => onWriteConsole(output) );
-		let WriteConsoleEx = ffi.Callback('void', [ref.types.CString, 'int', 'int'],
+		const WriteConsole = ffi.Callback('void', [ref.types.CString, 'int'], (output, len) => onWriteConsole(output) );
+		const WriteConsoleEx = ffi.Callback('void', [ref.types.CString, 'int', 'int'],
 										  (output, len, otype) => onWriteConsole(output, otype) );
 		ref.writePointer(libR.ptr_R_WriteConsole, 0, WriteConsole);
 		ref.writePointer(libR.ptr_R_WriteConsoleEx, 0, WriteConsoleEx);
+	}
+	/**
+	 * Set callback on R's computation.
+	 * @param {function} onBusy				Function called on busy/job finish
+	 */
+	overrideBusy(onBusy){
+		const Busy = ffi.Callback('void', ['int'], (which) => onBusy(which));
+		ref.writePointer(libR.ptr_R_Busy, 0, Busy);
 	}
 	/**
 	 * Finish using R.

@@ -24,6 +24,12 @@ describe('Console', () => {
 	});
 });
 
+describe('Busy', () => {
+	it('on Busy', () => {
+		r.overrideBusy((which) => console.log("[Busy status]: " + which));
+	});
+});
+
 /*
  * vim: filetype=javascript
  */

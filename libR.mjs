@@ -156,10 +156,11 @@ const apiList = {
 	"TAG": [SEXP, [SEXP]],
 	"TYPEOF": ["int", [SEXP]],
 	"VECTOR_ELT": [SEXP, [SEXP, "int"]],
-	"ptr_R_ShowMessage": [funcShowMessage, undefined],	// void R_ShowMessage(const char *s)
-	"ptr_R_ReadConsole": [funcReadConsole, undefined],	// int R_ReadConsole(const char *prompt, unsigned char *buf, int len, int addtohistory);
-	"ptr_R_WriteConsole": [funcWriteConsole, undefined],		// void R_WriteConsole(const char *buf, int len)
-	"ptr_R_WriteConsoleEx": [funcWriteConsoleEx, undefined],	// void R_WriteConsoleEx(const char *buf, int len, int otype)
+	"ptr_R_Busy": ['pointer', undefined],	// void R_Busy (int which)
+	"ptr_R_ShowMessage": ['pointer', undefined],	// void R_ShowMessage(const char *s)
+	"ptr_R_ReadConsole": ['pointer', undefined],	// int R_ReadConsole(const char *prompt, unsigned char *buf, int len, int addtohistory);
+	"ptr_R_WriteConsole": ['pointer', undefined],		// void R_WriteConsole(const char *buf, int len)
+	"ptr_R_WriteConsoleEx": ['pointer', undefined],	// void R_WriteConsoleEx(const char *buf, int len, int otype)
 	"R_GlobalEnv": [SEXP, undefined], 
 	"R_NaString": [SEXP, undefined], 
 	"R_BlankString": [SEXP, undefined], 
