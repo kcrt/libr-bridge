@@ -6,6 +6,7 @@
  */
 
 import ref from 'ref';
+import ffi from 'ffi';
 import createLibR, {ParseStatus} from './libR';
 import SEXPWrap from './SEXPWrap'
 import debug_ from 'debug'
@@ -317,7 +318,49 @@ export default class R{
 	setVarNames(varname, value){
 		let varsexp = new SEXPWrap(libR.Rf_findVar(libR.Rf_install(varname), R.GlobalEnv));
 		varsexp.names = value;
-	}	
+	}
+	/**
+	 * Use your own console input/output instead of R's default one.
+	 * @param {function} onMessage	Function on showing message
+	 */
+	overrideShowMessage(onMessage){
+		let ShowMessage = ffi.Callback('void', [ref.types.CString], (msg) => onMessage(msg) );
+		ref.writePointer(libR.ptr_R_ShowMessage, 0, ShowMessage);
+	}
+	/**
+	 * Use your own console input/output instead of R's default one.
+	 * @param {function} onReadConsole		Function on console read
+	 */
+	overrideReadConsole(onReadConsole){
+		let ReadConsole = ffi.Callback('int', [ref.types.CString, ref.refType(ref.types.char), 'int', 'int'],
+										(prompt, buf, len, addtohistory) => {
+											debug("Read console start: " + prompt);
+											const ret = onReadConsole(prompt) + "\n";
+											const rebuf = ref.reinterpret(buf, len, 0);
+											if(ret.length + 1 > len){
+												/* too large! */
+												debug("Too long input for ReadConsole");
+												ref.writeCString(rebuf, 0, "ERROR");
+											}else{
+												debug("Writedown to buffer.");
+												ref.writeCString(rebuf, 0, ret);
+											}
+											debug("Read console fin");
+											return 1;
+										});
+		ref.writePointer(libR.ptr_R_ReadConsole, 0, ReadConsole);
+	}
+	/**
+	 * Use your own console input/output instead of R's default one.
+	 * @param {function} onWriteConsole		Function on console write
+	 */
+	overrideWriteConsole(onWriteConsole){
+		let WriteConsole = ffi.Callback('void', [ref.types.CString, 'int'], (output, len) => onWriteConsole(output) );
+		let WriteConsoleEx = ffi.Callback('void', [ref.types.CString, 'int', 'int'],
+										  (output, len, otype) => onWriteConsole(output, otype) );
+		ref.writePointer(libR.ptr_R_WriteConsole, 0, WriteConsole);
+		ref.writePointer(libR.ptr_R_WriteConsoleEx, 0, WriteConsoleEx);
+	}
 	/**
 	 * Finish using R.
 	 */

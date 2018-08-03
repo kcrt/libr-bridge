@@ -8,7 +8,7 @@ assert_ext(assert);
 describe('Initialize', () => {
 	it('Initialize', () => {
 		r = new R();
-	})
+	});
 });
 
 describe('Unicode', () => {

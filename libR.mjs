@@ -8,19 +8,23 @@ import ref from 'ref';
 import refArray from 'ref-array';
 import refStruct from 'ref-struct';
 
-import { default as windowsRegistry } from './safe-windows-registry.js'
+import { default as windowsRegistry } from './safe-windows-registry.js';
 
-import debug_ from 'debug'
-const debug = debug_("libr-bridge:libR")
+import debug_ from 'debug';
+const debug = debug_("libr-bridge:libR");
 
 /* Type */
-const stringArr = refArray(ref.types.CString)			// char * [] or string[]
+const stringArr = refArray(ref.types.CString);			// char * [] or string[]
 export const SEXP = ref.refType(ref.types.void);
 export const SEXPREC_ALIGN_SIZE = ref.types.double.size;
 export const RComplex = refStruct({
   r: ref.types.double,
   i: ref.types.double
-})
+});
+const funcShowMessage = ffi.Function('void', [ref.types.CString]);
+const funcReadConsole = ffi.Function('int', [ref.types.CString, 'pointer', 'int', 'int']);
+const funcWriteConsole = ffi.Function('void', [ref.types.CString, 'int']);
+const funcWriteConsoleEx = ffi.Function('void', [ref.types.CString, 'int', 'int']);
 
 /** R SEXP type enums */
 export const SEXPTYPE = {
@@ -152,13 +156,17 @@ const apiList = {
 	"TAG": [SEXP, [SEXP]],
 	"TYPEOF": ["int", [SEXP]],
 	"VECTOR_ELT": [SEXP, [SEXP, "int"]],
-	// "ptr_R_WriteConsole": ["void", []],
+	"ptr_R_ShowMessage": [funcShowMessage, undefined],	// void R_ShowMessage(const char *s)
+	"ptr_R_ReadConsole": [funcReadConsole, undefined],	// int R_ReadConsole(const char *prompt, unsigned char *buf, int len, int addtohistory);
+	"ptr_R_WriteConsole": [funcWriteConsole, undefined],		// void R_WriteConsole(const char *buf, int len)
+	"ptr_R_WriteConsoleEx": [funcWriteConsoleEx, undefined],	// void R_WriteConsoleEx(const char *buf, int len, int otype)
 	"R_GlobalEnv": [SEXP, undefined], 
 	"R_NaString": [SEXP, undefined], 
 	"R_BlankString": [SEXP, undefined], 
 	//"R_IsNA": ["int", [ieee_double]],					// Rboolean R_IsNA(double);
 	//"R_IsNaN": ["int", [ieee_double]],				// Rboolean R_IsNaN(double);
 };
+var funcPtr = ffi.Function('void', ['int']);
 
 var libR = undefined;
 
