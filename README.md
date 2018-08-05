@@ -79,9 +79,9 @@ Depending package
 My TODO list
 ----------------------------------------
 
- - [ ] Factor
+ - [x] Factor
  - [ ] Dataframe
- - [ ] Console handling
+ - [x] Console handling
  - [ ] S3 class
  - [ ] S4 class
  - [ ] Graphic handling

@@ -27,7 +27,7 @@ export default class R{
 	constructor(){
 		if(!R.isInitialized()){
 			debug("Initializing R...");
-			const argv = ["REmbeddedOnBridge", "--vanilla", "--gui=none", "--silent"].map((e) => ref.allocCString(e));
+			const argv = ["REmbeddedOnBridge", "--vanilla", "--gui=none", "--silent"];
 			libR = createLibR();
 			if(libR === void 0){
 				debug("Failed to initialize");
@@ -43,7 +43,7 @@ export default class R{
 				throw new Error("Can not acquire NilValue");
 			}
 			R.R_UnboundValue = libR.Rf_findVar(libR.Rf_install("__non_existing_value_kcrt__"), R.GlobalEnv);
-			R.R_NamesSymbol = libR.Rf_install(ref.allocCString("names"));
+			R.R_NamesSymbol = libR.Rf_install("names");
 			R.R_NaInt = this.eval("as.integer(NA)");				// usually INT_MIN (-2147483648)
 			//R.R_NaString = new SEXPWrap(libR.STRING_ELT(this.eval_raw("as.character(NA)").sexp, 0));
 			R.R_NaString = new SEXPWrap(libR.R_NaString.deref());
@@ -117,7 +117,7 @@ export default class R{
 	 */
 	__func_sexp(name){
 		if(!(name in func_cached)){
-			func_cached[name] = new SEXPWrap(libR.Rf_findFun(libR.Rf_install(ref.allocCString(name)), R.GlobalEnv));
+			func_cached[name] = new SEXPWrap(libR.Rf_findFun(libR.Rf_install(name), R.GlobalEnv));
 			func_cached[name].preserve();			// Unfortunately, we have no destructor in JavaScript....
 		}
 		return func_cached[name];

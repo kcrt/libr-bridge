@@ -33,8 +33,8 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/libr-bridge/RObject.mjs~RFactor.html">RFactor</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/libr-bridge/SEXPWrap.mjs~SEXPWrap.html">SEXPWrap</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-createLibR">createLibR</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-ComplexInR">ComplexInR</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-ParseStatus">ParseStatus</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-RComplex">RComplex</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-SEXP">SEXP</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-SEXPREC_ALIGN_SIZE">SEXPREC_ALIGN_SIZE</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-SEXPTYPE">SEXPTYPE</a></span></span></li>
@@ -49,7 +49,8 @@
 import ref from &quot;ref&quot;;
 import Complex from &quot;Complex&quot;;
 import R from &quot;./R&quot;;
-import {SEXPTYPE, RComplex, cetype_t} from &quot;./libR&quot;;
+import {SEXPTYPE, ComplexInR, cetype_t} from &quot;./libR&quot;;
+import { RFactor } from &quot;./RObject&quot;;
 import debug_ from &quot;debug&quot;;
 const debug = debug_(&quot;libr-bridge:class SEXPWrap&quot;);
 
@@ -77,6 +78,22 @@ export default class SEXPWrap {
 			this.__initializeWithValue([value]);
 		}else if(value.length == 0){
 			this.sexp = R.R_NilValue;
+		}else if(value instanceof RFactor){
+			// Factor is actually an 1-origin integers with attributes.
+			this.sexp = R.libR.Rf_allocVector(SEXPTYPE.INTSXP, value.length);
+			this.protect();
+			let p = ref.reinterpret(this.dataptr(), ref.types.int.size * value.length);
+			value.map((e, i) =&gt; {
+				ref.set(
+					p, ref.types.int.size * i,
+					e === void 0 ? R.R_NaInt : e, ref.types.int
+				);
+			});
+
+			// add atribute
+			this.setAttribute(&quot;class&quot;, value.ordered ? [&quot;factor&quot;, &quot;ordered&quot;] : &quot;factor&quot;);
+			this.setAttribute(&quot;levels&quot;, value.levels);
+			this.unprotect();
 		}else if(typeof(value[0]) == &quot;number&quot; || typeof(value[0]) == &quot;undefined&quot;){
 			// assume this is array of numbers (e.g. [1, 2, 3, ...])
 			this.sexp = R.libR.Rf_allocVector(SEXPTYPE.REALSXP, value.length);
@@ -123,11 +140,11 @@ export default class SEXPWrap {
 		}else if(value[0] instanceof Complex){
 			this.sexp = R.libR.Rf_allocVector(SEXPTYPE.CPLXSXP, value.length);
 			this.protect();
-			let p = ref.reinterpret(this.dataptr(), RComplex.size * value.length);
+			let p = ref.reinterpret(this.dataptr(), ComplexInR.size * value.length);
 			value.map(
-				(e) =&gt; new RComplex({r: e.real, i: e.im})).map(
+				(e) =&gt; new ComplexInR({r: e.real, i: e.im})).map(
 				(e, i) =&gt; {
-					ref.set(p, RComplex.size * i, e, RComplex);
+					ref.set(p, ComplexInR.size * i, e, ComplexInR);
 				});
 			this.unprotect();
 		}else{
@@ -141,7 +158,7 @@ export default class SEXPWrap {
 	unprotect(depth=1){ R.libR.Rf_unprotect(depth); }
 	/** Preserve this SEXP. Please use protect() if you can. */
 	preserve(){ R.libR.R_PreserveObject(this.sexp); }
-	/** Release preserved SEXP. protect()ed SEXP should be releaseed with unprotect() */
+	/** Release preserved SEXP. protect()ed SEXP should be released with unprotect() */
 	release(){ R.libR.R_ReleaseObject(this.sexp); }
 	/** Return true if this SEXP is List. */
 	isList(){ return R.libR.Rf_isList(this.sexp); }
@@ -157,6 +174,7 @@ export default class SEXPWrap {
 	isLogical(){ return R.libR.Rf_isLogical(this.sexp); }
 	isReal(){ return R.libR.Rf_isReal(this.sexp); }
 	isValidString(){ return R.libR.Rf_isValidString(this.sexp); }
+	isFactor(){ return R.libR.Rf_isFactor(this.sexp); }
 	dataptr(){ return R.libR.DATAPTR(this.sexp); }
 	asChar(){
 		if(this.sexp.address() == R.R_NaString.sexp.address()){ return void 0;}
@@ -179,6 +197,21 @@ export default class SEXPWrap {
 		if (newtag === void 0) return;
 		R.libR.Rf_setAttrib(this.sexp, R.R_NamesSymbol, (new SEXPWrap(newtag)).sexp);
 	}
+	/** set attr of this variable. */
+	setAttribute(attrname, newattr){
+		const attrsymbol = R.libR.Rf_install(attrname);
+		R.libR.Rf_setAttrib(this.sexp, attrsymbol, (new SEXPWrap(newattr)).sexp);
+	}
+	/** get attr of this variable. */
+	getAttribute(attrname){
+		const attrvalue = new SEXPWrap(this._getAttribute_raw(attrname));
+		return attrvalue.getValue();
+	}
+	/** get attr SEXP of this variable. */
+	_getAttribute_raw(attrname){
+		const attrsymbol = R.libR.Rf_install(attrname);
+		return R.libR.Rf_getAttrib(this.sexp, attrsymbol);
+	}
 	getValue(){
 		if(this.sexp.address() == 0 || this.isNull()){
 			return null;
@@ -200,12 +233,18 @@ export default class SEXPWrap {
 		}else if(this.isVector()){		// be careful; is.vector(1) is even True
 			let itemtype;
 			let values = [];
-			if(this.isInteger() || this.isLogical()){
+			if(this.isInteger() || this.isLogical() || this.isFactor()){
 				itemtype = ref.types.int;
 				const f = this.isLogical() ? (e) =&gt; !!e : (e) =&gt; e;
 				const p = ref.reinterpret(this.dataptr(), itemtype.size * len);
 				values = R.range(0, len).map( (i) =&gt; ref.get(p, itemtype.size * i, itemtype) )
 					.map( (e) =&gt; e == R.R_NaInt ? undefined : f(e));
+				if(this.isFactor()){
+					const levels = this.getAttribute(&quot;levels&quot;);
+					const class_ = this.getAttribute(&quot;class&quot;);
+					const isOrdered = Array.isArray(class_) &amp;&amp; class_.indexOf(&quot;ordered&quot;) !== -1;
+					values = new RFactor(values.map((v) =&gt; levels[v - 1]), levels, isOrdered);
+				}
 			}else if(this.isReal()){
 				itemtype = ref.types.double;
 				const p = ref.reinterpret(this.dataptr(), itemtype.size * len);
@@ -220,7 +259,7 @@ export default class SEXPWrap {
 					}
 				});
 			}else if(this.isComplex()){
-				itemtype = RComplex;
+				itemtype = ComplexInR;
 				const p = ref.reinterpret(this.dataptr(), itemtype.size * len);
 				values = R.range(0, len).map( (i) =&gt; ref.get(p, itemtype.size * i, itemtype))
 					.map( (e) =&gt; new Complex(e.r, e.i));

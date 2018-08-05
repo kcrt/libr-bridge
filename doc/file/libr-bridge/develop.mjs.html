@@ -33,8 +33,8 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/libr-bridge/RObject.mjs~RFactor.html">RFactor</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/libr-bridge/SEXPWrap.mjs~SEXPWrap.html">SEXPWrap</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-createLibR">createLibR</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-ComplexInR">ComplexInR</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-ParseStatus">ParseStatus</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-RComplex">RComplex</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-SEXP">SEXP</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-SEXPREC_ALIGN_SIZE">SEXPREC_ALIGN_SIZE</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-SEXPTYPE">SEXPTYPE</a></span></span></li>
@@ -47,6 +47,7 @@
 <div class="content" data-ice="content"><h1 data-ice="title">libr-bridge/develop.mjs</h1>
 <pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">&quot;use strict&quot;;
 import R from &quot;./R&quot;;
+import { RFactor } from &quot;./RObject&quot;;
 
 /* Execute this script with:
  *   node -r @std/esm example.mjs
@@ -58,14 +59,16 @@ import R from &quot;./R&quot;;
 
 let r = new R();
 
+const fac = new RFactor([&quot;apple&quot;, &quot;banana&quot;, &quot;apple&quot;, &quot;orange&quot;], void 0, true);
+r.setVar(&quot;facvar&quot;, fac);
+r.evalWithTry(&quot;print(attr(facvar, \&quot;class\&quot;))&quot;);
+r.evalWithTry(&quot;print(attr(facvar, \&quot;levels\&quot;))&quot;);
+r.evalWithTry(&quot;print(typeof(attr(facvar, \&quot;levels\&quot;)))&quot;);
+r.evalWithTry(&quot;print(typeof(facvar))&quot;);
+r.evalWithTry(&quot;print(facvar)&quot;);
 
-r.overrideShowMessage( (msg) =&gt; console.log(&quot;[Message from R] &quot; + msg));
-r.overrideReadConsole( (_prompt) =&gt; &quot;1\n&quot; );
-r.overrideWriteConsole( (msg) =&gt; console.log(&quot;[R] &quot; + msg));
-r.print(&quot;Print from R&quot;);
-const menu = r.func(&quot;menu&quot;);
-menu([&quot;Hello&quot;, &quot;World&quot;]);
-//assert.equal(ans, &quot;a&quot;)
+const a = r.getVar(&quot;facvar&quot;);
+console.log(a);
 
 /*
  * vim: filetype=javascript

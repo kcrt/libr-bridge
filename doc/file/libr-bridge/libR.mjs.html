@@ -33,8 +33,8 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/libr-bridge/RObject.mjs~RFactor.html">RFactor</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/libr-bridge/SEXPWrap.mjs~SEXPWrap.html">SEXPWrap</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-createLibR">createLibR</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-ComplexInR">ComplexInR</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-ParseStatus">ParseStatus</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-RComplex">RComplex</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-SEXP">SEXP</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-SEXPREC_ALIGN_SIZE">SEXPREC_ALIGN_SIZE</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-SEXPTYPE">SEXPTYPE</a></span></span></li>
@@ -64,7 +64,7 @@ const debug = debug_(&quot;libr-bridge:libR&quot;);
 const stringArr = refArray(ref.types.CString);			// char * [] or string[]
 export const SEXP = ref.refType(ref.types.void);
 export const SEXPREC_ALIGN_SIZE = ref.types.double.size;
-export const RComplex = refStruct({
+export const ComplexInR = refStruct({
 	r: ref.types.double,
 	i: ref.types.double
 });

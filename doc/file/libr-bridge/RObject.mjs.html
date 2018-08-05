@@ -33,8 +33,8 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/libr-bridge/RObject.mjs~RFactor.html">RFactor</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/libr-bridge/SEXPWrap.mjs~SEXPWrap.html">SEXPWrap</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-createLibR">createLibR</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-ComplexInR">ComplexInR</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-ParseStatus">ParseStatus</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-RComplex">RComplex</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-SEXP">SEXP</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-SEXPREC_ALIGN_SIZE">SEXPREC_ALIGN_SIZE</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-SEXPTYPE">SEXPTYPE</a></span></span></li>
@@ -53,6 +53,9 @@
 // import {REALSXP} from &quot;./libR&quot;;
 // import SEXPWrap from &quot;./SEXPWrap&quot;;
 
+// import debug_ from &quot;debug&quot;;
+// const debug = debug_(&quot;libr-bridge:RObject&quot;);
+
 /**
  * JavaScript class for R Factor type.
  * A factor has numerical(integer) array with keys.
@@ -61,14 +64,36 @@ export class RFactor extends Array{
 	/**
 	 * Create a factor.
 	 *	@param data {string[]}		String array indicate category, like [&quot;male&quot;, &quot;female&quot;, &quot;male&quot;, ...]
-	 *	@param labels {Object}		Category item with index number, like {&quot;male&quot;: 1, &quot;female&quot;: 2} or [&quot;male&quot;, &quot;female&quot;]
+	 *	@param levels {Object}		Category item like [&quot;male&quot;, &quot;female&quot;]
 	 *	@param ordered {boolean}	If true, this factor is ordered factor (nominal)
 	 */
-	constructor(data, labels=void 0, ordered=false){
-		var s = new Set();
-		data.forEach((item) =&gt; s.add(item));
+	constructor(data, levels=undefined, ordered=false){
 
-		super(labels, ordered);
+		var mylevels;
+
+		if(!Array.isArray(data)){
+			super(data);
+		}else{
+			if(levels === undefined){
+				var s = new Set();
+				data.forEach((item) =&gt; s.add(item));
+				mylevels = Array.from(s);
+			}else if(Array.isArray(levels)){
+				mylevels = levels;
+			}else{
+				throw new Error(&quot;Unknown label of factor.&quot;);
+			}
+			mylevels = mylevels.filter((v) =&gt; v !== undefined);
+
+			// RFactor is 1-origin!
+			const values = data.map((v) =&gt; mylevels.indexOf(v) + 1)
+				.map((v) =&gt; v === 0 ? undefined : v); 
+
+			super(...values);
+		}
+		this.levels = mylevels;
+		this.ordered = ordered;
+
 	}
 }
 

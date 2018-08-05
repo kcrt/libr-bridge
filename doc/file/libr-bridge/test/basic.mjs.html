@@ -33,8 +33,8 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/libr-bridge/RObject.mjs~RFactor.html">RFactor</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/libr-bridge/SEXPWrap.mjs~SEXPWrap.html">SEXPWrap</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-createLibR">createLibR</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-ComplexInR">ComplexInR</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-ParseStatus">ParseStatus</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-RComplex">RComplex</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-SEXP">SEXP</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-SEXPREC_ALIGN_SIZE">SEXPREC_ALIGN_SIZE</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-SEXPTYPE">SEXPTYPE</a></span></span></li>
@@ -49,6 +49,7 @@
 import assert from &quot;assert&quot;;
 import assert_ext from &quot;./assert_ext&quot;;
 import Complex from &quot;Complex&quot;;
+import { RFactor } from &quot;../RObject&quot;;
 
 var r;
 assert_ext(assert);
@@ -146,6 +147,24 @@ describe(&quot;Array&quot;, () =&gt; {
 		assert.arrayEqual(strArr, r.eval(&quot;c(\&quot;abc\&quot;, \&quot;def\&quot;, \&quot;ghi\&quot;, \&quot;jkl\&quot;, \&quot;mno\&quot;)&quot;));
 		r.setVar(&quot;strArr&quot;, strArr);
 		assert.arrayEqual(strArr, r.getVar(&quot;strArr&quot;));
+	});
+});
+
+
+describe(&quot;Factor&quot;, () =&gt; {
+	const v = [&quot;apple&quot;, &quot;banana&quot;, &quot;apple&quot;, undefined, &quot;orange&quot;];
+	const idx = [1, 2, 1, undefined, 3];
+	it(&quot;Create factor&quot;, () =&gt; {
+		const fac = new RFactor(v);
+		assert.arrayEqual(fac, idx);
+		r.setVar(&quot;facvar&quot;, fac);
+		assert.arrayEqual(r.getVar(&quot;facvar&quot;), idx);
+	});
+	it(&quot;Create ordered factor&quot;, () =&gt; {
+		const fac = new RFactor(v, void 0, true);
+		assert.arrayEqual(fac, idx);
+		r.setVar(&quot;facvar&quot;, fac);
+		assert.arrayEqual(r.getVar(&quot;facvar&quot;), idx);
 	});
 });
 

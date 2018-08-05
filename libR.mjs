@@ -17,7 +17,7 @@ const debug = debug_("libr-bridge:libR");
 const stringArr = refArray(ref.types.CString);			// char * [] or string[]
 export const SEXP = ref.refType(ref.types.void);
 export const SEXPREC_ALIGN_SIZE = ref.types.double.size;
-export const RComplex = refStruct({
+export const ComplexInR = refStruct({
 	r: ref.types.double,
 	i: ref.types.double
 });

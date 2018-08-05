@@ -7,6 +7,7 @@
         "doc": "rm -R doc; ./node_modules/.bin/esdoc; cp ./logo.png doc",
         "test": "./node_modules/.bin/mocha-esm test/*.mjs",
         "debug-test": "DEBUG=libr-bridge:* ./node_modules/.bin/mocha-esm  test/*.mjs",
+        "run-develop": "DEBUG=libr-bridge:* node -r esm develop.mjs",
         "debug-develop": "node --inspect-brk -r esm develop.mjs",
 		"lint": "./node_modules/.bin/eslint --ext .js,.mjs ."
     },

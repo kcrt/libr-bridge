@@ -2,6 +2,7 @@ import R from "../R";
 import assert from "assert";
 import assert_ext from "./assert_ext";
 import Complex from "Complex";
+import { RFactor } from "../RObject";
 
 var r;
 assert_ext(assert);
@@ -99,6 +100,24 @@ describe("Array", () => {
 		assert.arrayEqual(strArr, r.eval("c(\"abc\", \"def\", \"ghi\", \"jkl\", \"mno\")"));
 		r.setVar("strArr", strArr);
 		assert.arrayEqual(strArr, r.getVar("strArr"));
+	});
+});
+
+
+describe("Factor", () => {
+	const v = ["apple", "banana", "apple", undefined, "orange"];
+	const idx = [1, 2, 1, undefined, 3];
+	it("Create factor", () => {
+		const fac = new RFactor(v);
+		assert.arrayEqual(fac, idx);
+		r.setVar("facvar", fac);
+		assert.arrayEqual(r.getVar("facvar"), idx);
+	});
+	it("Create ordered factor", () => {
+		const fac = new RFactor(v, void 0, true);
+		assert.arrayEqual(fac, idx);
+		r.setVar("facvar", fac);
+		assert.arrayEqual(r.getVar("facvar"), idx);
 	});
 });
 

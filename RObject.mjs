@@ -6,6 +6,9 @@
 // import {REALSXP} from "./libR";
 // import SEXPWrap from "./SEXPWrap";
 
+// import debug_ from "debug";
+// const debug = debug_("libr-bridge:RObject");
+
 /**
  * JavaScript class for R Factor type.
  * A factor has numerical(integer) array with keys.
@@ -14,14 +17,36 @@ export class RFactor extends Array{
 	/**
 	 * Create a factor.
 	 *	@param data {string[]}		String array indicate category, like ["male", "female", "male", ...]
-	 *	@param labels {Object}		Category item with index number, like {"male": 1, "female": 2} or ["male", "female"]
+	 *	@param levels {Object}		Category item like ["male", "female"]
 	 *	@param ordered {boolean}	If true, this factor is ordered factor (nominal)
 	 */
-	constructor(data, labels=void 0, ordered=false){
-		var s = new Set();
-		data.forEach((item) => s.add(item));
+	constructor(data, levels=undefined, ordered=false){
 
-		super(labels, ordered);
+		var mylevels;
+
+		if(!Array.isArray(data)){
+			super(data);
+		}else{
+			if(levels === undefined){
+				var s = new Set();
+				data.forEach((item) => s.add(item));
+				mylevels = Array.from(s);
+			}else if(Array.isArray(levels)){
+				mylevels = levels;
+			}else{
+				throw new Error("Unknown label of factor.");
+			}
+			mylevels = mylevels.filter((v) => v !== undefined);
+
+			// RFactor is 1-origin!
+			const values = data.map((v) => mylevels.indexOf(v) + 1)
+				.map((v) => v === 0 ? undefined : v); 
+
+			super(...values);
+		}
+		this.levels = mylevels;
+		this.ordered = ordered;
+
 	}
 }
 

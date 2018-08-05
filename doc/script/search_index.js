@@ -1,5 +1,11 @@
 window.esdocSearchIndex = [
   [
+    "libr-bridge/libr~complexinr",
+    "variable/index.html#static-variable-ComplexInR",
+    "<span>ComplexInR</span> <span class=\"search-result-import-path\">libr-bridge/libR</span>",
+    "variable"
+  ],
+  [
     "libr-bridge/libr~parsestatus",
     "variable/index.html#static-variable-ParseStatus",
     "<span>ParseStatus</span> <span class=\"search-result-import-path\">libr-bridge/libR</span>",
@@ -10,12 +16,6 @@ window.esdocSearchIndex = [
     "class/libr-bridge/R.mjs~R.html",
     "<span>R</span> <span class=\"search-result-import-path\">libr-bridge/R</span>",
     "class"
-  ],
-  [
-    "libr-bridge/libr~rcomplex",
-    "variable/index.html#static-variable-RComplex",
-    "<span>RComplex</span> <span class=\"search-result-import-path\">libr-bridge/libR</span>",
-    "variable"
   ],
   [
     "libr-bridge/robject~rfactor",
@@ -522,6 +522,18 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
+    "libr-bridge/robject.mjs~rfactor#levels",
+    "class/libr-bridge/RObject.mjs~RFactor.html#instance-member-levels",
+    "libr-bridge/RObject.mjs~RFactor#levels",
+    "member"
+  ],
+  [
+    "libr-bridge/robject.mjs~rfactor#ordered",
+    "class/libr-bridge/RObject.mjs~RFactor.html#instance-member-ordered",
+    "libr-bridge/RObject.mjs~RFactor#ordered",
+    "member"
+  ],
+  [
     "libr-bridge/sexpwrap.mjs",
     "file/libr-bridge/SEXPWrap.mjs.html",
     "libr-bridge/SEXPWrap.mjs",
@@ -531,6 +543,12 @@ window.esdocSearchIndex = [
     "libr-bridge/sexpwrap.mjs~sexpwrap#__initializewithvalue",
     "class/libr-bridge/SEXPWrap.mjs~SEXPWrap.html#instance-method-__initializeWithValue",
     "libr-bridge/SEXPWrap.mjs~SEXPWrap#__initializeWithValue",
+    "method"
+  ],
+  [
+    "libr-bridge/sexpwrap.mjs~sexpwrap#_getattribute_raw",
+    "class/libr-bridge/SEXPWrap.mjs~SEXPWrap.html#instance-method-_getAttribute_raw",
+    "libr-bridge/SEXPWrap.mjs~SEXPWrap#_getAttribute_raw",
     "method"
   ],
   [
@@ -558,6 +576,12 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
+    "libr-bridge/sexpwrap.mjs~sexpwrap#getattribute",
+    "class/libr-bridge/SEXPWrap.mjs~SEXPWrap.html#instance-method-getAttribute",
+    "libr-bridge/SEXPWrap.mjs~SEXPWrap#getAttribute",
+    "method"
+  ],
+  [
     "libr-bridge/sexpwrap.mjs~sexpwrap#getvalue",
     "class/libr-bridge/SEXPWrap.mjs~SEXPWrap.html#instance-method-getValue",
     "libr-bridge/SEXPWrap.mjs~SEXPWrap#getValue",
@@ -573,6 +597,12 @@ window.esdocSearchIndex = [
     "libr-bridge/sexpwrap.mjs~sexpwrap#isexpression",
     "class/libr-bridge/SEXPWrap.mjs~SEXPWrap.html#instance-method-isExpression",
     "libr-bridge/SEXPWrap.mjs~SEXPWrap#isExpression",
+    "method"
+  ],
+  [
+    "libr-bridge/sexpwrap.mjs~sexpwrap#isfactor",
+    "class/libr-bridge/SEXPWrap.mjs~SEXPWrap.html#instance-method-isFactor",
+    "libr-bridge/SEXPWrap.mjs~SEXPWrap#isFactor",
     "method"
   ],
   [
@@ -625,13 +655,13 @@ window.esdocSearchIndex = [
   ],
   [
     "libr-bridge/sexpwrap.mjs~sexpwrap#names",
-    "class/libr-bridge/SEXPWrap.mjs~SEXPWrap.html#instance-get-names",
+    "class/libr-bridge/SEXPWrap.mjs~SEXPWrap.html#instance-set-names",
     "libr-bridge/SEXPWrap.mjs~SEXPWrap#names",
     "member"
   ],
   [
     "libr-bridge/sexpwrap.mjs~sexpwrap#names",
-    "class/libr-bridge/SEXPWrap.mjs~SEXPWrap.html#instance-set-names",
+    "class/libr-bridge/SEXPWrap.mjs~SEXPWrap.html#instance-get-names",
     "libr-bridge/SEXPWrap.mjs~SEXPWrap#names",
     "member"
   ],
@@ -651,6 +681,12 @@ window.esdocSearchIndex = [
     "libr-bridge/sexpwrap.mjs~sexpwrap#release",
     "class/libr-bridge/SEXPWrap.mjs~SEXPWrap.html#instance-method-release",
     "libr-bridge/SEXPWrap.mjs~SEXPWrap#release",
+    "method"
+  ],
+  [
+    "libr-bridge/sexpwrap.mjs~sexpwrap#setattribute",
+    "class/libr-bridge/SEXPWrap.mjs~SEXPWrap.html#instance-method-setAttribute",
+    "libr-bridge/SEXPWrap.mjs~SEXPWrap#setAttribute",
     "method"
   ],
   [
