@@ -33,9 +33,9 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/libr-bridge/RObject.mjs~RArray.html">RArray</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/libr-bridge/RObject.mjs~RBoolArray.html">RBoolArray</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/libr-bridge/RObject.mjs~RComplexArray.html">RComplexArray</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/libr-bridge/RObject.mjs~RDataFrame.html">RDataFrame</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/libr-bridge/RObject.mjs~RFactor.html">RFactor</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/libr-bridge/RObject.mjs~RIntArray.html">RIntArray</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/libr-bridge/RObject.mjs~RList.html">RList</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/libr-bridge/RObject.mjs~RRealArray.html">RRealArray</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/libr-bridge/RObject.mjs~RStrArray.html">RStrArray</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/libr-bridge/SEXPWrap.mjs~SEXPWrap.html">SEXPWrap</a></span></span></li>
@@ -68,7 +68,7 @@
  * Please use appropriate deriverd class if possible.
  */
 export class RArray extends Array{
-	// nothing special.
+	// nothing special. It&apos;s only an alias.
 }
 export class RIntArray extends RArray{
 }
@@ -80,6 +80,7 @@ export class RRealArray extends RArray{
 }
 export class RComplexArray extends RArray{
 }
+
 /**
  * JavaScript class for R Factor type.
  * A factor has numerical(integer) array with keys.
@@ -124,20 +125,40 @@ export class RFactor extends RArray{
 
 /**
  * JavaScript class for R Data Frame type.
- * With a data frame, we can  is able to contain different type of items.
+ * With a data frame, we can perform data analysis.
  */
-export class RList extends Array{
+export class RDataFrame extends Map{
+	/**
+	 * Create RDataFrame from object.
+	 * e.g.:
+	 *	{
+	 *		&quot;id&quot;: [ 12345, 23456, 34567 ],
+	 *		&quot;Name&quot;: [&quot;apple&quot;, &quot;banana&quot;, &quot;orange&quot;],
+	 *		&quot;Color&quot;: [&quot;red&quot;, &quot;yellow&quot;, &quot;orange&quot;]
+	 *	}
+	 *	or, use Map.
+	 * Please take care that all items in the data frame have same number of items.
+	 */
 	constructor(data){
-		console.assert(Array.isArray(data));
 
-		// JavaScript Array can contain dirrent type of items, so do nothing special.
-		// However, array with 1-numerical item cannot be made with normal way.
-		if(data.length === 1 &amp;&amp; typeof(data[0]) === &quot;number&quot;){
-			super(1984, data[0]);
-			this.pop();
-		}else{
-			super(...data);
+		console.assert(typeof(data) === &quot;object&quot;);
+
+		if(!(data instanceof Map)){
+			// Object -&gt; Map
+			data = new Map(Object.entries(data));
 		}
+
+		// check if all members have same length.
+		let length_of_item = [];
+		for(const item in data){
+			length_of_item.push(data[item].length);
+		}
+		if(length_of_item.some((n) =&gt; n !== length_of_item[0])){
+			console.log(length_of_item);
+			throw new Error(&quot;Vector size mismatch.&quot;);
+		}
+		
+		super(data);
 	}
 }
 

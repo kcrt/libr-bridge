@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <base data-ice="baseUrl" href="../../">
-  <title data-ice="title">RList | libr-bridge</title>
+  <title data-ice="title">RDataFrame | libr-bridge</title>
   <link type="text/css" rel="stylesheet" href="css/style.css">
   <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
   <script src="script/prettify/prettify.js"></script>
@@ -33,9 +33,9 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/libr-bridge/RObject.mjs~RArray.html">RArray</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/libr-bridge/RObject.mjs~RBoolArray.html">RBoolArray</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/libr-bridge/RObject.mjs~RComplexArray.html">RComplexArray</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/libr-bridge/RObject.mjs~RDataFrame.html">RDataFrame</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/libr-bridge/RObject.mjs~RFactor.html">RFactor</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/libr-bridge/RObject.mjs~RIntArray.html">RIntArray</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/libr-bridge/RObject.mjs~RList.html">RList</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/libr-bridge/RObject.mjs~RRealArray.html">RRealArray</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/libr-bridge/RObject.mjs~RStrArray.html">RStrArray</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/libr-bridge/SEXPWrap.mjs~SEXPWrap.html">SEXPWrap</a></span></span></li>
@@ -52,23 +52,23 @@
 </nav>
 
 <div class="content" data-ice="content"><div class="header-notice">
-  <div data-ice="importPath" class="import-path"><pre class="prettyprint"><code data-ice="importPathCode">import {RList} from &apos;<span><a href="file/libr-bridge/RObject.mjs.html#lineNumber75">libr-bridge/RObject</a></span>&apos;</code></pre></div>
+  <div data-ice="importPath" class="import-path"><pre class="prettyprint"><code data-ice="importPathCode">import {RDataFrame} from &apos;<span><a href="file/libr-bridge/RObject.mjs.html#lineNumber76">libr-bridge/RObject</a></span>&apos;</code></pre></div>
   <span data-ice="access">public</span>
   <span data-ice="kind">class</span>
   
   
   
-  <span data-ice="source">| <span><a href="file/libr-bridge/RObject.mjs.html#lineNumber75">source</a></span></span>
+  <span data-ice="source">| <span><a href="file/libr-bridge/RObject.mjs.html#lineNumber76">source</a></span></span>
 </div>
 
 <div class="self-detail detail">
-  <h1 data-ice="name">RList</h1>
+  <h1 data-ice="name">RDataFrame</h1>
 
   
 
   
   
-  <div class="flat-list" data-ice="extendsChain"><h4>Extends:</h4><div><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></span> &#x2192; RList</div></div>
+  <div class="flat-list" data-ice="extendsChain"><h4>Extends:</h4><div><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map">Map</a></span> &#x2192; RDataFrame</div></div>
   
   
   
@@ -79,7 +79,7 @@
   
   
   <div class="description" data-ice="description"><p>JavaScript class for R Data Frame type.
-With a data frame, we can  is able to contain different type of items.</p>
+With a data frame, we can perform data analysis.</p>
 </div>
   
 
@@ -112,13 +112,14 @@ With a data frame, we can  is able to contain different type of items.</p>
           
           
           
-          <span class="code" data-ice="name"><span><a href="class/libr-bridge/RObject.mjs~RList.html#instance-constructor-constructor">constructor</a></span></span><span class="code" data-ice="signature">()</span>
+          <span class="code" data-ice="name"><span><a href="class/libr-bridge/RObject.mjs~RDataFrame.html#instance-constructor-constructor">constructor</a></span></span><span class="code" data-ice="signature">()</span>
         </p>
       </div>
       <div>
         
         
-        
+        <div data-ice="description"><p>Create RDataFrame from object.</p>
+</div>
       </div>
     </td>
     <td>
@@ -150,14 +151,23 @@ With a data frame, we can  is able to contain different type of items.</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/libr-bridge/RObject.mjs.html#lineNumber76">source</a></span></span>
+      <span data-ice="source"><span><a href="file/libr-bridge/RObject.mjs.html#lineNumber88">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  
+  <div data-ice="description"><p>Create RDataFrame from object.
+e.g.:
+{
+    &quot;id&quot;: [ 12345, 23456, 34567 ],
+    &quot;Name&quot;: [&quot;apple&quot;, &quot;banana&quot;, &quot;orange&quot;],
+    &quot;Color&quot;: [&quot;red&quot;, &quot;yellow&quot;, &quot;orange&quot;]
+}
+or, use Map.
+Please take care that all items in the data frame have same number of items.</p>
+</div>
 
   
 

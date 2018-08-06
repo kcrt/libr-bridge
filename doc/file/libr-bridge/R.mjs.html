@@ -33,9 +33,9 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/libr-bridge/RObject.mjs~RArray.html">RArray</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/libr-bridge/RObject.mjs~RBoolArray.html">RBoolArray</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/libr-bridge/RObject.mjs~RComplexArray.html">RComplexArray</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/libr-bridge/RObject.mjs~RDataFrame.html">RDataFrame</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/libr-bridge/RObject.mjs~RFactor.html">RFactor</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/libr-bridge/RObject.mjs~RIntArray.html">RIntArray</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/libr-bridge/RObject.mjs~RList.html">RList</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/libr-bridge/RObject.mjs~RRealArray.html">RRealArray</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/libr-bridge/RObject.mjs~RStrArray.html">RStrArray</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/libr-bridge/SEXPWrap.mjs~SEXPWrap.html">SEXPWrap</a></span></span></li>
@@ -115,7 +115,7 @@ export default class R{
 		let funclist = [&quot;print&quot;, &quot;require&quot;, &quot;mean&quot;, &quot;cor&quot;, &quot;var&quot;, &quot;sd&quot;, &quot;sqrt&quot;, &quot;IQR&quot;, &quot;min&quot;, &quot;max&quot;,
 			&quot;range&quot;, &quot;fisher.test&quot;, &quot;t.test&quot;, &quot;wilcox.test&quot;, &quot;prop.test&quot;, &quot;var.test&quot;, &quot;p.adjust&quot;,
 			&quot;sin&quot;, &quot;cos&quot;, &quot;tan&quot;, &quot;sum&quot;, &quot;c&quot;,
-			&quot;is.na&quot;, &quot;is.nan&quot;, &quot;write.csv&quot;];
+			&quot;is.na&quot;, &quot;is.nan&quot;, &quot;write.csv&quot;, &quot;data.frame&quot;];
 		funclist.map((e) =&gt; {this[e] = this.func(e);});
 	}
 	/**
@@ -160,7 +160,7 @@ export default class R{
 	 * @see {@link R#func}
 	 */
 	func_raw(name){
-		return this._RFuncBridgeRaw.bind(this, this.__func_sexp(name));
+		return this.__RFuncBridge_raw.bind(this, this.__func_sexp(name));
 	}
 	/**
 	 * Find functions in R environment.
@@ -171,7 +171,8 @@ export default class R{
 	 */
 	__func_sexp(name){
 		if(!(name in func_cached)){
-			func_cached[name] = new SEXPWrap(libR.Rf_findFun(libR.Rf_install(name), R.GlobalEnv));
+			const func_sexp = libR.Rf_findFun(libR.Rf_install(name), R.GlobalEnv);
+			func_cached[name] = new SEXPWrap(func_sexp);
 			func_cached[name].preserve();			// Unfortunately, we have no destructor in JavaScript....
 		}
 		return func_cached[name];

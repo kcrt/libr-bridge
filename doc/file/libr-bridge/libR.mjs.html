@@ -33,9 +33,9 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/libr-bridge/RObject.mjs~RArray.html">RArray</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/libr-bridge/RObject.mjs~RBoolArray.html">RBoolArray</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/libr-bridge/RObject.mjs~RComplexArray.html">RComplexArray</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/libr-bridge/RObject.mjs~RDataFrame.html">RDataFrame</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/libr-bridge/RObject.mjs~RFactor.html">RFactor</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/libr-bridge/RObject.mjs~RIntArray.html">RIntArray</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/libr-bridge/RObject.mjs~RList.html">RList</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/libr-bridge/RObject.mjs~RRealArray.html">RRealArray</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/libr-bridge/RObject.mjs~RStrArray.html">RStrArray</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/libr-bridge/SEXPWrap.mjs~SEXPWrap.html">SEXPWrap</a></span></span></li>
@@ -177,6 +177,8 @@ const apiList = {
 	&quot;Rf_isString&quot;: [&quot;int&quot;, [SEXP]],						// Rboolean Rf_isString(SEXP);
 	&quot;Rf_isValidString&quot;: [&quot;int&quot;, [SEXP]],				// Rboolean Rf_isValidString(SEXP);
 	&quot;Rf_isVector&quot;: [&quot;int&quot;, [SEXP]],						// Rboolean Rf_isVector(SEXP);
+	&quot;Rf_isFrame&quot;: [&quot;int&quot;, [SEXP]],						// Rboolean Rf_isFrame(SEXP);
+	&quot;Rf_isSymbol&quot;: [&quot;int&quot;, [SEXP]],						// Rboolean Rf_isSymbol(SEXP);
 	&quot;Rf_lang1&quot;: [SEXP, [SEXP]],
 	&quot;Rf_lang2&quot;: [SEXP, [SEXP, SEXP]],
 	&quot;Rf_lang3&quot;: [SEXP, [SEXP, SEXP, SEXP]],
