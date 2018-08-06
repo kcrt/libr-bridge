@@ -1,7 +1,7 @@
 {
-  "coverage": "48.86%",
-  "expectCount": 88,
-  "actualCount": 43,
+  "coverage": "46.87%",
+  "expectCount": 96,
+  "actualCount": 45,
   "files": {
     "libr-bridge/R.mjs": {
       "expectCount": 32,
@@ -16,11 +16,17 @@
       ]
     },
     "libr-bridge/RObject.mjs": {
-      "expectCount": 4,
-      "actualCount": 2,
+      "expectCount": 12,
+      "actualCount": 4,
       "undocumentLines": [
-        47,
-        48
+        19,
+        21,
+        23,
+        25,
+        27,
+        64,
+        65,
+        76
       ]
     },
     "libr-bridge/SEXPWrap.mjs": {
@@ -32,20 +38,20 @@
         12,
         13,
         17,
-        111,
-        124,
-        125,
-        126,
-        127,
-        128,
-        129,
-        130,
-        131,
         132,
         145,
+        146,
+        147,
+        148,
         149,
-        168,
-        236
+        150,
+        151,
+        152,
+        153,
+        166,
+        170,
+        189,
+        257
       ]
     },
     "libr-bridge/develop.mjs": {

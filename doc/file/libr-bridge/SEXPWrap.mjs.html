@@ -30,7 +30,14 @@
   <ul>
     
   <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/libr-bridge/R.mjs~R.html">R</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/libr-bridge/RObject.mjs~RArray.html">RArray</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/libr-bridge/RObject.mjs~RBoolArray.html">RBoolArray</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/libr-bridge/RObject.mjs~RComplexArray.html">RComplexArray</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/libr-bridge/RObject.mjs~RFactor.html">RFactor</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/libr-bridge/RObject.mjs~RIntArray.html">RIntArray</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/libr-bridge/RObject.mjs~RList.html">RList</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/libr-bridge/RObject.mjs~RRealArray.html">RRealArray</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/libr-bridge/RObject.mjs~RStrArray.html">RStrArray</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/libr-bridge/SEXPWrap.mjs~SEXPWrap.html">SEXPWrap</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-createLibR">createLibR</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-ComplexInR">ComplexInR</a></span></span></li>
@@ -50,7 +57,7 @@ import ref from &quot;ref&quot;;
 import Complex from &quot;Complex&quot;;
 import R from &quot;./R&quot;;
 import {SEXPTYPE, ComplexInR, cetype_t} from &quot;./libR&quot;;
-import { RFactor } from &quot;./RObject&quot;;
+import { RFactor, RArray, RBoolArray, RStrArray, RIntArray, RRealArray, RComplexArray } from &quot;./RObject&quot;;
 import debug_ from &quot;debug&quot;;
 const debug = debug_(&quot;libr-bridge:class SEXPWrap&quot;);
 
@@ -71,14 +78,33 @@ export default class SEXPWrap {
 	 *	@private
 	 */
 	__initializeWithValue(value){
+
 		if(!Array.isArray(value)){
 			// not an array.
 			// convert to array and try again.
 			// (You can use Rf_mkString, Rf_ScalarReal, Rf_ScalarLogical if you don&apos;t want SEXPWrap)
-			this.__initializeWithValue([value]);
+			return this.__initializeWithValue([value]);
 		}else if(value.length == 0){
 			this.sexp = R.R_NilValue;
-		}else if(value instanceof RFactor){
+		}
+
+		if(!(value instanceof RArray)){
+			// Javascript normal array.
+			// Need to determine type of array.
+			if(typeof(value[0]) == &quot;number&quot; || value[0] === void 0){
+				value = RRealArray.of(...value);
+			}else if(typeof(value[0]) == &quot;boolean&quot;){
+				value = RBoolArray.of(...value);
+			}else if(typeof(value[0]) == &quot;string&quot;){
+				value = RStrArray.of(...value);
+			}else if(value[0] instanceof Complex){
+				value = RComplexArray.of(...value);
+			}else{
+				throw new Error(&quot;Unknown type of array.&quot;);
+			}
+		}
+		
+		if(value instanceof RFactor || value instanceof RIntArray){
 			// Factor is actually an 1-origin integers with attributes.
 			this.sexp = R.libR.Rf_allocVector(SEXPTYPE.INTSXP, value.length);
 			this.protect();
@@ -90,11 +116,13 @@ export default class SEXPWrap {
 				);
 			});
 
-			// add atribute
-			this.setAttribute(&quot;class&quot;, value.ordered ? [&quot;factor&quot;, &quot;ordered&quot;] : &quot;factor&quot;);
-			this.setAttribute(&quot;levels&quot;, value.levels);
+			if(value instanceof RFactor){
+				// add atribute
+				this.setAttribute(&quot;class&quot;, value.ordered ? [&quot;factor&quot;, &quot;ordered&quot;] : &quot;factor&quot;);
+				this.setAttribute(&quot;levels&quot;, value.levels);
+			}
 			this.unprotect();
-		}else if(typeof(value[0]) == &quot;number&quot; || typeof(value[0]) == &quot;undefined&quot;){
+		}else if(value instanceof RRealArray){
 			// assume this is array of numbers (e.g. [1, 2, 3, ...])
 			this.sexp = R.libR.Rf_allocVector(SEXPTYPE.REALSXP, value.length);
 			this.protect();
@@ -108,7 +136,7 @@ export default class SEXPWrap {
 				if(e === void 0){ ref.set(p, ref.types.int.size * i * 2, 1954, ref.types.int); }
 			});
 			this.unprotect();
-		}else if(typeof(value[0]) == &quot;boolean&quot;){
+		}else if(value instanceof RBoolArray){
 			// assume this is array of boolean (e.g. [false, true, true, ...])
 			// to handle NA, we use int instead of bool.
 			this.sexp = R.libR.Rf_allocVector(SEXPTYPE.LGLSXP, value.length);
@@ -125,7 +153,7 @@ export default class SEXPWrap {
 				ref.set(p, ref.types.int.size * i, value, ref.types.int);
 			});
 			this.unprotect();
-		}else if(typeof(value[0]) == &quot;string&quot;){
+		}else if(value instanceof RStrArray){
 			// assuming this is array of strings (e.g. [&quot;abc&quot;, &quot;def&quot;, ...])
 			this.sexp = R.libR.Rf_allocVector(SEXPTYPE.STRSXP, value.length);
 			this.protect();
@@ -137,7 +165,7 @@ export default class SEXPWrap {
 				}
 			});
 			this.unprotect();
-		}else if(value[0] instanceof Complex){
+		}else if(value instanceof RComplexArray){
 			this.sexp = R.libR.Rf_allocVector(SEXPTYPE.CPLXSXP, value.length);
 			this.protect();
 			let p = ref.reinterpret(this.dataptr(), ComplexInR.size * value.length);

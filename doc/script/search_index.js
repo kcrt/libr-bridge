@@ -18,9 +18,51 @@ window.esdocSearchIndex = [
     "class"
   ],
   [
+    "libr-bridge/robject~rarray",
+    "class/libr-bridge/RObject.mjs~RArray.html",
+    "<span>RArray</span> <span class=\"search-result-import-path\">libr-bridge/RObject</span>",
+    "class"
+  ],
+  [
+    "libr-bridge/robject~rboolarray",
+    "class/libr-bridge/RObject.mjs~RBoolArray.html",
+    "<span>RBoolArray</span> <span class=\"search-result-import-path\">libr-bridge/RObject</span>",
+    "class"
+  ],
+  [
+    "libr-bridge/robject~rcomplexarray",
+    "class/libr-bridge/RObject.mjs~RComplexArray.html",
+    "<span>RComplexArray</span> <span class=\"search-result-import-path\">libr-bridge/RObject</span>",
+    "class"
+  ],
+  [
     "libr-bridge/robject~rfactor",
     "class/libr-bridge/RObject.mjs~RFactor.html",
     "<span>RFactor</span> <span class=\"search-result-import-path\">libr-bridge/RObject</span>",
+    "class"
+  ],
+  [
+    "libr-bridge/robject~rintarray",
+    "class/libr-bridge/RObject.mjs~RIntArray.html",
+    "<span>RIntArray</span> <span class=\"search-result-import-path\">libr-bridge/RObject</span>",
+    "class"
+  ],
+  [
+    "libr-bridge/robject~rlist",
+    "class/libr-bridge/RObject.mjs~RList.html",
+    "<span>RList</span> <span class=\"search-result-import-path\">libr-bridge/RObject</span>",
+    "class"
+  ],
+  [
+    "libr-bridge/robject~rrealarray",
+    "class/libr-bridge/RObject.mjs~RRealArray.html",
+    "<span>RRealArray</span> <span class=\"search-result-import-path\">libr-bridge/RObject</span>",
+    "class"
+  ],
+  [
+    "libr-bridge/robject~rstrarray",
+    "class/libr-bridge/RObject.mjs~RStrArray.html",
+    "<span>RStrArray</span> <span class=\"search-result-import-path\">libr-bridge/RObject</span>",
     "class"
   ],
   [
@@ -532,6 +574,12 @@ window.esdocSearchIndex = [
     "class/libr-bridge/RObject.mjs~RFactor.html#instance-member-ordered",
     "libr-bridge/RObject.mjs~RFactor#ordered",
     "member"
+  ],
+  [
+    "libr-bridge/robject.mjs~rlist#constructor",
+    "class/libr-bridge/RObject.mjs~RList.html#instance-constructor-constructor",
+    "libr-bridge/RObject.mjs~RList#constructor",
+    "method"
   ],
   [
     "libr-bridge/sexpwrap.mjs",

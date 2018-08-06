@@ -1510,7 +1510,7 @@
     "__docId__": 81,
     "kind": "file",
     "name": "libr-bridge/RObject.mjs",
-    "content": "\"use strict\";\n\n// import ref from \"ref\";\n// import refArray from \"ref-array\";\n// import R from \"./R\";\n// import {REALSXP} from \"./libR\";\n// import SEXPWrap from \"./SEXPWrap\";\n\n// import debug_ from \"debug\";\n// const debug = debug_(\"libr-bridge:RObject\");\n\n/**\n * JavaScript class for R Factor type.\n * A factor has numerical(integer) array with keys.\n */\nexport class RFactor extends Array{\n\t/**\n\t * Create a factor.\n\t *\t@param data {string[]}\t\tString array indicate category, like [\"male\", \"female\", \"male\", ...]\n\t *\t@param levels {Object}\t\tCategory item like [\"male\", \"female\"]\n\t *\t@param ordered {boolean}\tIf true, this factor is ordered factor (nominal)\n\t */\n\tconstructor(data, levels=undefined, ordered=false){\n\n\t\tvar mylevels;\n\n\t\tif(!Array.isArray(data)){\n\t\t\tsuper(data);\n\t\t}else{\n\t\t\tif(levels === undefined){\n\t\t\t\tvar s = new Set();\n\t\t\t\tdata.forEach((item) => s.add(item));\n\t\t\t\tmylevels = Array.from(s);\n\t\t\t}else if(Array.isArray(levels)){\n\t\t\t\tmylevels = levels;\n\t\t\t}else{\n\t\t\t\tthrow new Error(\"Unknown label of factor.\");\n\t\t\t}\n\t\t\tmylevels = mylevels.filter((v) => v !== undefined);\n\n\t\t\t// RFactor is 1-origin!\n\t\t\tconst values = data.map((v) => mylevels.indexOf(v) + 1)\n\t\t\t\t.map((v) => v === 0 ? undefined : v); \n\n\t\t\tsuper(...values);\n\t\t}\n\t\tthis.levels = mylevels;\n\t\tthis.ordered = ordered;\n\n\t}\n}\n\n/*\n * vim: filetype=javascript\n */\n",
+    "content": "\"use strict\";\n\n// import ref from \"ref\";\n// import refArray from \"ref-array\";\n// import R from \"./R\";\n// import {REALSXP} from \"./libR\";\n// import SEXPWrap from \"./SEXPWrap\";\n\n// import debug_ from \"debug\";\n// const debug = debug_(\"libr-bridge:RObject\");\n\n/**\n * JavaScript class for R Array type.\n * Please use appropriate deriverd class if possible.\n */\nexport class RArray extends Array{\n\t// nothing special.\n}\nexport class RIntArray extends RArray{\n}\nexport class RBoolArray extends RArray{\n}\nexport class RStrArray extends RArray{\n}\nexport class RRealArray extends RArray{\n}\nexport class RComplexArray extends RArray{\n}\n/**\n * JavaScript class for R Factor type.\n * A factor has numerical(integer) array with keys.\n */\nexport class RFactor extends RArray{\n\t/**\n\t * Create a factor.\n\t *\t@param data {string[]}\t\tString array indicate category, like [\"male\", \"female\", \"male\", ...]\n\t *\t@param levels {Object}\t\tCategory item like [\"male\", \"female\"]\n\t *\t@param ordered {boolean}\tIf true, this factor is ordered factor (nominal)\n\t */\n\tconstructor(data, levels=undefined, ordered=false){\n\n\t\tvar mylevels;\n\n\t\tif(!Array.isArray(data)){\n\t\t\tsuper(data);\n\t\t}else{\n\t\t\tif(levels === undefined){\n\t\t\t\tvar s = new Set();\n\t\t\t\tdata.forEach((item) => s.add(item));\n\t\t\t\tmylevels = Array.from(s);\n\t\t\t}else if(Array.isArray(levels)){\n\t\t\t\tmylevels = levels;\n\t\t\t}else{\n\t\t\t\tthrow new Error(\"Unknown label of factor.\");\n\t\t\t}\n\t\t\tmylevels = mylevels.filter((v) => v !== undefined);\n\n\t\t\t// RFactor is 1-origin!\n\t\t\tconst values = data.map((v) => mylevels.indexOf(v) + 1)\n\t\t\t\t.map((v) => v === 0 ? undefined : v); \n\n\t\t\tsuper(...values);\n\t\t}\n\t\tthis.levels = mylevels;\n\t\tthis.ordered = ordered;\n\n\t}\n}\n\n\n/**\n * JavaScript class for R Data Frame type.\n * With a data frame, we can  is able to contain different type of items.\n */\nexport class RList extends Array{\n\tconstructor(data){\n\t\tconsole.assert(Array.isArray(data));\n\n\t\t// JavaScript Array can contain dirrent type of items, so do nothing special.\n\t\t// However, array with 1-numerical item cannot be made with normal way.\n\t\tif(data.length === 1 && typeof(data[0]) === \"number\"){\n\t\t\tsuper(1984, data[0]);\n\t\t\tthis.pop();\n\t\t}else{\n\t\t\tsuper(...data);\n\t\t}\n\t}\n}\n\n\n\n/*\n * vim: filetype=javascript\n */\n",
     "static": true,
     "longname": "/Users/kcrt/prog/libr-bridge/RObject.mjs",
     "access": "public",
@@ -1519,6 +1519,119 @@
   },
   {
     "__docId__": 82,
+    "kind": "class",
+    "name": "RArray",
+    "memberof": "libr-bridge/RObject.mjs",
+    "static": true,
+    "longname": "libr-bridge/RObject.mjs~RArray",
+    "access": "public",
+    "export": true,
+    "importPath": "libr-bridge/RObject",
+    "importStyle": "{RArray}",
+    "description": "JavaScript class for R Array type.\nPlease use appropriate deriverd class if possible.",
+    "lineNumber": 16,
+    "interface": false,
+    "extends": [
+      "Array"
+    ]
+  },
+  {
+    "__docId__": 83,
+    "kind": "class",
+    "name": "RIntArray",
+    "memberof": "libr-bridge/RObject.mjs",
+    "static": true,
+    "longname": "libr-bridge/RObject.mjs~RIntArray",
+    "access": "public",
+    "export": true,
+    "importPath": "libr-bridge/RObject",
+    "importStyle": "{RIntArray}",
+    "description": null,
+    "lineNumber": 19,
+    "undocument": true,
+    "interface": false,
+    "extends": [
+      "RArray"
+    ]
+  },
+  {
+    "__docId__": 84,
+    "kind": "class",
+    "name": "RBoolArray",
+    "memberof": "libr-bridge/RObject.mjs",
+    "static": true,
+    "longname": "libr-bridge/RObject.mjs~RBoolArray",
+    "access": "public",
+    "export": true,
+    "importPath": "libr-bridge/RObject",
+    "importStyle": "{RBoolArray}",
+    "description": null,
+    "lineNumber": 21,
+    "undocument": true,
+    "interface": false,
+    "extends": [
+      "RArray"
+    ]
+  },
+  {
+    "__docId__": 85,
+    "kind": "class",
+    "name": "RStrArray",
+    "memberof": "libr-bridge/RObject.mjs",
+    "static": true,
+    "longname": "libr-bridge/RObject.mjs~RStrArray",
+    "access": "public",
+    "export": true,
+    "importPath": "libr-bridge/RObject",
+    "importStyle": "{RStrArray}",
+    "description": null,
+    "lineNumber": 23,
+    "undocument": true,
+    "interface": false,
+    "extends": [
+      "RArray"
+    ]
+  },
+  {
+    "__docId__": 86,
+    "kind": "class",
+    "name": "RRealArray",
+    "memberof": "libr-bridge/RObject.mjs",
+    "static": true,
+    "longname": "libr-bridge/RObject.mjs~RRealArray",
+    "access": "public",
+    "export": true,
+    "importPath": "libr-bridge/RObject",
+    "importStyle": "{RRealArray}",
+    "description": null,
+    "lineNumber": 25,
+    "undocument": true,
+    "interface": false,
+    "extends": [
+      "RArray"
+    ]
+  },
+  {
+    "__docId__": 87,
+    "kind": "class",
+    "name": "RComplexArray",
+    "memberof": "libr-bridge/RObject.mjs",
+    "static": true,
+    "longname": "libr-bridge/RObject.mjs~RComplexArray",
+    "access": "public",
+    "export": true,
+    "importPath": "libr-bridge/RObject",
+    "importStyle": "{RComplexArray}",
+    "description": null,
+    "lineNumber": 27,
+    "undocument": true,
+    "interface": false,
+    "extends": [
+      "RArray"
+    ]
+  },
+  {
+    "__docId__": 88,
     "kind": "class",
     "name": "RFactor",
     "memberof": "libr-bridge/RObject.mjs",
@@ -1529,14 +1642,14 @@
     "importPath": "libr-bridge/RObject",
     "importStyle": "{RFactor}",
     "description": "JavaScript class for R Factor type.\nA factor has numerical(integer) array with keys.",
-    "lineNumber": 16,
+    "lineNumber": 33,
     "interface": false,
     "extends": [
-      "Array"
+      "RArray"
     ]
   },
   {
-    "__docId__": 83,
+    "__docId__": 89,
     "kind": "constructor",
     "name": "constructor",
     "memberof": "libr-bridge/RObject.mjs~RFactor",
@@ -1546,7 +1659,7 @@
     "longname": "libr-bridge/RObject.mjs~RFactor#constructor",
     "access": "public",
     "description": "Create a factor.",
-    "lineNumber": 23,
+    "lineNumber": 40,
     "params": [
       {
         "nullable": null,
@@ -1581,7 +1694,7 @@
     ]
   },
   {
-    "__docId__": 84,
+    "__docId__": 90,
     "kind": "member",
     "name": "levels",
     "memberof": "libr-bridge/RObject.mjs~RFactor",
@@ -1589,7 +1702,7 @@
     "longname": "libr-bridge/RObject.mjs~RFactor#levels",
     "access": "public",
     "description": null,
-    "lineNumber": 47,
+    "lineNumber": 64,
     "undocument": true,
     "type": {
       "types": [
@@ -1598,7 +1711,7 @@
     }
   },
   {
-    "__docId__": 85,
+    "__docId__": 91,
     "kind": "member",
     "name": "ordered",
     "memberof": "libr-bridge/RObject.mjs~RFactor",
@@ -1606,7 +1719,7 @@
     "longname": "libr-bridge/RObject.mjs~RFactor#ordered",
     "access": "public",
     "description": null,
-    "lineNumber": 48,
+    "lineNumber": 65,
     "undocument": true,
     "type": {
       "types": [
@@ -1615,10 +1728,42 @@
     }
   },
   {
-    "__docId__": 86,
+    "__docId__": 92,
+    "kind": "class",
+    "name": "RList",
+    "memberof": "libr-bridge/RObject.mjs",
+    "static": true,
+    "longname": "libr-bridge/RObject.mjs~RList",
+    "access": "public",
+    "export": true,
+    "importPath": "libr-bridge/RObject",
+    "importStyle": "{RList}",
+    "description": "JavaScript class for R Data Frame type.\nWith a data frame, we can  is able to contain different type of items.",
+    "lineNumber": 75,
+    "interface": false,
+    "extends": [
+      "Array"
+    ]
+  },
+  {
+    "__docId__": 93,
+    "kind": "constructor",
+    "name": "constructor",
+    "memberof": "libr-bridge/RObject.mjs~RList",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "libr-bridge/RObject.mjs~RList#constructor",
+    "access": "public",
+    "description": null,
+    "lineNumber": 76,
+    "undocument": true
+  },
+  {
+    "__docId__": 94,
     "kind": "file",
     "name": "libr-bridge/SEXPWrap.mjs",
-    "content": "\"use strict\";\nimport ref from \"ref\";\nimport Complex from \"Complex\";\nimport R from \"./R\";\nimport {SEXPTYPE, ComplexInR, cetype_t} from \"./libR\";\nimport { RFactor } from \"./RObject\";\nimport debug_ from \"debug\";\nconst debug = debug_(\"libr-bridge:class SEXPWrap\");\n\nvar sexpSize = void 0;\n\nexport default class SEXPWrap {\n\tconstructor(value){\n\t\t\n\t\tif(value instanceof Buffer){\n\t\t\t// This may be SEXP!\n\t\t\tthis.sexp = value;\n\t\t}else{\n\t\t\tthis.__initializeWithValue(value);\n\t\t}\n\t}\n\t/**\n\t *\tInitialize this instance with specified value.\n\t *\t@private\n\t */\n\t__initializeWithValue(value){\n\t\tif(!Array.isArray(value)){\n\t\t\t// not an array.\n\t\t\t// convert to array and try again.\n\t\t\t// (You can use Rf_mkString, Rf_ScalarReal, Rf_ScalarLogical if you don't want SEXPWrap)\n\t\t\tthis.__initializeWithValue([value]);\n\t\t}else if(value.length == 0){\n\t\t\tthis.sexp = R.R_NilValue;\n\t\t}else if(value instanceof RFactor){\n\t\t\t// Factor is actually an 1-origin integers with attributes.\n\t\t\tthis.sexp = R.libR.Rf_allocVector(SEXPTYPE.INTSXP, value.length);\n\t\t\tthis.protect();\n\t\t\tlet p = ref.reinterpret(this.dataptr(), ref.types.int.size * value.length);\n\t\t\tvalue.map((e, i) => {\n\t\t\t\tref.set(\n\t\t\t\t\tp, ref.types.int.size * i,\n\t\t\t\t\te === void 0 ? R.R_NaInt : e, ref.types.int\n\t\t\t\t);\n\t\t\t});\n\n\t\t\t// add atribute\n\t\t\tthis.setAttribute(\"class\", value.ordered ? [\"factor\", \"ordered\"] : \"factor\");\n\t\t\tthis.setAttribute(\"levels\", value.levels);\n\t\t\tthis.unprotect();\n\t\t}else if(typeof(value[0]) == \"number\" || typeof(value[0]) == \"undefined\"){\n\t\t\t// assume this is array of numbers (e.g. [1, 2, 3, ...])\n\t\t\tthis.sexp = R.libR.Rf_allocVector(SEXPTYPE.REALSXP, value.length);\n\t\t\tthis.protect();\n\t\t\tlet p = ref.reinterpret(this.dataptr(), ref.types.double.size * value.length);\n\t\t\tvalue.map((e, i) => {\n\t\t\t\tref.set(p, ref.types.double.size * i, 1.0 * e /* convert to double */, ref.types.double);\n\t\t\t});\n\t\t\t// Find NA and set 1954. (sizeof(double) = sizeof(int) * 2)\n\t\t\tp = ref.reinterpret(this.dataptr(), ref.types.int.size * 2 * value.length);\n\t\t\tvalue.map((e, i) => {\n\t\t\t\tif(e === void 0){ ref.set(p, ref.types.int.size * i * 2, 1954, ref.types.int); }\n\t\t\t});\n\t\t\tthis.unprotect();\n\t\t}else if(typeof(value[0]) == \"boolean\"){\n\t\t\t// assume this is array of boolean (e.g. [false, true, true, ...])\n\t\t\t// to handle NA, we use int instead of bool.\n\t\t\tthis.sexp = R.libR.Rf_allocVector(SEXPTYPE.LGLSXP, value.length);\n\t\t\tthis.protect();\n\t\t\tlet p = ref.reinterpret(this.dataptr(), ref.types.int.size * value.length);\n\t\t\tvalue.map((e, i) => {\n\t\t\t\tlet value;\n\t\t\t\tif(e === void 0){\n\t\t\t\t\t// It's NA\n\t\t\t\t\tvalue = R.R_NaInt;\n\t\t\t\t}else{\n\t\t\t\t\tvalue = e ? 1 : 0;\n\t\t\t\t}\n\t\t\t\tref.set(p, ref.types.int.size * i, value, ref.types.int);\n\t\t\t});\n\t\t\tthis.unprotect();\n\t\t}else if(typeof(value[0]) == \"string\"){\n\t\t\t// assuming this is array of strings (e.g. [\"abc\", \"def\", ...])\n\t\t\tthis.sexp = R.libR.Rf_allocVector(SEXPTYPE.STRSXP, value.length);\n\t\t\tthis.protect();\n\t\t\tvalue.map((e, i) => {\n\t\t\t\tif(e !== void 0){\n\t\t\t\t\tR.libR.SET_STRING_ELT(this.sexp, i, R.libR.Rf_mkCharCE(e, cetype_t.CE_UTF8));\n\t\t\t\t}else{\n\t\t\t\t\tR.libR.SET_STRING_ELT(this.sexp, i, R.R_NaString.sexp);\n\t\t\t\t}\n\t\t\t});\n\t\t\tthis.unprotect();\n\t\t}else if(value[0] instanceof Complex){\n\t\t\tthis.sexp = R.libR.Rf_allocVector(SEXPTYPE.CPLXSXP, value.length);\n\t\t\tthis.protect();\n\t\t\tlet p = ref.reinterpret(this.dataptr(), ComplexInR.size * value.length);\n\t\t\tvalue.map(\n\t\t\t\t(e) => new ComplexInR({r: e.real, i: e.im})).map(\n\t\t\t\t(e, i) => {\n\t\t\t\t\tref.set(p, ComplexInR.size * i, e, ComplexInR);\n\t\t\t\t});\n\t\t\tthis.unprotect();\n\t\t}else{\n\t\t\tconsole.log(\"Cannot convert \" + typeof(value) + \" in JavaScript to R SEXP / \" + value);\n\t\t}\n\t}\n\t/** Protect this SEXP */\n\tprotect(){ R.libR.Rf_protect(this.sexp); }\n\t/** Unprotect SEXPs */\n\tstatic unprotect(depth=1){ R.libR.Rf_unprotect(depth); }\n\tunprotect(depth=1){ R.libR.Rf_unprotect(depth); }\n\t/** Preserve this SEXP. Please use protect() if you can. */\n\tpreserve(){ R.libR.R_PreserveObject(this.sexp); }\n\t/** Release preserved SEXP. protect()ed SEXP should be released with unprotect() */\n\trelease(){ R.libR.R_ReleaseObject(this.sexp); }\n\t/** Return true if this SEXP is List. */\n\tisList(){ return R.libR.Rf_isList(this.sexp); }\n\t/** Return true if this SEXP is Vector. Please note single scalar value in R is vector. */\n\tisVector(){ return R.libR.Rf_isVector(this.sexp); }\n\t/** Return the length of vector. */\n\tlength(){ return R.libR.Rf_length(this.sexp); }\n\t/** Return true if this SEXP is null. */\n\tisNull(){ return R.libR.Rf_isNull(this.sexp); }\n\tisComplex(){ return R.libR.Rf_isComplex(this.sexp); }\n\tisExpression(){ return R.libR.Rf_isExpression(this.sexp); }\n\tisInteger(){ return R.libR.Rf_isInteger(this.sexp); }\n\tisLogical(){ return R.libR.Rf_isLogical(this.sexp); }\n\tisReal(){ return R.libR.Rf_isReal(this.sexp); }\n\tisValidString(){ return R.libR.Rf_isValidString(this.sexp); }\n\tisFactor(){ return R.libR.Rf_isFactor(this.sexp); }\n\tdataptr(){ return R.libR.DATAPTR(this.sexp); }\n\tasChar(){\n\t\tif(this.sexp.address() == R.R_NaString.sexp.address()){ return void 0;}\n\t\tif(this.sexp.address() == R.R_BlankString.sexp.address()){ return \"\";}\n\t\treturn R.libR.Rf_translateCharUTF8(R.libR.Rf_asChar(this.sexp)).slice();\n\t}\n\t/** Return sizeof(SEXP) in byte. */\n\tstatic get SEXPSize(){\n\t\tif(sexpSize == void 0){\n\t\t\tconst intSEXP = new SEXPWrap(0);\n\t\t\tsexpSize = intSEXP.dataptr().address() - intSEXP.sexp.address();\n\t\t}\n\t\treturn sexpSize;\n\t}\n\tget names(){\n\t\tlet names = new SEXPWrap(R.libR.Rf_getAttrib(this.sexp, R.R_NamesSymbol));\n\t\treturn names.isNull() ? undefined : names.getValue();\n\t}\n\tset names(newtag){\n\t\tif (newtag === void 0) return;\n\t\tR.libR.Rf_setAttrib(this.sexp, R.R_NamesSymbol, (new SEXPWrap(newtag)).sexp);\n\t}\n\t/** set attr of this variable. */\n\tsetAttribute(attrname, newattr){\n\t\tconst attrsymbol = R.libR.Rf_install(attrname);\n\t\tR.libR.Rf_setAttrib(this.sexp, attrsymbol, (new SEXPWrap(newattr)).sexp);\n\t}\n\t/** get attr of this variable. */\n\tgetAttribute(attrname){\n\t\tconst attrvalue = new SEXPWrap(this._getAttribute_raw(attrname));\n\t\treturn attrvalue.getValue();\n\t}\n\t/** get attr SEXP of this variable. */\n\t_getAttribute_raw(attrname){\n\t\tconst attrsymbol = R.libR.Rf_install(attrname);\n\t\treturn R.libR.Rf_getAttrib(this.sexp, attrsymbol);\n\t}\n\tgetValue(){\n\t\tif(this.sexp.address() == 0 || this.isNull()){\n\t\t\treturn null;\n\t\t}\n\t\tconst len = this.length();\n\t\tif(len == 0){\n\t\t\treturn [];\n\t\t}if(this.isList()){\n\t\t\t// TODO: support this\n\t\t\t/*\n\t\t\tlet v = this.sexp;\n\t\t\treturn R.range(0, len).map( (e) => {\n\t\t\t\tlet a = R.libR.CAR(v);\n\t\t\t\tv = R.libR.CDR(v);\n\t\t\t\treturn this._getValue_scalar(a);\n\t\t\t});*/\n\t\t\tconsole.log(\"LIST NOT SUPPORTED\");\n\t\t\treturn undefined;\n\t\t}else if(this.isVector()){\t\t// be careful; is.vector(1) is even True\n\t\t\tlet itemtype;\n\t\t\tlet values = [];\n\t\t\tif(this.isInteger() || this.isLogical() || this.isFactor()){\n\t\t\t\titemtype = ref.types.int;\n\t\t\t\tconst f = this.isLogical() ? (e) => !!e : (e) => e;\n\t\t\t\tconst p = ref.reinterpret(this.dataptr(), itemtype.size * len);\n\t\t\t\tvalues = R.range(0, len).map( (i) => ref.get(p, itemtype.size * i, itemtype) )\n\t\t\t\t\t.map( (e) => e == R.R_NaInt ? undefined : f(e));\n\t\t\t\tif(this.isFactor()){\n\t\t\t\t\tconst levels = this.getAttribute(\"levels\");\n\t\t\t\t\tconst class_ = this.getAttribute(\"class\");\n\t\t\t\t\tconst isOrdered = Array.isArray(class_) && class_.indexOf(\"ordered\") !== -1;\n\t\t\t\t\tvalues = new RFactor(values.map((v) => levels[v - 1]), levels, isOrdered);\n\t\t\t\t}\n\t\t\t}else if(this.isReal()){\n\t\t\t\titemtype = ref.types.double;\n\t\t\t\tconst p = ref.reinterpret(this.dataptr(), itemtype.size * len);\n\t\t\t\tvalues = R.range(0, len).map( (i) => ref.get(p, itemtype.size * i, itemtype) );\n\t\t\t\t/* Discriminate NA from NaN (1954; the year Ross Ihaka was born) */\n\t\t\t\t/* see main/arithmetic.c for detail. */\n\t\t\t\titemtype = ref.types.uint;\n\t\t\t\tconst q = ref.reinterpret(this.dataptr(), itemtype.size * len * 2);\n\t\t\t\tR.range(0, len).map( (i) => {\n\t\t\t\t\tif(isNaN(values[i])){\n\t\t\t\t\t\tif(ref.get(q, itemtype.size * i * 2, itemtype) == 1954) values[i] = undefined;\n\t\t\t\t\t}\n\t\t\t\t});\n\t\t\t}else if(this.isComplex()){\n\t\t\t\titemtype = ComplexInR;\n\t\t\t\tconst p = ref.reinterpret(this.dataptr(), itemtype.size * len);\n\t\t\t\tvalues = R.range(0, len).map( (i) => ref.get(p, itemtype.size * i, itemtype))\n\t\t\t\t\t.map( (e) => new Complex(e.r, e.i));\n\t\t\t}else if(this.isValidString()){\n\t\t\t\tvalues = R.range(0, len).map((i) => R.libR.STRING_ELT(this.sexp, i))\n\t\t\t\t\t.map((e) => {\n\t\t\t\t\t\tconst s = new SEXPWrap(e);\n\t\t\t\t\t\treturn s.asChar();\n\t\t\t\t\t});\n\t\t\t}else if(this.isExpression()){\n\t\t\t\tdebug(\"getValue() for RExpression\");\n\t\t\t\tvalues = [\"(R Expression)\"];\n\t\t\t}else{\n\t\t\t\tvalues = [\"Unsupported vector item!\"];\n\t\t\t}\n\t\t\treturn values.length == 1 ? values[0] : values;\n\t\t}else{\n\t\t\treturn \"unknown type!\";\n\t\t}\n\t}\n\t_getValue_scalar(sexp){\n\t\t// 'Number' includes complex, 'Vector' includes Array and Matrix\n\t\tif(R.libR.Rf_isInteger(sexp)){\n\t\t\treturn R.libR.Rf_asInteger(sexp);\n\t\t}else if(R.libR.Rf_isNumeric(sexp)){\n\t\t\treturn R.libR.Rf_asReal(sexp);\n\t\t}else if(R.libR.Rf_isValidString(sexp)){\n\t\t\treturn R.libR.Rf_translateCharUTF8(R.libR.Rf_asChar(sexp)).slice();\n\t\t}else{\n\t\t\treturn \"SEXPWRAP: unknown SEXP Type\";\n\t\t}\n\t}\n}\n\n/*\n * vim: filetype=javascript\n */\n",
+    "content": "\"use strict\";\nimport ref from \"ref\";\nimport Complex from \"Complex\";\nimport R from \"./R\";\nimport {SEXPTYPE, ComplexInR, cetype_t} from \"./libR\";\nimport { RFactor, RArray, RBoolArray, RStrArray, RIntArray, RRealArray, RComplexArray } from \"./RObject\";\nimport debug_ from \"debug\";\nconst debug = debug_(\"libr-bridge:class SEXPWrap\");\n\nvar sexpSize = void 0;\n\nexport default class SEXPWrap {\n\tconstructor(value){\n\t\t\n\t\tif(value instanceof Buffer){\n\t\t\t// This may be SEXP!\n\t\t\tthis.sexp = value;\n\t\t}else{\n\t\t\tthis.__initializeWithValue(value);\n\t\t}\n\t}\n\t/**\n\t *\tInitialize this instance with specified value.\n\t *\t@private\n\t */\n\t__initializeWithValue(value){\n\n\t\tif(!Array.isArray(value)){\n\t\t\t// not an array.\n\t\t\t// convert to array and try again.\n\t\t\t// (You can use Rf_mkString, Rf_ScalarReal, Rf_ScalarLogical if you don't want SEXPWrap)\n\t\t\treturn this.__initializeWithValue([value]);\n\t\t}else if(value.length == 0){\n\t\t\tthis.sexp = R.R_NilValue;\n\t\t}\n\n\t\tif(!(value instanceof RArray)){\n\t\t\t// Javascript normal array.\n\t\t\t// Need to determine type of array.\n\t\t\tif(typeof(value[0]) == \"number\" || value[0] === void 0){\n\t\t\t\tvalue = RRealArray.of(...value);\n\t\t\t}else if(typeof(value[0]) == \"boolean\"){\n\t\t\t\tvalue = RBoolArray.of(...value);\n\t\t\t}else if(typeof(value[0]) == \"string\"){\n\t\t\t\tvalue = RStrArray.of(...value);\n\t\t\t}else if(value[0] instanceof Complex){\n\t\t\t\tvalue = RComplexArray.of(...value);\n\t\t\t}else{\n\t\t\t\tthrow new Error(\"Unknown type of array.\");\n\t\t\t}\n\t\t}\n\t\t\n\t\tif(value instanceof RFactor || value instanceof RIntArray){\n\t\t\t// Factor is actually an 1-origin integers with attributes.\n\t\t\tthis.sexp = R.libR.Rf_allocVector(SEXPTYPE.INTSXP, value.length);\n\t\t\tthis.protect();\n\t\t\tlet p = ref.reinterpret(this.dataptr(), ref.types.int.size * value.length);\n\t\t\tvalue.map((e, i) => {\n\t\t\t\tref.set(\n\t\t\t\t\tp, ref.types.int.size * i,\n\t\t\t\t\te === void 0 ? R.R_NaInt : e, ref.types.int\n\t\t\t\t);\n\t\t\t});\n\n\t\t\tif(value instanceof RFactor){\n\t\t\t\t// add atribute\n\t\t\t\tthis.setAttribute(\"class\", value.ordered ? [\"factor\", \"ordered\"] : \"factor\");\n\t\t\t\tthis.setAttribute(\"levels\", value.levels);\n\t\t\t}\n\t\t\tthis.unprotect();\n\t\t}else if(value instanceof RRealArray){\n\t\t\t// assume this is array of numbers (e.g. [1, 2, 3, ...])\n\t\t\tthis.sexp = R.libR.Rf_allocVector(SEXPTYPE.REALSXP, value.length);\n\t\t\tthis.protect();\n\t\t\tlet p = ref.reinterpret(this.dataptr(), ref.types.double.size * value.length);\n\t\t\tvalue.map((e, i) => {\n\t\t\t\tref.set(p, ref.types.double.size * i, 1.0 * e /* convert to double */, ref.types.double);\n\t\t\t});\n\t\t\t// Find NA and set 1954. (sizeof(double) = sizeof(int) * 2)\n\t\t\tp = ref.reinterpret(this.dataptr(), ref.types.int.size * 2 * value.length);\n\t\t\tvalue.map((e, i) => {\n\t\t\t\tif(e === void 0){ ref.set(p, ref.types.int.size * i * 2, 1954, ref.types.int); }\n\t\t\t});\n\t\t\tthis.unprotect();\n\t\t}else if(value instanceof RBoolArray){\n\t\t\t// assume this is array of boolean (e.g. [false, true, true, ...])\n\t\t\t// to handle NA, we use int instead of bool.\n\t\t\tthis.sexp = R.libR.Rf_allocVector(SEXPTYPE.LGLSXP, value.length);\n\t\t\tthis.protect();\n\t\t\tlet p = ref.reinterpret(this.dataptr(), ref.types.int.size * value.length);\n\t\t\tvalue.map((e, i) => {\n\t\t\t\tlet value;\n\t\t\t\tif(e === void 0){\n\t\t\t\t\t// It's NA\n\t\t\t\t\tvalue = R.R_NaInt;\n\t\t\t\t}else{\n\t\t\t\t\tvalue = e ? 1 : 0;\n\t\t\t\t}\n\t\t\t\tref.set(p, ref.types.int.size * i, value, ref.types.int);\n\t\t\t});\n\t\t\tthis.unprotect();\n\t\t}else if(value instanceof RStrArray){\n\t\t\t// assuming this is array of strings (e.g. [\"abc\", \"def\", ...])\n\t\t\tthis.sexp = R.libR.Rf_allocVector(SEXPTYPE.STRSXP, value.length);\n\t\t\tthis.protect();\n\t\t\tvalue.map((e, i) => {\n\t\t\t\tif(e !== void 0){\n\t\t\t\t\tR.libR.SET_STRING_ELT(this.sexp, i, R.libR.Rf_mkCharCE(e, cetype_t.CE_UTF8));\n\t\t\t\t}else{\n\t\t\t\t\tR.libR.SET_STRING_ELT(this.sexp, i, R.R_NaString.sexp);\n\t\t\t\t}\n\t\t\t});\n\t\t\tthis.unprotect();\n\t\t}else if(value instanceof RComplexArray){\n\t\t\tthis.sexp = R.libR.Rf_allocVector(SEXPTYPE.CPLXSXP, value.length);\n\t\t\tthis.protect();\n\t\t\tlet p = ref.reinterpret(this.dataptr(), ComplexInR.size * value.length);\n\t\t\tvalue.map(\n\t\t\t\t(e) => new ComplexInR({r: e.real, i: e.im})).map(\n\t\t\t\t(e, i) => {\n\t\t\t\t\tref.set(p, ComplexInR.size * i, e, ComplexInR);\n\t\t\t\t});\n\t\t\tthis.unprotect();\n\t\t}else{\n\t\t\tconsole.log(\"Cannot convert \" + typeof(value) + \" in JavaScript to R SEXP / \" + value);\n\t\t}\n\t}\n\t/** Protect this SEXP */\n\tprotect(){ R.libR.Rf_protect(this.sexp); }\n\t/** Unprotect SEXPs */\n\tstatic unprotect(depth=1){ R.libR.Rf_unprotect(depth); }\n\tunprotect(depth=1){ R.libR.Rf_unprotect(depth); }\n\t/** Preserve this SEXP. Please use protect() if you can. */\n\tpreserve(){ R.libR.R_PreserveObject(this.sexp); }\n\t/** Release preserved SEXP. protect()ed SEXP should be released with unprotect() */\n\trelease(){ R.libR.R_ReleaseObject(this.sexp); }\n\t/** Return true if this SEXP is List. */\n\tisList(){ return R.libR.Rf_isList(this.sexp); }\n\t/** Return true if this SEXP is Vector. Please note single scalar value in R is vector. */\n\tisVector(){ return R.libR.Rf_isVector(this.sexp); }\n\t/** Return the length of vector. */\n\tlength(){ return R.libR.Rf_length(this.sexp); }\n\t/** Return true if this SEXP is null. */\n\tisNull(){ return R.libR.Rf_isNull(this.sexp); }\n\tisComplex(){ return R.libR.Rf_isComplex(this.sexp); }\n\tisExpression(){ return R.libR.Rf_isExpression(this.sexp); }\n\tisInteger(){ return R.libR.Rf_isInteger(this.sexp); }\n\tisLogical(){ return R.libR.Rf_isLogical(this.sexp); }\n\tisReal(){ return R.libR.Rf_isReal(this.sexp); }\n\tisValidString(){ return R.libR.Rf_isValidString(this.sexp); }\n\tisFactor(){ return R.libR.Rf_isFactor(this.sexp); }\n\tdataptr(){ return R.libR.DATAPTR(this.sexp); }\n\tasChar(){\n\t\tif(this.sexp.address() == R.R_NaString.sexp.address()){ return void 0;}\n\t\tif(this.sexp.address() == R.R_BlankString.sexp.address()){ return \"\";}\n\t\treturn R.libR.Rf_translateCharUTF8(R.libR.Rf_asChar(this.sexp)).slice();\n\t}\n\t/** Return sizeof(SEXP) in byte. */\n\tstatic get SEXPSize(){\n\t\tif(sexpSize == void 0){\n\t\t\tconst intSEXP = new SEXPWrap(0);\n\t\t\tsexpSize = intSEXP.dataptr().address() - intSEXP.sexp.address();\n\t\t}\n\t\treturn sexpSize;\n\t}\n\tget names(){\n\t\tlet names = new SEXPWrap(R.libR.Rf_getAttrib(this.sexp, R.R_NamesSymbol));\n\t\treturn names.isNull() ? undefined : names.getValue();\n\t}\n\tset names(newtag){\n\t\tif (newtag === void 0) return;\n\t\tR.libR.Rf_setAttrib(this.sexp, R.R_NamesSymbol, (new SEXPWrap(newtag)).sexp);\n\t}\n\t/** set attr of this variable. */\n\tsetAttribute(attrname, newattr){\n\t\tconst attrsymbol = R.libR.Rf_install(attrname);\n\t\tR.libR.Rf_setAttrib(this.sexp, attrsymbol, (new SEXPWrap(newattr)).sexp);\n\t}\n\t/** get attr of this variable. */\n\tgetAttribute(attrname){\n\t\tconst attrvalue = new SEXPWrap(this._getAttribute_raw(attrname));\n\t\treturn attrvalue.getValue();\n\t}\n\t/** get attr SEXP of this variable. */\n\t_getAttribute_raw(attrname){\n\t\tconst attrsymbol = R.libR.Rf_install(attrname);\n\t\treturn R.libR.Rf_getAttrib(this.sexp, attrsymbol);\n\t}\n\tgetValue(){\n\t\tif(this.sexp.address() == 0 || this.isNull()){\n\t\t\treturn null;\n\t\t}\n\t\tconst len = this.length();\n\t\tif(len == 0){\n\t\t\treturn [];\n\t\t}if(this.isList()){\n\t\t\t// TODO: support this\n\t\t\t/*\n\t\t\tlet v = this.sexp;\n\t\t\treturn R.range(0, len).map( (e) => {\n\t\t\t\tlet a = R.libR.CAR(v);\n\t\t\t\tv = R.libR.CDR(v);\n\t\t\t\treturn this._getValue_scalar(a);\n\t\t\t});*/\n\t\t\tconsole.log(\"LIST NOT SUPPORTED\");\n\t\t\treturn undefined;\n\t\t}else if(this.isVector()){\t\t// be careful; is.vector(1) is even True\n\t\t\tlet itemtype;\n\t\t\tlet values = [];\n\t\t\tif(this.isInteger() || this.isLogical() || this.isFactor()){\n\t\t\t\titemtype = ref.types.int;\n\t\t\t\tconst f = this.isLogical() ? (e) => !!e : (e) => e;\n\t\t\t\tconst p = ref.reinterpret(this.dataptr(), itemtype.size * len);\n\t\t\t\tvalues = R.range(0, len).map( (i) => ref.get(p, itemtype.size * i, itemtype) )\n\t\t\t\t\t.map( (e) => e == R.R_NaInt ? undefined : f(e));\n\t\t\t\tif(this.isFactor()){\n\t\t\t\t\tconst levels = this.getAttribute(\"levels\");\n\t\t\t\t\tconst class_ = this.getAttribute(\"class\");\n\t\t\t\t\tconst isOrdered = Array.isArray(class_) && class_.indexOf(\"ordered\") !== -1;\n\t\t\t\t\tvalues = new RFactor(values.map((v) => levels[v - 1]), levels, isOrdered);\n\t\t\t\t}\n\t\t\t}else if(this.isReal()){\n\t\t\t\titemtype = ref.types.double;\n\t\t\t\tconst p = ref.reinterpret(this.dataptr(), itemtype.size * len);\n\t\t\t\tvalues = R.range(0, len).map( (i) => ref.get(p, itemtype.size * i, itemtype) );\n\t\t\t\t/* Discriminate NA from NaN (1954; the year Ross Ihaka was born) */\n\t\t\t\t/* see main/arithmetic.c for detail. */\n\t\t\t\titemtype = ref.types.uint;\n\t\t\t\tconst q = ref.reinterpret(this.dataptr(), itemtype.size * len * 2);\n\t\t\t\tR.range(0, len).map( (i) => {\n\t\t\t\t\tif(isNaN(values[i])){\n\t\t\t\t\t\tif(ref.get(q, itemtype.size * i * 2, itemtype) == 1954) values[i] = undefined;\n\t\t\t\t\t}\n\t\t\t\t});\n\t\t\t}else if(this.isComplex()){\n\t\t\t\titemtype = ComplexInR;\n\t\t\t\tconst p = ref.reinterpret(this.dataptr(), itemtype.size * len);\n\t\t\t\tvalues = R.range(0, len).map( (i) => ref.get(p, itemtype.size * i, itemtype))\n\t\t\t\t\t.map( (e) => new Complex(e.r, e.i));\n\t\t\t}else if(this.isValidString()){\n\t\t\t\tvalues = R.range(0, len).map((i) => R.libR.STRING_ELT(this.sexp, i))\n\t\t\t\t\t.map((e) => {\n\t\t\t\t\t\tconst s = new SEXPWrap(e);\n\t\t\t\t\t\treturn s.asChar();\n\t\t\t\t\t});\n\t\t\t}else if(this.isExpression()){\n\t\t\t\tdebug(\"getValue() for RExpression\");\n\t\t\t\tvalues = [\"(R Expression)\"];\n\t\t\t}else{\n\t\t\t\tvalues = [\"Unsupported vector item!\"];\n\t\t\t}\n\t\t\treturn values.length == 1 ? values[0] : values;\n\t\t}else{\n\t\t\treturn \"unknown type!\";\n\t\t}\n\t}\n\t_getValue_scalar(sexp){\n\t\t// 'Number' includes complex, 'Vector' includes Array and Matrix\n\t\tif(R.libR.Rf_isInteger(sexp)){\n\t\t\treturn R.libR.Rf_asInteger(sexp);\n\t\t}else if(R.libR.Rf_isNumeric(sexp)){\n\t\t\treturn R.libR.Rf_asReal(sexp);\n\t\t}else if(R.libR.Rf_isValidString(sexp)){\n\t\t\treturn R.libR.Rf_translateCharUTF8(R.libR.Rf_asChar(sexp)).slice();\n\t\t}else{\n\t\t\treturn \"SEXPWRAP: unknown SEXP Type\";\n\t\t}\n\t}\n}\n\n/*\n * vim: filetype=javascript\n */\n",
     "static": true,
     "longname": "/Users/kcrt/prog/libr-bridge/SEXPWrap.mjs",
     "access": "public",
@@ -1626,7 +1771,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 87,
+    "__docId__": 95,
     "kind": "variable",
     "name": "debug",
     "memberof": "libr-bridge/SEXPWrap.mjs",
@@ -1647,7 +1792,7 @@
     "ignore": true
   },
   {
-    "__docId__": 88,
+    "__docId__": 96,
     "kind": "variable",
     "name": "sexpSize",
     "memberof": "libr-bridge/SEXPWrap.mjs",
@@ -1668,7 +1813,7 @@
     "ignore": true
   },
   {
-    "__docId__": 89,
+    "__docId__": 97,
     "kind": "class",
     "name": "SEXPWrap",
     "memberof": "libr-bridge/SEXPWrap.mjs",
@@ -1684,7 +1829,7 @@
     "interface": false
   },
   {
-    "__docId__": 90,
+    "__docId__": 98,
     "kind": "constructor",
     "name": "constructor",
     "memberof": "libr-bridge/SEXPWrap.mjs~SEXPWrap",
@@ -1698,7 +1843,7 @@
     "undocument": true
   },
   {
-    "__docId__": 91,
+    "__docId__": 99,
     "kind": "member",
     "name": "sexp",
     "memberof": "libr-bridge/SEXPWrap.mjs~SEXPWrap",
@@ -1715,7 +1860,7 @@
     }
   },
   {
-    "__docId__": 92,
+    "__docId__": 100,
     "kind": "method",
     "name": "__initializeWithValue",
     "memberof": "libr-bridge/SEXPWrap.mjs~SEXPWrap",
@@ -1734,155 +1879,6 @@
         ]
       }
     ],
-    "return": null
-  },
-  {
-    "__docId__": 99,
-    "kind": "method",
-    "name": "protect",
-    "memberof": "libr-bridge/SEXPWrap.mjs~SEXPWrap",
-    "generator": false,
-    "async": false,
-    "static": false,
-    "longname": "libr-bridge/SEXPWrap.mjs~SEXPWrap#protect",
-    "access": "public",
-    "description": "Protect this SEXP",
-    "lineNumber": 108,
-    "params": [],
-    "return": null
-  },
-  {
-    "__docId__": 100,
-    "kind": "method",
-    "name": "unprotect",
-    "memberof": "libr-bridge/SEXPWrap.mjs~SEXPWrap",
-    "generator": false,
-    "async": false,
-    "static": true,
-    "longname": "libr-bridge/SEXPWrap.mjs~SEXPWrap.unprotect",
-    "access": "public",
-    "description": "Unprotect SEXPs",
-    "lineNumber": 110,
-    "params": [
-      {
-        "name": "depth",
-        "optional": true,
-        "types": [
-          "number"
-        ],
-        "defaultRaw": 1,
-        "defaultValue": "1"
-      }
-    ],
-    "return": null
-  },
-  {
-    "__docId__": 101,
-    "kind": "method",
-    "name": "unprotect",
-    "memberof": "libr-bridge/SEXPWrap.mjs~SEXPWrap",
-    "generator": false,
-    "async": false,
-    "static": false,
-    "longname": "libr-bridge/SEXPWrap.mjs~SEXPWrap#unprotect",
-    "access": "public",
-    "description": null,
-    "lineNumber": 111,
-    "undocument": true,
-    "params": [
-      {
-        "name": "depth",
-        "optional": true,
-        "types": [
-          "number"
-        ],
-        "defaultRaw": 1,
-        "defaultValue": "1"
-      }
-    ],
-    "return": null
-  },
-  {
-    "__docId__": 102,
-    "kind": "method",
-    "name": "preserve",
-    "memberof": "libr-bridge/SEXPWrap.mjs~SEXPWrap",
-    "generator": false,
-    "async": false,
-    "static": false,
-    "longname": "libr-bridge/SEXPWrap.mjs~SEXPWrap#preserve",
-    "access": "public",
-    "description": "Preserve this SEXP. Please use protect() if you can.",
-    "lineNumber": 113,
-    "params": [],
-    "return": null
-  },
-  {
-    "__docId__": 103,
-    "kind": "method",
-    "name": "release",
-    "memberof": "libr-bridge/SEXPWrap.mjs~SEXPWrap",
-    "generator": false,
-    "async": false,
-    "static": false,
-    "longname": "libr-bridge/SEXPWrap.mjs~SEXPWrap#release",
-    "access": "public",
-    "description": "Release preserved SEXP. protect()ed SEXP should be released with unprotect()",
-    "lineNumber": 115,
-    "params": [],
-    "return": null
-  },
-  {
-    "__docId__": 104,
-    "kind": "method",
-    "name": "isList",
-    "memberof": "libr-bridge/SEXPWrap.mjs~SEXPWrap",
-    "generator": false,
-    "async": false,
-    "static": false,
-    "longname": "libr-bridge/SEXPWrap.mjs~SEXPWrap#isList",
-    "access": "public",
-    "description": "Return true if this SEXP is List.",
-    "lineNumber": 117,
-    "params": [],
-    "return": {
-      "types": [
-        "*"
-      ]
-    }
-  },
-  {
-    "__docId__": 105,
-    "kind": "method",
-    "name": "isVector",
-    "memberof": "libr-bridge/SEXPWrap.mjs~SEXPWrap",
-    "generator": false,
-    "async": false,
-    "static": false,
-    "longname": "libr-bridge/SEXPWrap.mjs~SEXPWrap#isVector",
-    "access": "public",
-    "description": "Return true if this SEXP is Vector. Please note single scalar value in R is vector.",
-    "lineNumber": 119,
-    "params": [],
-    "return": {
-      "types": [
-        "*"
-      ]
-    }
-  },
-  {
-    "__docId__": 106,
-    "kind": "method",
-    "name": "length",
-    "memberof": "libr-bridge/SEXPWrap.mjs~SEXPWrap",
-    "generator": false,
-    "async": false,
-    "static": false,
-    "longname": "libr-bridge/SEXPWrap.mjs~SEXPWrap#length",
-    "access": "public",
-    "description": "Return the length of vector.",
-    "lineNumber": 121,
-    "params": [],
     "return": {
       "types": [
         "*"
@@ -1892,115 +1888,111 @@
   {
     "__docId__": 107,
     "kind": "method",
-    "name": "isNull",
+    "name": "protect",
     "memberof": "libr-bridge/SEXPWrap.mjs~SEXPWrap",
     "generator": false,
     "async": false,
     "static": false,
-    "longname": "libr-bridge/SEXPWrap.mjs~SEXPWrap#isNull",
+    "longname": "libr-bridge/SEXPWrap.mjs~SEXPWrap#protect",
     "access": "public",
-    "description": "Return true if this SEXP is null.",
-    "lineNumber": 123,
+    "description": "Protect this SEXP",
+    "lineNumber": 129,
     "params": [],
-    "return": {
-      "types": [
-        "*"
-      ]
-    }
+    "return": null
   },
   {
     "__docId__": 108,
     "kind": "method",
-    "name": "isComplex",
+    "name": "unprotect",
     "memberof": "libr-bridge/SEXPWrap.mjs~SEXPWrap",
     "generator": false,
     "async": false,
-    "static": false,
-    "longname": "libr-bridge/SEXPWrap.mjs~SEXPWrap#isComplex",
+    "static": true,
+    "longname": "libr-bridge/SEXPWrap.mjs~SEXPWrap.unprotect",
     "access": "public",
-    "description": null,
-    "lineNumber": 124,
-    "undocument": true,
-    "params": [],
-    "return": {
-      "types": [
-        "*"
-      ]
-    }
+    "description": "Unprotect SEXPs",
+    "lineNumber": 131,
+    "params": [
+      {
+        "name": "depth",
+        "optional": true,
+        "types": [
+          "number"
+        ],
+        "defaultRaw": 1,
+        "defaultValue": "1"
+      }
+    ],
+    "return": null
   },
   {
     "__docId__": 109,
     "kind": "method",
-    "name": "isExpression",
+    "name": "unprotect",
     "memberof": "libr-bridge/SEXPWrap.mjs~SEXPWrap",
     "generator": false,
     "async": false,
     "static": false,
-    "longname": "libr-bridge/SEXPWrap.mjs~SEXPWrap#isExpression",
+    "longname": "libr-bridge/SEXPWrap.mjs~SEXPWrap#unprotect",
     "access": "public",
     "description": null,
-    "lineNumber": 125,
+    "lineNumber": 132,
     "undocument": true,
-    "params": [],
-    "return": {
-      "types": [
-        "*"
-      ]
-    }
+    "params": [
+      {
+        "name": "depth",
+        "optional": true,
+        "types": [
+          "number"
+        ],
+        "defaultRaw": 1,
+        "defaultValue": "1"
+      }
+    ],
+    "return": null
   },
   {
     "__docId__": 110,
     "kind": "method",
-    "name": "isInteger",
+    "name": "preserve",
     "memberof": "libr-bridge/SEXPWrap.mjs~SEXPWrap",
     "generator": false,
     "async": false,
     "static": false,
-    "longname": "libr-bridge/SEXPWrap.mjs~SEXPWrap#isInteger",
+    "longname": "libr-bridge/SEXPWrap.mjs~SEXPWrap#preserve",
     "access": "public",
-    "description": null,
-    "lineNumber": 126,
-    "undocument": true,
+    "description": "Preserve this SEXP. Please use protect() if you can.",
+    "lineNumber": 134,
     "params": [],
-    "return": {
-      "types": [
-        "*"
-      ]
-    }
+    "return": null
   },
   {
     "__docId__": 111,
     "kind": "method",
-    "name": "isLogical",
+    "name": "release",
     "memberof": "libr-bridge/SEXPWrap.mjs~SEXPWrap",
     "generator": false,
     "async": false,
     "static": false,
-    "longname": "libr-bridge/SEXPWrap.mjs~SEXPWrap#isLogical",
+    "longname": "libr-bridge/SEXPWrap.mjs~SEXPWrap#release",
     "access": "public",
-    "description": null,
-    "lineNumber": 127,
-    "undocument": true,
+    "description": "Release preserved SEXP. protect()ed SEXP should be released with unprotect()",
+    "lineNumber": 136,
     "params": [],
-    "return": {
-      "types": [
-        "*"
-      ]
-    }
+    "return": null
   },
   {
     "__docId__": 112,
     "kind": "method",
-    "name": "isReal",
+    "name": "isList",
     "memberof": "libr-bridge/SEXPWrap.mjs~SEXPWrap",
     "generator": false,
     "async": false,
     "static": false,
-    "longname": "libr-bridge/SEXPWrap.mjs~SEXPWrap#isReal",
+    "longname": "libr-bridge/SEXPWrap.mjs~SEXPWrap#isList",
     "access": "public",
-    "description": null,
-    "lineNumber": 128,
-    "undocument": true,
+    "description": "Return true if this SEXP is List.",
+    "lineNumber": 138,
     "params": [],
     "return": {
       "types": [
@@ -2011,16 +2003,15 @@
   {
     "__docId__": 113,
     "kind": "method",
-    "name": "isValidString",
+    "name": "isVector",
     "memberof": "libr-bridge/SEXPWrap.mjs~SEXPWrap",
     "generator": false,
     "async": false,
     "static": false,
-    "longname": "libr-bridge/SEXPWrap.mjs~SEXPWrap#isValidString",
+    "longname": "libr-bridge/SEXPWrap.mjs~SEXPWrap#isVector",
     "access": "public",
-    "description": null,
-    "lineNumber": 129,
-    "undocument": true,
+    "description": "Return true if this SEXP is Vector. Please note single scalar value in R is vector.",
+    "lineNumber": 140,
     "params": [],
     "return": {
       "types": [
@@ -2031,16 +2022,15 @@
   {
     "__docId__": 114,
     "kind": "method",
-    "name": "isFactor",
+    "name": "length",
     "memberof": "libr-bridge/SEXPWrap.mjs~SEXPWrap",
     "generator": false,
     "async": false,
     "static": false,
-    "longname": "libr-bridge/SEXPWrap.mjs~SEXPWrap#isFactor",
+    "longname": "libr-bridge/SEXPWrap.mjs~SEXPWrap#length",
     "access": "public",
-    "description": null,
-    "lineNumber": 130,
-    "undocument": true,
+    "description": "Return the length of vector.",
+    "lineNumber": 142,
     "params": [],
     "return": {
       "types": [
@@ -2051,16 +2041,15 @@
   {
     "__docId__": 115,
     "kind": "method",
-    "name": "dataptr",
+    "name": "isNull",
     "memberof": "libr-bridge/SEXPWrap.mjs~SEXPWrap",
     "generator": false,
     "async": false,
     "static": false,
-    "longname": "libr-bridge/SEXPWrap.mjs~SEXPWrap#dataptr",
+    "longname": "libr-bridge/SEXPWrap.mjs~SEXPWrap#isNull",
     "access": "public",
-    "description": null,
-    "lineNumber": 131,
-    "undocument": true,
+    "description": "Return true if this SEXP is null.",
+    "lineNumber": 144,
     "params": [],
     "return": {
       "types": [
@@ -2071,15 +2060,15 @@
   {
     "__docId__": 116,
     "kind": "method",
-    "name": "asChar",
+    "name": "isComplex",
     "memberof": "libr-bridge/SEXPWrap.mjs~SEXPWrap",
     "generator": false,
     "async": false,
     "static": false,
-    "longname": "libr-bridge/SEXPWrap.mjs~SEXPWrap#asChar",
+    "longname": "libr-bridge/SEXPWrap.mjs~SEXPWrap#isComplex",
     "access": "public",
     "description": null,
-    "lineNumber": 132,
+    "lineNumber": 145,
     "undocument": true,
     "params": [],
     "return": {
@@ -2090,6 +2079,166 @@
   },
   {
     "__docId__": 117,
+    "kind": "method",
+    "name": "isExpression",
+    "memberof": "libr-bridge/SEXPWrap.mjs~SEXPWrap",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "libr-bridge/SEXPWrap.mjs~SEXPWrap#isExpression",
+    "access": "public",
+    "description": null,
+    "lineNumber": 146,
+    "undocument": true,
+    "params": [],
+    "return": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 118,
+    "kind": "method",
+    "name": "isInteger",
+    "memberof": "libr-bridge/SEXPWrap.mjs~SEXPWrap",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "libr-bridge/SEXPWrap.mjs~SEXPWrap#isInteger",
+    "access": "public",
+    "description": null,
+    "lineNumber": 147,
+    "undocument": true,
+    "params": [],
+    "return": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 119,
+    "kind": "method",
+    "name": "isLogical",
+    "memberof": "libr-bridge/SEXPWrap.mjs~SEXPWrap",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "libr-bridge/SEXPWrap.mjs~SEXPWrap#isLogical",
+    "access": "public",
+    "description": null,
+    "lineNumber": 148,
+    "undocument": true,
+    "params": [],
+    "return": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 120,
+    "kind": "method",
+    "name": "isReal",
+    "memberof": "libr-bridge/SEXPWrap.mjs~SEXPWrap",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "libr-bridge/SEXPWrap.mjs~SEXPWrap#isReal",
+    "access": "public",
+    "description": null,
+    "lineNumber": 149,
+    "undocument": true,
+    "params": [],
+    "return": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 121,
+    "kind": "method",
+    "name": "isValidString",
+    "memberof": "libr-bridge/SEXPWrap.mjs~SEXPWrap",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "libr-bridge/SEXPWrap.mjs~SEXPWrap#isValidString",
+    "access": "public",
+    "description": null,
+    "lineNumber": 150,
+    "undocument": true,
+    "params": [],
+    "return": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 122,
+    "kind": "method",
+    "name": "isFactor",
+    "memberof": "libr-bridge/SEXPWrap.mjs~SEXPWrap",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "libr-bridge/SEXPWrap.mjs~SEXPWrap#isFactor",
+    "access": "public",
+    "description": null,
+    "lineNumber": 151,
+    "undocument": true,
+    "params": [],
+    "return": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 123,
+    "kind": "method",
+    "name": "dataptr",
+    "memberof": "libr-bridge/SEXPWrap.mjs~SEXPWrap",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "libr-bridge/SEXPWrap.mjs~SEXPWrap#dataptr",
+    "access": "public",
+    "description": null,
+    "lineNumber": 152,
+    "undocument": true,
+    "params": [],
+    "return": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 124,
+    "kind": "method",
+    "name": "asChar",
+    "memberof": "libr-bridge/SEXPWrap.mjs~SEXPWrap",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "libr-bridge/SEXPWrap.mjs~SEXPWrap#asChar",
+    "access": "public",
+    "description": null,
+    "lineNumber": 153,
+    "undocument": true,
+    "params": [],
+    "return": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 125,
     "kind": "get",
     "name": "SEXPSize",
     "memberof": "libr-bridge/SEXPWrap.mjs~SEXPWrap",
@@ -2099,7 +2248,7 @@
     "longname": "libr-bridge/SEXPWrap.mjs~SEXPWrap.SEXPSize",
     "access": "public",
     "description": "Return sizeof(SEXP) in byte.",
-    "lineNumber": 138,
+    "lineNumber": 159,
     "type": {
       "types": [
         "*"
@@ -2107,7 +2256,7 @@
     }
   },
   {
-    "__docId__": 118,
+    "__docId__": 126,
     "kind": "get",
     "name": "names",
     "memberof": "libr-bridge/SEXPWrap.mjs~SEXPWrap",
@@ -2117,7 +2266,7 @@
     "longname": "libr-bridge/SEXPWrap.mjs~SEXPWrap#names",
     "access": "public",
     "description": null,
-    "lineNumber": 145,
+    "lineNumber": 166,
     "undocument": true,
     "type": {
       "types": [
@@ -2126,7 +2275,7 @@
     }
   },
   {
-    "__docId__": 119,
+    "__docId__": 127,
     "kind": "set",
     "name": "names",
     "memberof": "libr-bridge/SEXPWrap.mjs~SEXPWrap",
@@ -2136,11 +2285,11 @@
     "longname": "libr-bridge/SEXPWrap.mjs~SEXPWrap#names",
     "access": "public",
     "description": null,
-    "lineNumber": 149,
+    "lineNumber": 170,
     "undocument": true
   },
   {
-    "__docId__": 120,
+    "__docId__": 128,
     "kind": "method",
     "name": "setAttribute",
     "memberof": "libr-bridge/SEXPWrap.mjs~SEXPWrap",
@@ -2150,7 +2299,7 @@
     "longname": "libr-bridge/SEXPWrap.mjs~SEXPWrap#setAttribute",
     "access": "public",
     "description": "set attr of this variable.",
-    "lineNumber": 154,
+    "lineNumber": 175,
     "params": [
       {
         "name": "attrname",
@@ -2168,7 +2317,7 @@
     "return": null
   },
   {
-    "__docId__": 121,
+    "__docId__": 129,
     "kind": "method",
     "name": "getAttribute",
     "memberof": "libr-bridge/SEXPWrap.mjs~SEXPWrap",
@@ -2178,7 +2327,7 @@
     "longname": "libr-bridge/SEXPWrap.mjs~SEXPWrap#getAttribute",
     "access": "public",
     "description": "get attr of this variable.",
-    "lineNumber": 159,
+    "lineNumber": 180,
     "params": [
       {
         "name": "attrname",
@@ -2194,7 +2343,7 @@
     }
   },
   {
-    "__docId__": 122,
+    "__docId__": 130,
     "kind": "method",
     "name": "_getAttribute_raw",
     "memberof": "libr-bridge/SEXPWrap.mjs~SEXPWrap",
@@ -2204,7 +2353,7 @@
     "longname": "libr-bridge/SEXPWrap.mjs~SEXPWrap#_getAttribute_raw",
     "access": "private",
     "description": "get attr SEXP of this variable.",
-    "lineNumber": 164,
+    "lineNumber": 185,
     "params": [
       {
         "name": "attrname",
@@ -2220,7 +2369,7 @@
     }
   },
   {
-    "__docId__": 123,
+    "__docId__": 131,
     "kind": "method",
     "name": "getValue",
     "memberof": "libr-bridge/SEXPWrap.mjs~SEXPWrap",
@@ -2230,7 +2379,7 @@
     "longname": "libr-bridge/SEXPWrap.mjs~SEXPWrap#getValue",
     "access": "public",
     "description": null,
-    "lineNumber": 168,
+    "lineNumber": 189,
     "undocument": true,
     "params": [],
     "return": {
@@ -2240,7 +2389,7 @@
     }
   },
   {
-    "__docId__": 124,
+    "__docId__": 132,
     "kind": "method",
     "name": "_getValue_scalar",
     "memberof": "libr-bridge/SEXPWrap.mjs~SEXPWrap",
@@ -2250,7 +2399,7 @@
     "longname": "libr-bridge/SEXPWrap.mjs~SEXPWrap#_getValue_scalar",
     "access": "private",
     "description": null,
-    "lineNumber": 236,
+    "lineNumber": 257,
     "undocument": true,
     "params": [
       {
@@ -2267,7 +2416,7 @@
     }
   },
   {
-    "__docId__": 125,
+    "__docId__": 133,
     "kind": "file",
     "name": "libr-bridge/develop.mjs",
     "content": "\"use strict\";\nimport R from \"./R\";\nimport { RFactor } from \"./RObject\";\n\n/* Execute this script with:\n *   node -r @std/esm example.mjs\n *     or \n *   node --experimental-modules example.mjs\n * If something is wrong, try with:\n *   DEBUG=libr-bridge:* node -r @std/esm example.mjs\n */\n\nlet r = new R();\n\nconst fac = new RFactor([\"apple\", \"banana\", \"apple\", \"orange\"], void 0, true);\nr.setVar(\"facvar\", fac);\nr.evalWithTry(\"print(attr(facvar, \\\"class\\\"))\");\nr.evalWithTry(\"print(attr(facvar, \\\"levels\\\"))\");\nr.evalWithTry(\"print(typeof(attr(facvar, \\\"levels\\\")))\");\nr.evalWithTry(\"print(typeof(facvar))\");\nr.evalWithTry(\"print(facvar)\");\n\nconst a = r.getVar(\"facvar\");\nconsole.log(a);\n\n/*\n * vim: filetype=javascript\n */\n",
@@ -2278,7 +2427,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 126,
+    "__docId__": 134,
     "kind": "variable",
     "name": "r",
     "memberof": "libr-bridge/develop.mjs",
@@ -2299,7 +2448,7 @@
     "ignore": true
   },
   {
-    "__docId__": 127,
+    "__docId__": 135,
     "kind": "variable",
     "name": "fac",
     "memberof": "libr-bridge/develop.mjs",
@@ -2320,7 +2469,7 @@
     "ignore": true
   },
   {
-    "__docId__": 128,
+    "__docId__": 136,
     "kind": "variable",
     "name": "a",
     "memberof": "libr-bridge/develop.mjs",
@@ -2341,7 +2490,7 @@
     "ignore": true
   },
   {
-    "__docId__": 129,
+    "__docId__": 137,
     "kind": "file",
     "name": "libr-bridge/example.mjs",
     "content": "\"use strict\";\nimport R from \"./R\";\n\n/* Execute this script with:\n *   node -r @std/esm example.mjs\n *     or \n *   node --experimental-modules example.mjs\n * If something is wrong, try with:\n *   DEBUG=libr-bridge:* node -r @std/esm example.mjs\n */\n\nlet r = new R();\n\nconst arrA = [1.00, 3.36, 8.01, 1.22, 3.74, 2.43, 7.95, 8.32, 7.45, 4.36];\nconst arrB = [1.04, 3.65, 6.82, 1.46, 2.70, 2.49, 7.48, 8.28, 8.93, 5.63];\n\n/* Some functions are already loaded to libr-bridge */\nconsole.log(\"Mean of arrA: \" + r.mean(arrA));\nconsole.log(\"Mean of arrB: \" + r.mean(arrB));\nconsole.log(\"Peason's correlation coefficient: \" + r.cor(arrA, arrB));\n//TODO: r['wilcox.test'](arrA, arrB);\n\n/* You can pass data to R */\nr.setVar(\"a\", arrA);\n\n/* And data can be used in R */\nconsole.log(r.eval(\"sum(a)\"));\nr.eval(\"b <- a / 2\");\nconsole.log(r.eval(\"b\"));\n\n/* You can receive data from R */\nconst b = r.getVar(\"b\");\nconsole.log(b);\n\n/* Execute complex command with eval. */\nr.eval(`\n\tmyfactorial <- function(x) {\n\t\tif (x == 0) {\n\t\t\treturn(1)\n\t\t} else {\n\t\t\treturn(x * myfactorial(x - 1))\n\t\t}\n\t}\n`);\nlet factorial_50 = r.func(\"myfactorial\")(50);\nconsole.log(factorial_50);\n\n\n/*\n * vim: filetype=javascript\n */\n",
@@ -2352,7 +2501,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 130,
+    "__docId__": 138,
     "kind": "variable",
     "name": "r",
     "memberof": "libr-bridge/example.mjs",
@@ -2373,7 +2522,7 @@
     "ignore": true
   },
   {
-    "__docId__": 131,
+    "__docId__": 139,
     "kind": "variable",
     "name": "arrA",
     "memberof": "libr-bridge/example.mjs",
@@ -2394,7 +2543,7 @@
     "ignore": true
   },
   {
-    "__docId__": 132,
+    "__docId__": 140,
     "kind": "variable",
     "name": "arrB",
     "memberof": "libr-bridge/example.mjs",
@@ -2415,7 +2564,7 @@
     "ignore": true
   },
   {
-    "__docId__": 133,
+    "__docId__": 141,
     "kind": "variable",
     "name": "b",
     "memberof": "libr-bridge/example.mjs",
@@ -2436,7 +2585,7 @@
     "ignore": true
   },
   {
-    "__docId__": 134,
+    "__docId__": 142,
     "kind": "variable",
     "name": "factorial_50",
     "memberof": "libr-bridge/example.mjs",
@@ -2457,7 +2606,7 @@
     "ignore": true
   },
   {
-    "__docId__": 135,
+    "__docId__": 143,
     "kind": "file",
     "name": "libr-bridge/index.js",
     "content": "module.exports = require(\"esm\")(module)(\"./R.mjs\").default;\n",
@@ -2468,7 +2617,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 136,
+    "__docId__": 144,
     "kind": "file",
     "name": "libr-bridge/index.mjs",
     "content": "\"use strict\";\nimport R from \"./R\";\nexport default R;\n",
@@ -2479,7 +2628,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 137,
+    "__docId__": 145,
     "kind": "file",
     "name": "libr-bridge/libR.mjs",
     "content": "\"use strict\";\nimport child_process from \"child_process\";\nimport process from \"process\";\nimport path from \"path\";\n\nimport ffi from \"ffi\";\nimport ref from \"ref\";\nimport refArray from \"ref-array\";\nimport refStruct from \"ref-struct\";\n\nimport { default as windowsRegistry } from \"./safe-windows-registry.js\";\n\nimport debug_ from \"debug\";\nconst debug = debug_(\"libr-bridge:libR\");\n\n/* Type */\nconst stringArr = refArray(ref.types.CString);\t\t\t// char * [] or string[]\nexport const SEXP = ref.refType(ref.types.void);\nexport const SEXPREC_ALIGN_SIZE = ref.types.double.size;\nexport const ComplexInR = refStruct({\n\tr: ref.types.double,\n\ti: ref.types.double\n});\n\n/** R SEXP type enums */\nexport const SEXPTYPE = {\n\tNILSXP\t\t: 0,\t/* nil : NULL */\n\tSYMSXP\t\t: 1,\t/* symbols */\n\tLISTSXP\t\t: 2,\t/* lists of dotted pairs */\n\tCLOSXP\t\t: 3,\t/* closures */\n\tENVSXP\t\t: 4,\t/* environments */\n\tPROMSXP\t\t: 5,\t/* promises: [un]evaluated closure arguments */\n\tLANGSXP\t\t: 6,\t/* language constructs (special lists) */\n\tSPECIALSXP\t: 7,\t/* special forms */\n\tBUILTINSXP\t: 8,\t/* builtin non-special forms */\n\tCHARSXP\t\t: 9,\t/* \"scalar\" string type (internal only)*/\n\tLGLSXP\t\t: 10,\t/* logical vectors */\n\tINTSXP\t\t: 13,\t/* integer vectors */\n\tREALSXP\t\t: 14,\t/* real variables */\n\tCPLXSXP\t\t: 15,\t/* complex variables */\n\tSTRSXP\t\t: 16,\t/* string vectors */\n\tDOTSXP\t\t: 17,\t/* dot-dot-dot object */\n\tANYSXP\t\t: 18,\t/* make \"any\" args work */\n\tVECSXP\t\t: 19,\t/* generic vectors */\n\tEXPRSXP\t\t: 20,\t/* expressions vectors */\n\tBCODESXP\t: 21,\t/* byte code */\n\tEXTPTRSXP\t: 22,\t/* external pointer */\n\tWEAKREFSXP\t: 23,\t/* weak reference */\n\tRAWSXP\t\t: 24,\t/* raw bytes */\n\tS4SXP\t\t: 25,\t/* S4 non-vector */\n\tNEWSXP\t\t: 30,   /* fresh node creaed in new page */\n\tFREESXP\t\t: 31,   /* node released by GC */\n\tFUNSXP\t\t: 99\t/* Closure or Builtin */\n};\n\nexport const ParseStatus = {\n\tPARSE_NULL: 0,\n\tPARSE_OK: 1,\n\tPARSE_INCOMPLETE: 2,\n\tPARSE_ERROR: 3,\n\tPARSE_EOF: 4\n};\n\nexport const cetype_t = {\n\tCE_NATIVE : 0,\n\tCE_UTF8   : 1,\n\tCE_LATIN1 : 2,\n\tCE_BYTES  : 3,\n\tCE_SYMBOL : 5,\n\tCE_ANY    : 99\n};\n\nconst apiList = {\n\t\"CAR\": [SEXP, [SEXP]], \n\t\"CDR\": [SEXP, [SEXP]],\n\t\"NAMED\": [\"int\", [SEXP]],\n\t\"R_CHAR\": [\"string\", [SEXP]],\n\t\"R_curErrorBuf\": [\"string\", []],\n\t\"R_NilValue\": [SEXP, []],\n\t// \"R_ParseEvalString\": [SEXP, [\"string\", SEXP]],\t- I don't know why, but Windows dll doesn't have this function.\n\t\"R_ParseVector\": [SEXP, [SEXP, \"int\", \"int*\", SEXP]], // SEXP R_ParseVector(SEXP text, int n, ParseStatus *status, SEXP srcfile)\n\t\"R_PreserveObject\": [\"void\", [SEXP]],\n\t\"R_ReleaseObject\": [\"void\", [SEXP]],\n\t\"R_setStartTime\": [\"void\", []],\t\t\t\t\t\t// void R_setStartTime(void);\n\t// \"R_sysframe\": [SEXP, [\"int\", \"pointer\"]],\n\t\"R_tryEval\": [SEXP, [SEXP, SEXP, \"int*\"]],\t\t\t// SEXP R_tryEval(SEXP e, SEXP env, int *ErrorOccurred)\n\t\"R_tryEvalSilent\": [SEXP, [SEXP, SEXP, \"int*\"]],\t// SEXP R_tryEvalSilent(SEXP e, SEXP env, int *ErrorOccurred)\n\t\"Rf_GetRowNames\": [SEXP, [SEXP]],\n\t\"Rf_ScalarInteger\": [SEXP, [\"int\"]],\n\t\"Rf_ScalarLogical\": [SEXP, [\"int\"]],\n\t\"Rf_ScalarReal\": [SEXP, [\"double\"]],\t\t\t\t// SEXP ScalarReal(double x)\t\n\t\"Rf_allocVector\": [SEXP, [\"int\", \"int\"]],\t\t\t// SEXP Rf_allocVector(SEXPTYPE, int R_xlen_t);\n\t\"Rf_asChar\": [SEXP, [SEXP]],\n\t\"Rf_asInteger\": [\"int\", [SEXP]],\n\t\"Rf_asLogical\": [\"int\", [SEXP]],\n\t\"Rf_asReal\": [\"double\", [SEXP]],\n\t\"Rf_cons\": [SEXP, [SEXP, SEXP]],\n\t\"Rf_defineVar\": [\"void\", [SEXP, SEXP, \"pointer\"]],\n\t\"Rf_elt\": [SEXP, [SEXP, \"int\"]],\n\t\"Rf_endEmbeddedR\": [\"void\", [\"int\"]],\t\t\t\t// void Rf_endEmbeddedR(int fatal);\n\t\"Rf_eval\": [SEXP, [SEXP, \"int*\"]],\n\t\"Rf_findFun\": [SEXP, [SEXP, SEXP]],\t\t\t\t\t// SEXP Rf_findFun(SEXP, SEXP)\n\t\"Rf_findVar\": [SEXP, [SEXP, SEXP]],\t\t\t\t\t// SEXP Rf_findVar(SEXP, SEXP)\n\t\"Rf_getAttrib\": [SEXP, [SEXP, SEXP]],\n\t\"Rf_initEmbeddedR\": [\"int\", [\"int\", stringArr]],\t// int Rf_initEmbeddedR(int argc, char *argv[]);\n\t\"Rf_initialize_R\": [\"int\", [\"int\", stringArr]],\n\t\"Rf_install\": [SEXP, [\"string\"]],\n\t\"Rf_isArray\": [\"int\", [SEXP]],\t\t\t\t\t\t// Rboolean Rf_isArray(SEXP);\n\t\"Rf_isComplex\": [\"int\", [SEXP]],\t\t\t\t\t// Rboolean Rf_isComplex(SEXP);\n\t\"Rf_isExpression\": [\"int\", [SEXP]],\t\t\t\t\t// Rboolean Rf_isExpression(SEXP);\n\t\"Rf_isFactor\": [\"int\", [SEXP]],\t\t\t\t\t\t// Rboolean Rf_isFactor(SEXP);\n\t\"Rf_isFunction\": [\"int\", [SEXP]],\t\t\t\t\t// Rboolean Rf_isFunction(SEXP);\n\t\"Rf_isInteger\": [\"int\", [SEXP]],\t\t\t\t\t// Rboolean Rf_isInteger(SEXP);\n\t\"Rf_isList\": [\"int\", [SEXP]],\t\t\t\t\t\t// Rboolean Rf_isList(SEXP);\n\t\"Rf_isLogical\": [\"int\", [SEXP]],\t\t\t\t\t// Rboolean Rf_isLogical(SEXP);\n\t\"Rf_isMatrix\": [\"int\", [SEXP]],\t\t\t\t\t\t// Rboolean Rf_isMatrix(SEXP);\n\t\"Rf_isNull\": [\"int\", [SEXP]],\t\t\t\t\t\t// Rboolean Rf_isNull(SEXP);\n\t\"Rf_isNumber\": [\"int\", [SEXP]],\t\t\t\t\t\t// Rboolean Rf_isNumber(SEXP);\n\t\"Rf_isNumeric\": [\"int\", [SEXP]],\t\t\t\t\t// Rboolean Rf_isNumeric(SEXP);\n\t\"Rf_isPrimitive\": [\"int\", [SEXP]],\t\t\t\t\t// Rboolean Rf_isPrimitive(SEXP);\n\t\"Rf_isReal\": [\"int\", [SEXP]],\t\t\t\t\t\t// Rboolean Rf_isReal(SEXP);\n\t\"Rf_isS4\": [\"int\", [SEXP]],\t\t\t\t\t\t\t// Rboolean Rf_isS4(SEXP);\n\t\"Rf_isString\": [\"int\", [SEXP]],\t\t\t\t\t\t// Rboolean Rf_isString(SEXP);\n\t\"Rf_isValidString\": [\"int\", [SEXP]],\t\t\t\t// Rboolean Rf_isValidString(SEXP);\n\t\"Rf_isVector\": [\"int\", [SEXP]],\t\t\t\t\t\t// Rboolean Rf_isVector(SEXP);\n\t\"Rf_lang1\": [SEXP, [SEXP]],\n\t\"Rf_lang2\": [SEXP, [SEXP, SEXP]],\n\t\"Rf_lang3\": [SEXP, [SEXP, SEXP, SEXP]],\n\t\"Rf_lang4\": [SEXP, [SEXP, SEXP, SEXP, SEXP]],\n\t\"Rf_lang5\": [SEXP, [SEXP, SEXP, SEXP, SEXP, SEXP]],\n\t\"Rf_lang6\": [SEXP, [SEXP, SEXP, SEXP, SEXP, SEXP, SEXP]],\n\t\"Rf_lcons\": [SEXP, [SEXP, SEXP]],\n\t\"Rf_length\": [\"int\", [SEXP]],\n\t\"Rf_lengthgets\": [SEXP, [SEXP]],\n\t\"Rf_mainloop\": [\"void\", []],\t\t\t\t\t\t// void Rf_mainloop();\n\t\"Rf_mkChar\": [SEXP, [\"string\"]],\n\t\"Rf_mkCharCE\": [SEXP, [\"string\", \"int\"]],\n\t\"Rf_mkString\": [SEXP, [\"string\"]],\n\t\"Rf_protect\": [SEXP, [SEXP]],\n\t\"Rf_setAttrib\": [SEXP, [SEXP, SEXP, SEXP]],\n\t\"Rf_setVar\": [SEXP, [SEXP, SEXP, SEXP]],\n\t\"Rf_translateCharUTF8\": [\"string\", [SEXP]],\t\t\t// const char* Rf_translateCharUTF8(SEXP x)\n\t\"Rf_unprotect\": [\"void\", [\"int\"]],\n\t\"SET_NAMED\": [\"void\", [SEXP, \"int\"]],\n\t\"SET_STRING_ELT\": [SEXP, [SEXP, \"int\", SEXP]],\t\t// memory.c\n\t\"SET_TAG\": [\"void\", [SEXP, SEXP]],\n\t\"STRING_ELT\": [SEXP, [SEXP, \"int\"]],\t\t\t\t// memory.c\n\t\"STRING_PTR\": [\"pointer\", [SEXP]],\t\t\t\t\t// memory.c\n\t\"ALTVEC_DATAPTR\": [\"pointer\", [SEXP]],\n\t\"STDVEC_DATAPTR\": [\"pointer\", [SEXP]],\n\t\"DATAPTR\": [\"pointer\", [SEXP]],\n\t\"TAG\": [SEXP, [SEXP]],\n\t\"TYPEOF\": [\"int\", [SEXP]],\n\t\"VECTOR_ELT\": [SEXP, [SEXP, \"int\"]],\n\t\"ptr_R_Busy\": [\"pointer\", undefined],\t// void R_Busy (int which)\n\t\"ptr_R_ShowMessage\": [\"pointer\", undefined],\t// void R_ShowMessage(const char *s)\n\t\"ptr_R_ReadConsole\": [\"pointer\", undefined],\t// int R_ReadConsole(const char *prompt, unsigned char *buf, int len, int addtohistory);\n\t\"ptr_R_WriteConsole\": [\"pointer\", undefined],\t\t// void R_WriteConsole(const char *buf, int len)\n\t\"ptr_R_WriteConsoleEx\": [\"pointer\", undefined],\t// void R_WriteConsoleEx(const char *buf, int len, int otype)\n\t\"R_GlobalEnv\": [SEXP, undefined], \n\t\"R_NaString\": [SEXP, undefined], \n\t\"R_BlankString\": [SEXP, undefined], \n\t//\"R_IsNA\": [\"int\", [ieee_double]],\t\t\t\t\t// Rboolean R_IsNA(double);\n\t//\"R_IsNaN\": [\"int\", [ieee_double]],\t\t\t\t// Rboolean R_IsNaN(double);\n};\n\nvar libR = undefined;\n\n/**\n * Load libR from appropriate place.\n *\t@constructor\n *\t@param r_path\t\t\t\"auto\" (default) || \"environment\" || \"system\" || \"buildin\" || path to R_HOME\n *\t\t\t\t\t\t\t\"auto\" - try \"environment\" -> \"system\" -> \"buildin\"\n *\t\t\t\t\t\t\t\"environment\" - use environmental R_HOME and LD_LIBRARY_PATH. libr-bridge handles nothing.\n *\t\t\t\t\t\t\t\"system\" - find system installed R\n *\t\t\t\t\t\t\t\"buildin\" - (NOT IMPLEMENTED) use redistributed binary attached with libr-bridge-bin\n *\t@returns libR object which enables access to dynamic link library.\n */\nexport default function createLibR(r_path = \"auto\"){\n\n\tif(libR !== void 0){\n\t\treturn libR;\n\t}\n\n\tdebug(`creating libR: ${r_path}`);\n\n\tif(r_path == \"auto\"){\n\t\ttry{\n\t\t\tlibR = createLibR(\"environment\");\n\t\t}catch(e){\n\t\t\ttry{\n\t\t\t\tlibR = createLibR(\"system\");\n\t\t\t}catch(e){\n\t\t\t\ttry{\n\t\t\t\t\tlibR = createLibR(\"buildin\");\n\t\t\t\t}catch(e){\n\t\t\t\t\tthrow new Error(\"R not found. Please specify path manually.\");\n\t\t\t\t}\n\t\t\t}\n\t\t}\n\t}else if(r_path == \"environment\"){\n\t\t// use environmental R_HOME\n\t\tif(process.env.R_HOME !== void 0){\n\t\t\tlibR = createLibR(process.env.R_HOME);\n\t\t}\n\t}else if(r_path == \"system\"){\n\t\tlet my_path;\n\t\ttry {\n\t\t\tif (process.platform == \"win32\") {\n\t\t\t\tconst windef = windowsRegistry.windef;\n\t\t\t\tlet k;\n\t\t\t\ttry {\n\t\t\t\t\tk = new windowsRegistry.Key(windef.HKEY.HKEY_LOCAL_MACHINE, \"SOFTWARE\\\\R-core\\\\R\", windef.KEY_ACCESS.KEY_READ);\n\t\t\t\t}catch(e){\n\t\t\t\t\tdebug(\"No key in HLM, finding HCU.\");\n\t\t\t\t\tk = new windowsRegistry.Key(windef.HKEY.HKEY_CURRENT_USER, \"SOFTWARE\\\\R-core\\\\R\", windef.KEY_ACCESS.KEY_READ);\n\t\t\t\t}\n\t\t\t\tmy_path = k.getValue(\"InstallPath\");\n\t\t\t\tk.close();\n\t\t\t}else{\n\t\t\t\tconst ret = child_process.execSync(\"Rscript -e \\\"cat(Sys.getenv('R_HOME'))\\\"\");\n\t\t\t\tmy_path = ret.toString();\n\t\t\t}\n\t\t\tlibR = createLibR(my_path);\n\t\t}catch(e){\n\t\t\tdebug(\"Loading system R failure: \" + e);\n\t\t\tthrow new Error(\"Couldn't load installed R (RScript not found or bad registry)\");\n\t\t}\n\t}else if(r_path == \"buildin\"){\n\t\tthrow new Error(\"NOT IMPLEMENTED.\");\n\t}else if(r_path == \"\"){\n\t\tthrow new Error(\"Please specify installed R.\");\n\t}else{\n\t\t// assuming path of installed R is specified.\n\t\tconst delim = path.delimiter;\n\t\tif(r_path.slice(-1) == path.sep) r_path = r_path.slice(0, -1);\t// remove trailing \"/\" (or \"\\\")\n\t\tprocess.env.R_HOME = r_path;\n\t\tif (process.platform == \"win32\") {\n\t\t\tprocess.env.PATH = `${r_path}\\\\bin\\\\x64${delim}` + process.env.PATH;\n\t\t\tlibR = ffi.Library(`${r_path}\\\\bin\\\\x64\\\\R.dll`, apiList);\n\t\t}else{\n\t\t\tprocess.env.LD_LIBRARY_PATH = `${r_path}${delim}${r_path}/lib${delim}` + process.env.LD_LIBRARY_PATH;\n\t\t\tprocess.env.DYLD_LIBRARY_PATH = `${r_path}${delim}${r_path}/lib${delim}` + process.env.DYLD_LIBRARY_PATH;\n\t\t\tlibR = ffi.Library(\"libR\", apiList);\n\t\t}\n\t}\n\n\tif(libR == undefined){\n\t\tthrow new Error(\"Couldn't read libR\");\n\t}\n\n\treturn libR;\n\n}\n/*\n * vim: filetype=javascript\n */\n",
@@ -2490,7 +2639,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 138,
+    "__docId__": 146,
     "kind": "variable",
     "name": "debug",
     "memberof": "libr-bridge/libR.mjs",
@@ -2511,7 +2660,7 @@
     "ignore": true
   },
   {
-    "__docId__": 139,
+    "__docId__": 147,
     "kind": "variable",
     "name": "stringArr",
     "memberof": "libr-bridge/libR.mjs",
@@ -2532,7 +2681,7 @@
     "ignore": true
   },
   {
-    "__docId__": 140,
+    "__docId__": 148,
     "kind": "variable",
     "name": "SEXP",
     "memberof": "libr-bridge/libR.mjs",
@@ -2552,7 +2701,7 @@
     }
   },
   {
-    "__docId__": 141,
+    "__docId__": 149,
     "kind": "variable",
     "name": "SEXPREC_ALIGN_SIZE",
     "memberof": "libr-bridge/libR.mjs",
@@ -2572,7 +2721,7 @@
     }
   },
   {
-    "__docId__": 142,
+    "__docId__": 150,
     "kind": "variable",
     "name": "ComplexInR",
     "memberof": "libr-bridge/libR.mjs",
@@ -2592,7 +2741,7 @@
     }
   },
   {
-    "__docId__": 143,
+    "__docId__": 151,
     "kind": "variable",
     "name": "SEXPTYPE",
     "memberof": "libr-bridge/libR.mjs",
@@ -2611,7 +2760,7 @@
     }
   },
   {
-    "__docId__": 144,
+    "__docId__": 152,
     "kind": "variable",
     "name": "ParseStatus",
     "memberof": "libr-bridge/libR.mjs",
@@ -2631,7 +2780,7 @@
     }
   },
   {
-    "__docId__": 145,
+    "__docId__": 153,
     "kind": "variable",
     "name": "cetype_t",
     "memberof": "libr-bridge/libR.mjs",
@@ -2651,7 +2800,7 @@
     }
   },
   {
-    "__docId__": 146,
+    "__docId__": 154,
     "kind": "variable",
     "name": "apiList",
     "memberof": "libr-bridge/libR.mjs",
@@ -2672,7 +2821,7 @@
     "ignore": true
   },
   {
-    "__docId__": 147,
+    "__docId__": 155,
     "kind": "variable",
     "name": "libR",
     "memberof": "libr-bridge/libR.mjs",
@@ -2693,7 +2842,7 @@
     "ignore": true
   },
   {
-    "__docId__": 148,
+    "__docId__": 156,
     "kind": "function",
     "name": "createLibR",
     "memberof": "libr-bridge/libR.mjs",
@@ -2739,7 +2888,7 @@
     }
   },
   {
-    "__docId__": 149,
+    "__docId__": 157,
     "kind": "file",
     "name": "libr-bridge/license.js",
     "content": "/**\n * @license\n * Copyright © 2017 kcrt (TAKAHASHI, Kyohei)\n * Released under the MIT license\n * http://opensource.org/licenses/mit-license.php\n *\n * Permission is hereby granted, free of charge, to any person obtaining a copy\n * of this software and associated documentation files (the \"Software\"), to deal\n * in the Software without restriction, including without limitation the rights\n * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell\n * copies of the Software, and to permit persons to whom the Software is\n * furnished to do so, subject to the following conditions:\n *\n * The above copyright notice and this permission notice shall be included in all\n * copies or substantial portions of the Software.\n *\n * THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\n * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\n * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\n * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\n * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\n * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\n * SOFTWARE.\n */\n",
@@ -2750,7 +2899,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 150,
+    "__docId__": 158,
     "kind": "file",
     "name": "libr-bridge/safe-windows-registry.js",
     "content": "if (process.platform == \"win32\") {\n\tmodule.exports = require(\"windows-registry\");\n}else{\n\tmodule.exports = void 0;\n}\n",
@@ -2761,7 +2910,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 151,
+    "__docId__": 159,
     "kind": "file",
     "name": "libr-bridge/test/assert_ext.mjs",
     "content": "export default function assert_ext(assert){\n\tassert.almostEqual = (a, b, allow = 0.001) => assert.ok(Math.abs(a - b) < allow, `${a} is not equal to ${b}`);\n\tassert.arrayEqual = (a, b) => {\n\t\tif(!Array.isArray(a) || !Array.isArray(b)){\n\t\t\tassert.fail(\"not an array.\");\n\t\t}else if(a.length != b.length){\n\t\t\tassert.fail(\"different length\");\n\t\t}else{\n\t\t\tassert.ok(a.every((e, i) => (e == b[i])), `different item: ${a} !== ${b}`);\n\t\t}\n\t};\n}\n/*\n * vim: filetype=javascript\n */\n",
@@ -2772,7 +2921,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 152,
+    "__docId__": 160,
     "kind": "function",
     "name": "assert_ext",
     "memberof": "libr-bridge/test/assert_ext.mjs",
@@ -2798,10 +2947,10 @@
     "return": null
   },
   {
-    "__docId__": 153,
+    "__docId__": 161,
     "kind": "file",
     "name": "libr-bridge/test/basic.mjs",
-    "content": "import R from \"../R\";\nimport assert from \"assert\";\nimport assert_ext from \"./assert_ext\";\nimport Complex from \"Complex\";\nimport { RFactor } from \"../RObject\";\n\nvar r;\nassert_ext(assert);\n\ndescribe(\"Initialize\", () => {\n\tit(\"Initialize\", () => {\n\t\tr = new R();\n\t});\n});\n\ndescribe(\"Primitives\", () => {\n\tit(\"Integer\", () => {\n\t\tassert.equal(1, r.eval(\"as.integer(1)\"));\n\t\tassert.equal(0, r.eval(\"as.integer(0)\"));\n\t\tassert.equal(-1, r.eval(\"as.integer(-1)\"));\n\t\tr.setVar(\"numvar\", 2017);\n\t\tassert.equal(2017, r.getVar(\"numvar\"));\n\t\tassert.equal(2017, r.eval(\"numvar\"));\n\t});\n\tit(\"Real\", () => {\n\t\tassert.equal(1.0, r.eval(\"1.0\"));\n\t\tassert.equal(0.5, r.eval(\"0.5\"));\n\t});\n\tit(\"String\", () => {\n\t\tassert.equal(\"abc\", r.eval(\"\\\"abc\\\"\"));\n\t\tr.setVar(\"strvar\", \"kcrt\");\n\t\tassert.equal(\"kcrt\", r.getVar(\"strvar\"));\n\t\tassert.equal(\"kcrt\", r.eval(\"strvar\"));\n\t\tassert.equal(\"\", r.eval(\"\\\"\\\"\"));\n\t});\n\tit(\"Logical (Boolean)\", () => {\n\t\tassert.equal(true, r.eval(\"T\"));\n\t\tassert.equal(false, r.eval(\"F\"));\n\t\tassert.notEqual(false, r.eval(\"T\"));\n\t\tassert.notEqual(true, r.eval(\"F\"));\n\t\tr.setVar(\"logvar\", true);\n\t\tassert.ok(r.eval(\"logvar\"));\n\t});\n\tit(\"Complex\", () => {\n\t\tconst cpxvar = new Complex(1, 2);\n\t\tassert.ok(cpxvar.equals(r.eval(\"1+2i\")));\n\t\tr.setVar(\"cpxvar\", cpxvar);\n\t\tassert.equal(r.eval(\"Re(cpxvar)\"), cpxvar.real);\n\t\tassert.equal(r.eval(\"Im(cpxvar)\"), cpxvar.im);\n\t\tassert.equal(r.eval(\"abs(cpxvar)\"), cpxvar.abs());\n\t\tassert.equal(r.eval(\"Arg(cpxvar)\"), cpxvar.angle());\n\t\tassert.ok(r.eval(\"cpxvar^2\").equals(cpxvar.multiply(cpxvar)));\n\t});\n});\n\ndescribe(\"Special values\", () => {\n\tit(\"Empty vector\", () => {\n\t\tassert.equal(r.eval(\"vector(mode=\\\"numeric\\\", length=0)\").length, 0);\n\t\tr.setVar(\"empty_vector\", []);\n\t\tassert.equal(r.eval(\"length(empty_vector)\"), 0);\n\t});\n\tit(\"NA\", () => {\n\t\tassert.strictEqual(r.eval(\"NA\"), void 0);\n\t\tassert.arrayEqual(r.eval(\"c(1.1, 2.1, NA)\"), [1.1, 2.1, undefined]);\n\t\tassert.arrayEqual(r.eval(\"c(1:2, NA)\"), [1, 2, undefined]);\n\t\tassert.arrayEqual(r.eval(\"c('a', '', NA)\"), [\"a\", \"\", undefined]);\n\n\t\tr.setVar(\"NASingle\", void 0);\n\t\tr.setVar(\"NAReal\", [1.0, void 0]);\n\t\tr.setVar(\"NAStr\", [\"a\", void 0]);\n\t\tr.setVar(\"NABool\", [true, void 0]);\n\t\tassert.ok(r.eval(\"is.na(NASingle) && !is.nan(NASingle)\"));\n\t\tassert.ok(r.eval(\"is.na(NAReal[2]) && !is.nan(NAReal[2])\"));\n\t\tassert.ok(r.eval(\"is.na(NAStr[2]) && !is.nan(NAStr[2])\"));\n\t\tassert.ok(r.eval(\"is.na(NABool[2]) && !is.nan(NABool[2])\"));\n\t});\n\tit(\"NaN\", () => {\n\t\tassert.ok(isNaN(r.eval(\"NaN\")));\n\t\tassert.ok(isNaN(r.eval(\"0 / 0\")));\n\t});\n\tit(\"Inf\", () => {\n\t\tassert.strictEqual(r.eval(\"Inf\"), Infinity);\n\t\tassert.strictEqual(r.eval(\"-Inf\"), -Infinity);\n\t});\n});\n\ndescribe(\"Array\", () => {\n\tconst arr_1to100 = R.range(1, 101);\n\tit(\"ES Array <-> R Array\", () => {\n\t\tassert.arrayEqual([3, 2, 1], r.eval(\"as.integer(c(3, 2, 1))\"));\n\t\tassert.arrayEqual([1, 2, 3], r.c(1, 2, 3));\n\t\tassert.arrayEqual(arr_1to100, r.eval(\"1:100\"));\n\t\tr.setVar(\"myarr\", arr_1to100);\n\t\tassert.ok(r.eval(\"all.equal(myarr, 1:100)\"));\n\t\tassert.ok(!r.eval(\"isTRUE(all.equal(myarr, 2:101))\"));\n\t\tassert.arrayEqual(arr_1to100, r.getVar(\"myarr\"));\n\t});\n\tit(\"String Array\", () => {\n\t\tvar strArr = [\"abc\", \"def\", \"ghi\", \"jkl\", \"mno\"];\n\t\tassert.arrayEqual(strArr, r.eval(\"c(\\\"abc\\\", \\\"def\\\", \\\"ghi\\\", \\\"jkl\\\", \\\"mno\\\")\"));\n\t\tr.setVar(\"strArr\", strArr);\n\t\tassert.arrayEqual(strArr, r.getVar(\"strArr\"));\n\t});\n});\n\n\ndescribe(\"Factor\", () => {\n\tconst v = [\"apple\", \"banana\", \"apple\", undefined, \"orange\"];\n\tconst idx = [1, 2, 1, undefined, 3];\n\tit(\"Create factor\", () => {\n\t\tconst fac = new RFactor(v);\n\t\tassert.arrayEqual(fac, idx);\n\t\tr.setVar(\"facvar\", fac);\n\t\tassert.arrayEqual(r.getVar(\"facvar\"), idx);\n\t});\n\tit(\"Create ordered factor\", () => {\n\t\tconst fac = new RFactor(v, void 0, true);\n\t\tassert.arrayEqual(fac, idx);\n\t\tr.setVar(\"facvar\", fac);\n\t\tassert.arrayEqual(r.getVar(\"facvar\"), idx);\n\t});\n});\n\ndescribe(\"Attribute\", () => {\n\tit(\"Names\", () => {\n\t\tr.setVar(\"numvar\", 2017);\n\t\tr.eval(\"names(numvar) = \\\"hello\\\"\");\n\t\tassert.equal(\"hello\", r.getVarNames(\"numvar\"));\n\n\t\tr.setVar(\"strvar\", \"kcrt\");\n\t\tr.setVarNames(\"strvar\", \"hello\");\n\t\tassert.equal(\"hello\", r.eval(\"names(strvar)\"));\n\n\t\tr.setVar(\"no_name_var\", \"test\");\n\t\tassert.strictEqual(r.getVarNames(\"no_name_var\"), void 0);\n\t});\n});\n\ndescribe(\"Basic calculation\", () => {\n\tit(\"+-*/\", () => {\n\t\tconst expression = [\n\t\t\t\"1 + 1\", \"10 + 20\", \"1984 + 2017\", \"-1 + 3\",\n\t\t\t\"1 - 1\", \"2 - 30\", \"0 - 5\", \"1 - (-3)\",\n\t\t\t\"1 * 1\", \"2 * 10\", \"1984 * 2017\", \"0 * 99999\", \"99999 * 99999\",\n\t\t\t\"8 / 4\", \"200 / 5\", \"4 / 3\", \"22 / 7\", \"0 / 100\"\n\t\t];\n\t\texpression.map((e) => {\n\t\t\tassert.almostEqual(eval(e), r.eval(e));\n\t\t});\n\t}),\n\tit(\"pow\", () => {\n\t\tassert.almostEqual(Math.pow(3, 15), r.eval(\"3^15\"));\n\t}),\n\tit(\"modulo\", () => {\n\t\tassert.almostEqual(1549 % 8, r.eval(\"1549 %% 8\"));\n\t});\n});\n\ndescribe(\"Math function\", () => {\n\tit(\"Trigonometric functions\", () => {\n\t\tassert.almostEqual(Math.sin(0), r.sin(0));\n\t\tassert.almostEqual(Math.sin(0.5), r.sin(0.5));\n\t\tassert.almostEqual(Math.cos(0), r.cos(0));\n\t\tassert.almostEqual(Math.cos(0.5), r.cos(0.5));\n\t\tassert.almostEqual(Math.tan(0), r.tan(0));\n\t\tassert.almostEqual(Math.tan(0.5), r.tan(0.5));\n\t});\n\tit(\"Array and functions\", () => {\n\t\tconst arr_1to100 = R.range(1, 101);\n\t\tconst sum_1to100 = arr_1to100.reduce((pre, v) => pre + v);\n\t\tassert.almostEqual(sum_1to100, r.sum(arr_1to100));\n\t\tassert.almostEqual(sum_1to100 / 100, r.mean(arr_1to100));\n\t});\n});\n\ndescribe(\"Function call with named arguments\", () => {\n\tit(\"Named arguments\", () => {\n\t\tassert.strictEqual(r.mean([1, 2, 3, undefined]), void 0);\n\t\tassert.strictEqual(r.mean([1, 2, 3, undefined], {\"na.rm\": true}), 2);\n\t});\n});\n\ndescribe(\"Long command\", () => {\n\tit(\"factorial\", () => {\n\t\tr.eval(`\n\t\t\tmyfactorial <- function(x) {\n\t\t\t\tif (x == 0) {\n\t\t\t\t\treturn(1)\n\t\t\t\t} else {\n\t\t\t\t\treturn(x * myfactorial(x - 1))\n\t\t\t\t}\n\t\t\t}\n\t\t`);\n\t\tlet factorial_50 = r.func(\"myfactorial\")(50);\n\t\tassert.equal(factorial_50, R.range(1, 51).reduce((pre, v) => pre * v));\n\t});\n});\n\ndescribe(\"Failing test\", () => {\n\tit(\"non existing variable\", () => {\n\t\tassert.strictEqual(r.getVar(\"non_exsisting_var\"), void 0);\n\t});\n\tit(\"Syntax error in eval\", () => {\n\t\tassert.throws(() => {r.eval(\"2 *+* 4\", true);}, Error);\n\t});\n\tit(\"Execution error in eval\", () => {\n\t\tassert.throws(() => {r.eval(\"1 <- 5\", true);}, Error);\n\t\tassert.ok(r.evalWithTry(\"1 <- 5\", true).startsWith(\"Error\"));\n\t});\n\tit(\"Execution error in function call\", () => {\n\t\tassert.throws(() => {r.func[\"stop\"](\"Test Error\");}, Error);\n\t});\n});\n\n/*\n * vim: filetype=javascript\n */\n",
+    "content": "import R from \"../R\";\nimport assert from \"assert\";\nimport assert_ext from \"./assert_ext\";\nimport Complex from \"Complex\";\nimport { RFactor, RIntArray } from \"../RObject\";\n\nvar r;\nassert_ext(assert);\n\ndescribe(\"Initialize\", () => {\n\tit(\"Initialize\", () => {\n\t\tr = new R();\n\t});\n});\n\ndescribe(\"Primitives\", () => {\n\tit(\"Integer\", () => {\n\t\tassert.equal(1, r.eval(\"as.integer(1)\"));\n\t\tassert.equal(0, r.eval(\"as.integer(0)\"));\n\t\tassert.equal(-1, r.eval(\"as.integer(-1)\"));\n\t\tr.setVar(\"numvar\", 2017);\n\t\tassert.equal(2017, r.getVar(\"numvar\"));\n\t\tassert.equal(2017, r.eval(\"numvar\"));\n\t\tr.setVar(\"intvar\", RIntArray.of(1));\n\t\tassert.equal(1, r.getVar(\"intvar\"));\n\t\tassert.equal(1, r.eval(\"intvar\"));\n\t\tassert.equal(\"integer\", r.eval(\"typeof(intvar)\"));\n\t});\n\tit(\"Real\", () => {\n\t\tassert.equal(1.0, r.eval(\"1.0\"));\n\t\tassert.equal(0.5, r.eval(\"0.5\"));\n\t});\n\tit(\"String\", () => {\n\t\tassert.equal(\"abc\", r.eval(\"\\\"abc\\\"\"));\n\t\tr.setVar(\"strvar\", \"kcrt\");\n\t\tassert.equal(\"kcrt\", r.getVar(\"strvar\"));\n\t\tassert.equal(\"kcrt\", r.eval(\"strvar\"));\n\t\tassert.equal(\"\", r.eval(\"\\\"\\\"\"));\n\t});\n\tit(\"Logical (Boolean)\", () => {\n\t\tassert.equal(true, r.eval(\"T\"));\n\t\tassert.equal(false, r.eval(\"F\"));\n\t\tassert.notEqual(false, r.eval(\"T\"));\n\t\tassert.notEqual(true, r.eval(\"F\"));\n\t\tr.setVar(\"logvar\", true);\n\t\tassert.ok(r.eval(\"logvar\"));\n\t});\n\tit(\"Complex\", () => {\n\t\tconst cpxvar = new Complex(1, 2);\n\t\tassert.ok(cpxvar.equals(r.eval(\"1+2i\")));\n\t\tr.setVar(\"cpxvar\", cpxvar);\n\t\tassert.equal(r.eval(\"Re(cpxvar)\"), cpxvar.real);\n\t\tassert.equal(r.eval(\"Im(cpxvar)\"), cpxvar.im);\n\t\tassert.equal(r.eval(\"abs(cpxvar)\"), cpxvar.abs());\n\t\tassert.equal(r.eval(\"Arg(cpxvar)\"), cpxvar.angle());\n\t\tassert.ok(r.eval(\"cpxvar^2\").equals(cpxvar.multiply(cpxvar)));\n\t});\n});\n\ndescribe(\"Special values\", () => {\n\tit(\"Empty vector\", () => {\n\t\tassert.equal(r.eval(\"vector(mode=\\\"numeric\\\", length=0)\").length, 0);\n\t\tr.setVar(\"empty_vector\", []);\n\t\tassert.equal(r.eval(\"length(empty_vector)\"), 0);\n\t});\n\tit(\"NA\", () => {\n\t\tassert.strictEqual(r.eval(\"NA\"), void 0);\n\t\tassert.arrayEqual(r.eval(\"c(1.1, 2.1, NA)\"), [1.1, 2.1, undefined]);\n\t\tassert.arrayEqual(r.eval(\"c(1:2, NA)\"), [1, 2, undefined]);\n\t\tassert.arrayEqual(r.eval(\"c('a', '', NA)\"), [\"a\", \"\", undefined]);\n\n\t\tr.setVar(\"NASingle\", void 0);\n\t\tr.setVar(\"NAReal\", [1.0, void 0]);\n\t\tr.setVar(\"NAStr\", [\"a\", void 0]);\n\t\tr.setVar(\"NABool\", [true, void 0]);\n\t\tassert.ok(r.eval(\"is.na(NASingle) && !is.nan(NASingle)\"));\n\t\tassert.ok(r.eval(\"is.na(NAReal[2]) && !is.nan(NAReal[2])\"));\n\t\tassert.ok(r.eval(\"is.na(NAStr[2]) && !is.nan(NAStr[2])\"));\n\t\tassert.ok(r.eval(\"is.na(NABool[2]) && !is.nan(NABool[2])\"));\n\t});\n\tit(\"NaN\", () => {\n\t\tassert.ok(isNaN(r.eval(\"NaN\")));\n\t\tassert.ok(isNaN(r.eval(\"0 / 0\")));\n\t});\n\tit(\"Inf\", () => {\n\t\tassert.strictEqual(r.eval(\"Inf\"), Infinity);\n\t\tassert.strictEqual(r.eval(\"-Inf\"), -Infinity);\n\t});\n});\n\ndescribe(\"Array\", () => {\n\tconst arr_1to100 = R.range(1, 101);\n\tit(\"ES Array <-> R Array\", () => {\n\t\tassert.arrayEqual([3, 2, 1], r.eval(\"as.integer(c(3, 2, 1))\"));\n\t\tassert.arrayEqual([1, 2, 3], r.c(1, 2, 3));\n\t\tassert.arrayEqual(arr_1to100, r.eval(\"1:100\"));\n\t\tr.setVar(\"myarr\", arr_1to100);\n\t\tassert.ok(r.eval(\"all.equal(myarr, 1:100)\"));\n\t\tassert.ok(!r.eval(\"isTRUE(all.equal(myarr, 2:101))\"));\n\t\tassert.arrayEqual(arr_1to100, r.getVar(\"myarr\"));\n\t});\n\tit(\"Int Array\", () => {\n\t\tassert.arrayEqual(new RIntArray(...arr_1to100), r.eval(\"1:100\"));\n\t});\n\tit(\"String Array\", () => {\n\t\tvar strArr = [\"abc\", \"def\", \"ghi\", \"jkl\", \"mno\"];\n\t\tassert.arrayEqual(strArr, r.eval(\"c(\\\"abc\\\", \\\"def\\\", \\\"ghi\\\", \\\"jkl\\\", \\\"mno\\\")\"));\n\t\tr.setVar(\"strArr\", strArr);\n\t\tassert.arrayEqual(strArr, r.getVar(\"strArr\"));\n\t});\n});\n\ndescribe(\"Factor\", () => {\n\tconst v = [\"apple\", \"banana\", \"apple\", undefined, \"orange\"];\n\tconst idx = [1, 2, 1, undefined, 3];\n\tit(\"Create factor\", () => {\n\t\tconst fac = new RFactor(v);\n\t\tassert.arrayEqual(fac, idx);\n\t\tr.setVar(\"facvar\", fac);\n\t\tassert.arrayEqual(r.getVar(\"facvar\"), idx);\n\t});\n\tit(\"Create ordered factor\", () => {\n\t\tconst fac = new RFactor(v, void 0, true);\n\t\tassert.arrayEqual(fac, idx);\n\t\tr.setVar(\"facvar\", fac);\n\t\tassert.arrayEqual(r.getVar(\"facvar\"), idx);\n\t});\n});\n\ndescribe(\"Attribute\", () => {\n\tit(\"Names\", () => {\n\t\tr.setVar(\"numvar\", 2017);\n\t\tr.eval(\"names(numvar) = \\\"hello\\\"\");\n\t\tassert.equal(\"hello\", r.getVarNames(\"numvar\"));\n\n\t\tr.setVar(\"strvar\", \"kcrt\");\n\t\tr.setVarNames(\"strvar\", \"hello\");\n\t\tassert.equal(\"hello\", r.eval(\"names(strvar)\"));\n\n\t\tr.setVar(\"no_name_var\", \"test\");\n\t\tassert.strictEqual(r.getVarNames(\"no_name_var\"), void 0);\n\t});\n});\n\ndescribe(\"Basic calculation\", () => {\n\tit(\"+-*/\", () => {\n\t\tconst expression = [\n\t\t\t\"1 + 1\", \"10 + 20\", \"1984 + 2017\", \"-1 + 3\",\n\t\t\t\"1 - 1\", \"2 - 30\", \"0 - 5\", \"1 - (-3)\",\n\t\t\t\"1 * 1\", \"2 * 10\", \"1984 * 2017\", \"0 * 99999\", \"99999 * 99999\",\n\t\t\t\"8 / 4\", \"200 / 5\", \"4 / 3\", \"22 / 7\", \"0 / 100\"\n\t\t];\n\t\texpression.map((e) => {\n\t\t\tassert.almostEqual(eval(e), r.eval(e));\n\t\t});\n\t}),\n\tit(\"pow\", () => {\n\t\tassert.almostEqual(Math.pow(3, 15), r.eval(\"3^15\"));\n\t}),\n\tit(\"modulo\", () => {\n\t\tassert.almostEqual(1549 % 8, r.eval(\"1549 %% 8\"));\n\t});\n});\n\ndescribe(\"Math function\", () => {\n\tit(\"Trigonometric functions\", () => {\n\t\tassert.almostEqual(Math.sin(0), r.sin(0));\n\t\tassert.almostEqual(Math.sin(0.5), r.sin(0.5));\n\t\tassert.almostEqual(Math.cos(0), r.cos(0));\n\t\tassert.almostEqual(Math.cos(0.5), r.cos(0.5));\n\t\tassert.almostEqual(Math.tan(0), r.tan(0));\n\t\tassert.almostEqual(Math.tan(0.5), r.tan(0.5));\n\t});\n\tit(\"Array and functions\", () => {\n\t\tconst arr_1to100 = R.range(1, 101);\n\t\tconst sum_1to100 = arr_1to100.reduce((pre, v) => pre + v);\n\t\tassert.almostEqual(sum_1to100, r.sum(arr_1to100));\n\t\tassert.almostEqual(sum_1to100 / 100, r.mean(arr_1to100));\n\t});\n});\n\ndescribe(\"Function call with named arguments\", () => {\n\tit(\"Named arguments\", () => {\n\t\tassert.strictEqual(r.mean([1, 2, 3, undefined]), void 0);\n\t\tassert.strictEqual(r.mean([1, 2, 3, undefined], {\"na.rm\": true}), 2);\n\t});\n});\n\ndescribe(\"Long command\", () => {\n\tit(\"factorial\", () => {\n\t\tr.eval(`\n\t\t\tmyfactorial <- function(x) {\n\t\t\t\tif (x == 0) {\n\t\t\t\t\treturn(1)\n\t\t\t\t} else {\n\t\t\t\t\treturn(x * myfactorial(x - 1))\n\t\t\t\t}\n\t\t\t}\n\t\t`);\n\t\tlet factorial_50 = r.func(\"myfactorial\")(50);\n\t\tassert.equal(factorial_50, R.range(1, 51).reduce((pre, v) => pre * v));\n\t});\n});\n\ndescribe(\"Failing test\", () => {\n\tit(\"non existing variable\", () => {\n\t\tassert.strictEqual(r.getVar(\"non_exsisting_var\"), void 0);\n\t});\n\tit(\"Syntax error in eval\", () => {\n\t\tassert.throws(() => {r.eval(\"2 *+* 4\", true);}, Error);\n\t});\n\tit(\"Execution error in eval\", () => {\n\t\tassert.throws(() => {r.eval(\"1 <- 5\", true);}, Error);\n\t\tassert.ok(r.evalWithTry(\"1 <- 5\", true).startsWith(\"Error\"));\n\t});\n\tit(\"Execution error in function call\", () => {\n\t\tassert.throws(() => {r.func[\"stop\"](\"Test Error\");}, Error);\n\t});\n});\n\n/*\n * vim: filetype=javascript\n */\n",
     "static": true,
     "longname": "/Users/kcrt/prog/libr-bridge/test/basic.mjs",
     "access": "public",
@@ -2809,7 +2958,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 154,
+    "__docId__": 162,
     "kind": "file",
     "name": "libr-bridge/test/callback.mjs",
     "content": "\nimport R from \"../R\";\nimport assert from \"assert\";\nimport assert_ext from \"./assert_ext\";\n\nvar r;\nassert_ext(assert);\n\ndescribe(\"Initialize\", () => {\n\tit(\"Initialize\", () => {\n\t\tr = new R();\n\t});\n});\n\ndescribe(\"Console\", () => {\n\tit(\"test console\", () => {\n\t\tr.overrideShowMessage( (msg) => console.log(\"[Message from R] \" + msg));\n\t\tr.overrideReadConsole( (_prompt) => \"Answer\" );\n\t\tr.overrideWriteConsole( (msg) => console.log(\"[R] \" + msg));\n\t\tr.print(\"Print from R\");\n\t\tconst readline = r.func(\"readline\");\n\t\tconst ans = readline(\"MyReadLine> \");\n\t\tassert.equal(ans, \"Answer\");\n\t});\n});\n\ndescribe(\"Busy\", () => {\n\tit(\"on Busy\", () => {\n\t\tr.overrideBusy((which) => console.log(\"[Busy status]: \" + which));\n\t});\n});\n\n/*\n * vim: filetype=javascript\n */\n",
@@ -2820,7 +2969,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 155,
+    "__docId__": 163,
     "kind": "file",
     "name": "libr-bridge/test/unicode.mjs",
     "content": "import R from \"../R\";\nimport assert from \"assert\";\nimport assert_ext from \"./assert_ext\";\n\nvar r;\nassert_ext(assert);\n\ndescribe(\"Initialize\", () => {\n\tit(\"Initialize\", () => {\n\t\tr = new R();\n\t});\n});\n\ndescribe(\"Unicode\", () => {\n\tit(\"Variable and value\", () => {\n\t\tr.setVar(\"挨拶\", \"こんにちわ\");\n\t\tassert.equal(r.getVar(\"挨拶\"), \"こんにちわ\");\n\t});\n});\n\n\n/*\n * vim: filetype=javascript\n */\n",
@@ -2840,7 +2989,7 @@
   },
   {
     "kind": "packageJSON",
-    "content": "{\n    \"name\": \"libr-bridge\",\n    \"version\": \"0.1.5\",\n    \"description\": \"Use libR from node.js\",\n    \"main\": \"index\",\n    \"scripts\": {\n        \"doc\": \"rm -R doc; ./node_modules/.bin/esdoc; cp ./logo.png doc\",\n        \"test\": \"./node_modules/.bin/mocha-esm test/*.mjs\",\n        \"debug-test\": \"DEBUG=libr-bridge:* ./node_modules/.bin/mocha-esm  test/*.mjs\",\n        \"run-develop\": \"DEBUG=libr-bridge:* node -r esm develop.mjs\",\n        \"debug-develop\": \"node --inspect-brk -r esm develop.mjs\",\n\t\t\"lint\": \"./node_modules/.bin/eslint --ext .js,.mjs .\"\n    },\n    \"repository\": {\n        \"type\": \"git\",\n        \"url\": \"https://github.com/kcrt/libr-bridge.git\"\n    },\n    \"author\": \"kcrt\",\n    \"license\": \"MIT\",\n    \"dependencies\": {\n        \"Complex\": \"^3.0.0\",\n        \"esm\": \"^3.0.62\",\n        \"ffi\": \"https://github.com/kcrt/node-ffi.git\",\n        \"node-gyp\": \"^3\",\n        \"ref-array\": \"^1\",\n        \"ref-struct\": \"^1.1.0\",\n        \"windows-registry\": \"^0.1.3\"\n    },\n    \"devDependencies\": {\n        \"esdoc\": \"^1\",\n        \"esdoc-ecmascript-proposal-plugin\": \"^1.0.0\",\n        \"esdoc-importpath-plugin\": \"^1\",\n        \"esdoc-standard-plugin\": \"^1\",\n        \"eslint\": \"^5.2.0\",\n        \"mocha\": \"^3\",\n        \"mocha-esm\": \"^1.0.2\"\n    }\n}\n",
+    "content": "{\n    \"name\": \"libr-bridge\",\n    \"version\": \"0.1.6\",\n    \"description\": \"Use libR from node.js\",\n    \"main\": \"index\",\n    \"scripts\": {\n        \"doc\": \"rm -R doc; ./node_modules/.bin/esdoc; cp ./logo.png doc\",\n        \"test\": \"./node_modules/.bin/mocha-esm test/*.mjs\",\n        \"debug-test\": \"DEBUG=libr-bridge:* ./node_modules/.bin/mocha-esm  test/*.mjs\",\n        \"run-develop\": \"DEBUG=libr-bridge:* node -r esm develop.mjs\",\n        \"debug-develop\": \"node --inspect-brk -r esm develop.mjs\",\n\t\t\"lint\": \"./node_modules/.bin/eslint --ext .js,.mjs .\"\n    },\n    \"repository\": {\n        \"type\": \"git\",\n        \"url\": \"https://github.com/kcrt/libr-bridge.git\"\n    },\n    \"author\": \"kcrt\",\n    \"license\": \"MIT\",\n    \"dependencies\": {\n        \"Complex\": \"^3.0.0\",\n        \"esm\": \"^3.0.62\",\n        \"ffi\": \"https://github.com/kcrt/node-ffi.git\",\n        \"node-gyp\": \"^3\",\n        \"ref-array\": \"^1\",\n        \"ref-struct\": \"^1.1.0\",\n        \"windows-registry\": \"^0.1.3\"\n    },\n    \"devDependencies\": {\n        \"esdoc\": \"^1\",\n        \"esdoc-ecmascript-proposal-plugin\": \"^1.0.0\",\n        \"esdoc-importpath-plugin\": \"^1\",\n        \"esdoc-standard-plugin\": \"^1\",\n        \"eslint\": \"^5.2.0\",\n        \"mocha\": \"^3\",\n        \"mocha-esm\": \"^1.0.2\"\n    }\n}\n",
     "longname": "/Users/kcrt/prog/libr-bridge/package.json",
     "name": "package.json",
     "static": true,

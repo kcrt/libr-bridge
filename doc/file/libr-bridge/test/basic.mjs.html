@@ -30,7 +30,14 @@
   <ul>
     
   <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/libr-bridge/R.mjs~R.html">R</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/libr-bridge/RObject.mjs~RArray.html">RArray</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/libr-bridge/RObject.mjs~RBoolArray.html">RBoolArray</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/libr-bridge/RObject.mjs~RComplexArray.html">RComplexArray</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/libr-bridge/RObject.mjs~RFactor.html">RFactor</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/libr-bridge/RObject.mjs~RIntArray.html">RIntArray</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/libr-bridge/RObject.mjs~RList.html">RList</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/libr-bridge/RObject.mjs~RRealArray.html">RRealArray</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/libr-bridge/RObject.mjs~RStrArray.html">RStrArray</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/libr-bridge/SEXPWrap.mjs~SEXPWrap.html">SEXPWrap</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-createLibR">createLibR</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-ComplexInR">ComplexInR</a></span></span></li>
@@ -49,7 +56,7 @@
 import assert from &quot;assert&quot;;
 import assert_ext from &quot;./assert_ext&quot;;
 import Complex from &quot;Complex&quot;;
-import { RFactor } from &quot;../RObject&quot;;
+import { RFactor, RIntArray } from &quot;../RObject&quot;;
 
 var r;
 assert_ext(assert);
@@ -68,6 +75,10 @@ describe(&quot;Primitives&quot;, () =&gt; {
 		r.setVar(&quot;numvar&quot;, 2017);
 		assert.equal(2017, r.getVar(&quot;numvar&quot;));
 		assert.equal(2017, r.eval(&quot;numvar&quot;));
+		r.setVar(&quot;intvar&quot;, RIntArray.of(1));
+		assert.equal(1, r.getVar(&quot;intvar&quot;));
+		assert.equal(1, r.eval(&quot;intvar&quot;));
+		assert.equal(&quot;integer&quot;, r.eval(&quot;typeof(intvar)&quot;));
 	});
 	it(&quot;Real&quot;, () =&gt; {
 		assert.equal(1.0, r.eval(&quot;1.0&quot;));
@@ -142,6 +153,9 @@ describe(&quot;Array&quot;, () =&gt; {
 		assert.ok(!r.eval(&quot;isTRUE(all.equal(myarr, 2:101))&quot;));
 		assert.arrayEqual(arr_1to100, r.getVar(&quot;myarr&quot;));
 	});
+	it(&quot;Int Array&quot;, () =&gt; {
+		assert.arrayEqual(new RIntArray(...arr_1to100), r.eval(&quot;1:100&quot;));
+	});
 	it(&quot;String Array&quot;, () =&gt; {
 		var strArr = [&quot;abc&quot;, &quot;def&quot;, &quot;ghi&quot;, &quot;jkl&quot;, &quot;mno&quot;];
 		assert.arrayEqual(strArr, r.eval(&quot;c(\&quot;abc\&quot;, \&quot;def\&quot;, \&quot;ghi\&quot;, \&quot;jkl\&quot;, \&quot;mno\&quot;)&quot;));
@@ -149,7 +163,6 @@ describe(&quot;Array&quot;, () =&gt; {
 		assert.arrayEqual(strArr, r.getVar(&quot;strArr&quot;));
 	});
 });
-
 
 describe(&quot;Factor&quot;, () =&gt; {
 	const v = [&quot;apple&quot;, &quot;banana&quot;, &quot;apple&quot;, undefined, &quot;orange&quot;];
