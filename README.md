@@ -62,6 +62,9 @@ r.eval(`
 `);
 let factorial_50 = r.func("myfactorial")(50);
 console.log(factorial_50);
+
+console.log(r.eval("iris"));
+
 ```
 
 API
@@ -80,7 +83,7 @@ My TODO list
 ----------------------------------------
 
  - [x] Factor
- - [ ] Dataframe
+ - [x] Dataframe
  - [x] Console handling
  - [ ] S3 class
  - [ ] S4 class

@@ -61,7 +61,7 @@ export default class R{
 		let funclist = ["print", "require", "mean", "cor", "var", "sd", "sqrt", "IQR", "min", "max",
 			"range", "fisher.test", "t.test", "wilcox.test", "prop.test", "var.test", "p.adjust",
 			"sin", "cos", "tan", "sum", "c",
-			"is.na", "is.nan", "write.csv"];
+			"is.na", "is.nan", "write.csv", "data.frame"];
 		funclist.map((e) => {this[e] = this.func(e);});
 	}
 	/**
@@ -106,7 +106,7 @@ export default class R{
 	 * @see {@link R#func}
 	 */
 	func_raw(name){
-		return this._RFuncBridgeRaw.bind(this, this.__func_sexp(name));
+		return this.__RFuncBridge_raw.bind(this, this.__func_sexp(name));
 	}
 	/**
 	 * Find functions in R environment.
@@ -117,7 +117,8 @@ export default class R{
 	 */
 	__func_sexp(name){
 		if(!(name in func_cached)){
-			func_cached[name] = new SEXPWrap(libR.Rf_findFun(libR.Rf_install(name), R.GlobalEnv));
+			const func_sexp = libR.Rf_findFun(libR.Rf_install(name), R.GlobalEnv);
+			func_cached[name] = new SEXPWrap(func_sexp);
 			func_cached[name].preserve();			// Unfortunately, we have no destructor in JavaScript....
 		}
 		return func_cached[name];

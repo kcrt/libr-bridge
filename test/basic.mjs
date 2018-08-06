@@ -2,7 +2,7 @@ import R from "../R";
 import assert from "assert";
 import assert_ext from "./assert_ext";
 import Complex from "Complex";
-import { RFactor, RIntArray } from "../RObject";
+import { RFactor, RIntArray, RDataFrame } from "../RObject";
 
 var r;
 assert_ext(assert);
@@ -124,6 +124,29 @@ describe("Factor", () => {
 		assert.arrayEqual(fac, idx);
 		r.setVar("facvar", fac);
 		assert.arrayEqual(r.getVar("facvar"), idx);
+	});
+});
+
+describe("Data frame", () => {
+	const data = {
+		"id": [ 12345, 23456, 34567],
+		"Name": ["apple", "banana", "orange"],
+		"Color": new RFactor(["red", "yellow", "orange"])
+	};
+	const data2 = new Map([
+		["id", [ 12345, 23456, 34567]],
+		["Name", ["apple", "banana", "orange"]],
+		["Color", new RFactor(["red", "yellow", "orange"])]
+	]);
+	it("Create data frame", () => {
+		r.setVar("mydataframe", new RDataFrame(data));
+		assert.arrayEqual(data.id, r.getVar("mydataframe").get("id"));
+		r.setVar("mydataframe", new RDataFrame(data2));
+		assert.arrayEqual(data.Name, r.getVar("mydataframe").get("Name"));
+		assert.notEqual(r.eval("iris").get("Species").levels.indexOf("versicolor"), -1);
+	});
+	it("Invalid data frame", () => {
+		assert.throws(() => {r.setVar("test", {"id": [1, 2], "Name": "kcrt"});}, Error);
 	});
 });
 

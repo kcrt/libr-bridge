@@ -3,7 +3,7 @@ import ref from "ref";
 import Complex from "Complex";
 import R from "./R";
 import {SEXPTYPE, ComplexInR, cetype_t} from "./libR";
-import { RFactor, RArray, RBoolArray, RStrArray, RIntArray, RRealArray, RComplexArray } from "./RObject";
+import { RFactor, RDataFrame, RArray, RBoolArray, RStrArray, RIntArray, RRealArray, RComplexArray } from "./RObject";
 import debug_ from "debug";
 const debug = debug_("libr-bridge:class SEXPWrap");
 
@@ -19,33 +19,41 @@ export default class SEXPWrap {
 			this.__initializeWithValue(value);
 		}
 	}
+	toString(){
+		return "[SEXP]";
+	}
 	/**
 	 *	Initialize this instance with specified value.
 	 *	@private
 	 */
 	__initializeWithValue(value){
 
-		if(!Array.isArray(value)){
+		if(value === []){
+			debug("[]: " + value);
+		}
+		if(value instanceof RDataFrame){
+			/* it is ok. */
+		}else if(!Array.isArray(value)){
 			// not an array.
 			// convert to array and try again.
 			// (You can use Rf_mkString, Rf_ScalarReal, Rf_ScalarLogical if you don't want SEXPWrap)
 			return this.__initializeWithValue([value]);
-		}else if(value.length == 0){
+		}else if(value.length === 0){
 			this.sexp = R.R_NilValue;
-		}
-
-		if(!(value instanceof RArray)){
-			// Javascript normal array.
+		}else if(!(value instanceof RArray)){
+			// Javascript normal array. (not RArray)
 			// Need to determine type of array.
-			if(typeof(value[0]) == "number" || value[0] === void 0){
+			if(typeof(value[0]) === "number" || value[0] === void 0){
 				value = RRealArray.of(...value);
-			}else if(typeof(value[0]) == "boolean"){
+			}else if(typeof(value[0]) === "boolean"){
 				value = RBoolArray.of(...value);
-			}else if(typeof(value[0]) == "string"){
+			}else if(typeof(value[0]) === "string"){
 				value = RStrArray.of(...value);
 			}else if(value[0] instanceof Complex){
 				value = RComplexArray.of(...value);
 			}else{
+				debug("Cannot recognize " + typeof(value[0]));
+				debug("value is: " + value);
 				throw new Error("Unknown type of array.");
 			}
 		}
@@ -89,13 +97,7 @@ export default class SEXPWrap {
 			this.protect();
 			let p = ref.reinterpret(this.dataptr(), ref.types.int.size * value.length);
 			value.map((e, i) => {
-				let value;
-				if(e === void 0){
-					// It's NA
-					value = R.R_NaInt;
-				}else{
-					value = e ? 1 : 0;
-				}
+				const value = e === void 0 ? R.R_NaInt : ( e ? 1 : 0 );
 				ref.set(p, ref.types.int.size * i, value, ref.types.int);
 			});
 			this.unprotect();
@@ -121,6 +123,28 @@ export default class SEXPWrap {
 					ref.set(p, ComplexInR.size * i, e, ComplexInR);
 				});
 			this.unprotect();
+		}else if(value instanceof RDataFrame){
+			let dfitem_sexp = [];
+			for (var [k, v] of value){
+				const v_sexp = new SEXPWrap(v);
+				v_sexp.protect();
+				v_sexp.argtag = k;
+				dfitem_sexp.push(v_sexp);
+			}
+			const false_sexp = new SEXPWrap(false);
+			false_sexp.protect();
+			false_sexp.argtag = "stringsAsFactors";
+			dfitem_sexp.push(false_sexp);
+			const r = new R();
+			const dataFrame = r.func_raw("data.frame");
+			const df_sexp = dataFrame(...dfitem_sexp);
+			df_sexp.protect();
+			for (const item in value){
+				df_sexp[item].unprotect();
+			}
+			false_sexp.unprotect();
+			this.sexp = df_sexp.sexp;
+			df_sexp.unprotect();
 		}else{
 			console.log("Cannot convert " + typeof(value) + " in JavaScript to R SEXP / " + value);
 		}
@@ -149,15 +173,20 @@ export default class SEXPWrap {
 	isReal(){ return R.libR.Rf_isReal(this.sexp); }
 	isValidString(){ return R.libR.Rf_isValidString(this.sexp); }
 	isFactor(){ return R.libR.Rf_isFactor(this.sexp); }
+	isFrame(){ return R.libR.Rf_isFrame(this.sexp); }
+	isSymbol(){ return R.libR.Rf_isSymbol(this.sexp); }
+	isFunction(){ return R.libR.Rf_isFunction(this.sexp); }
 	dataptr(){ return R.libR.DATAPTR(this.sexp); }
+	getType(){ return R.libR.TYPEOF(this.sexp); } 
 	asChar(){
 		if(this.sexp.address() == R.R_NaString.sexp.address()){ return void 0;}
 		if(this.sexp.address() == R.R_BlankString.sexp.address()){ return "";}
 		return R.libR.Rf_translateCharUTF8(R.libR.Rf_asChar(this.sexp)).slice();
 	}
 	/** Return sizeof(SEXP) in byte. */
-	static get SEXPSize(){
-		if(sexpSize == void 0){
+	get SEXPSize(){
+		console.log("!!!");
+		if(sexpSize === void 0){
 			const intSEXP = new SEXPWrap(0);
 			sexpSize = intSEXP.dataptr().address() - intSEXP.sexp.address();
 		}
@@ -204,6 +233,15 @@ export default class SEXPWrap {
 			});*/
 			console.log("LIST NOT SUPPORTED");
 			return undefined;
+		}else if(this.isFrame()){
+			// DataFrame is Vector of vectors.
+			const names = this.names;
+			const values = new Map();
+			R.range(0, len).map( (i) => {
+				const px = new SEXPWrap(R.libR.VECTOR_ELT(this.sexp, i));
+				values.set(names[i], px.getValue());
+			});
+			return values;
 		}else if(this.isVector()){		// be careful; is.vector(1) is even True
 			let itemtype;
 			let values = [];
@@ -250,8 +288,19 @@ export default class SEXPWrap {
 				values = ["Unsupported vector item!"];
 			}
 			return values.length == 1 ? values[0] : values;
+		}else if(this.isSymbol()){
+			return "[R Symbol]";
+		}else if(this.isFunction()){
+			return "[R Function]";
 		}else{
-			return "unknown type!";
+			switch(this.getType()){
+			case 5:
+				debug("Promissed value: Get before evaluation");
+				return "[Promiss: Unevaluated value]";
+			default:
+				debug("Unknown type: " + this.getType());
+				return "[unknown type]";
+			}
 		}
 	}
 	_getValue_scalar(sexp){

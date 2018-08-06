@@ -14,7 +14,7 @@
  * Please use appropriate deriverd class if possible.
  */
 export class RArray extends Array{
-	// nothing special.
+	// nothing special. It's only an alias.
 }
 export class RIntArray extends RArray{
 }
@@ -26,6 +26,7 @@ export class RRealArray extends RArray{
 }
 export class RComplexArray extends RArray{
 }
+
 /**
  * JavaScript class for R Factor type.
  * A factor has numerical(integer) array with keys.
@@ -70,20 +71,40 @@ export class RFactor extends RArray{
 
 /**
  * JavaScript class for R Data Frame type.
- * With a data frame, we can  is able to contain different type of items.
+ * With a data frame, we can perform data analysis.
  */
-export class RList extends Array{
+export class RDataFrame extends Map{
+	/**
+	 * Create RDataFrame from object.
+	 * e.g.:
+	 *	{
+	 *		"id": [ 12345, 23456, 34567 ],
+	 *		"Name": ["apple", "banana", "orange"],
+	 *		"Color": ["red", "yellow", "orange"]
+	 *	}
+	 *	or, use Map.
+	 * Please take care that all items in the data frame have same number of items.
+	 */
 	constructor(data){
-		console.assert(Array.isArray(data));
 
-		// JavaScript Array can contain dirrent type of items, so do nothing special.
-		// However, array with 1-numerical item cannot be made with normal way.
-		if(data.length === 1 && typeof(data[0]) === "number"){
-			super(1984, data[0]);
-			this.pop();
-		}else{
-			super(...data);
+		console.assert(typeof(data) === "object");
+
+		if(!(data instanceof Map)){
+			// Object -> Map
+			data = new Map(Object.entries(data));
 		}
+
+		// check if all members have same length.
+		let length_of_item = [];
+		for(const item in data){
+			length_of_item.push(data[item].length);
+		}
+		if(length_of_item.some((n) => n !== length_of_item[0])){
+			console.log(length_of_item);
+			throw new Error("Vector size mismatch.");
+		}
+		
+		super(data);
 	}
 }
 

@@ -123,6 +123,8 @@ const apiList = {
 	"Rf_isString": ["int", [SEXP]],						// Rboolean Rf_isString(SEXP);
 	"Rf_isValidString": ["int", [SEXP]],				// Rboolean Rf_isValidString(SEXP);
 	"Rf_isVector": ["int", [SEXP]],						// Rboolean Rf_isVector(SEXP);
+	"Rf_isFrame": ["int", [SEXP]],						// Rboolean Rf_isFrame(SEXP);
+	"Rf_isSymbol": ["int", [SEXP]],						// Rboolean Rf_isSymbol(SEXP);
 	"Rf_lang1": [SEXP, [SEXP]],
 	"Rf_lang2": [SEXP, [SEXP, SEXP]],
 	"Rf_lang3": [SEXP, [SEXP, SEXP, SEXP]],
