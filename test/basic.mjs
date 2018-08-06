@@ -2,7 +2,7 @@ import R from "../R";
 import assert from "assert";
 import assert_ext from "./assert_ext";
 import Complex from "Complex";
-import { RFactor } from "../RObject";
+import { RFactor, RIntArray } from "../RObject";
 
 var r;
 assert_ext(assert);
@@ -21,6 +21,10 @@ describe("Primitives", () => {
 		r.setVar("numvar", 2017);
 		assert.equal(2017, r.getVar("numvar"));
 		assert.equal(2017, r.eval("numvar"));
+		r.setVar("intvar", RIntArray.of(1));
+		assert.equal(1, r.getVar("intvar"));
+		assert.equal(1, r.eval("intvar"));
+		assert.equal("integer", r.eval("typeof(intvar)"));
 	});
 	it("Real", () => {
 		assert.equal(1.0, r.eval("1.0"));
@@ -95,6 +99,9 @@ describe("Array", () => {
 		assert.ok(!r.eval("isTRUE(all.equal(myarr, 2:101))"));
 		assert.arrayEqual(arr_1to100, r.getVar("myarr"));
 	});
+	it("Int Array", () => {
+		assert.arrayEqual(new RIntArray(...arr_1to100), r.eval("1:100"));
+	});
 	it("String Array", () => {
 		var strArr = ["abc", "def", "ghi", "jkl", "mno"];
 		assert.arrayEqual(strArr, r.eval("c(\"abc\", \"def\", \"ghi\", \"jkl\", \"mno\")"));
@@ -102,7 +109,6 @@ describe("Array", () => {
 		assert.arrayEqual(strArr, r.getVar("strArr"));
 	});
 });
-
 
 describe("Factor", () => {
 	const v = ["apple", "banana", "apple", undefined, "orange"];

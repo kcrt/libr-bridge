@@ -3,7 +3,7 @@ import ref from "ref";
 import Complex from "Complex";
 import R from "./R";
 import {SEXPTYPE, ComplexInR, cetype_t} from "./libR";
-import { RFactor } from "./RObject";
+import { RFactor, RArray, RBoolArray, RStrArray, RIntArray, RRealArray, RComplexArray } from "./RObject";
 import debug_ from "debug";
 const debug = debug_("libr-bridge:class SEXPWrap");
 
@@ -24,14 +24,33 @@ export default class SEXPWrap {
 	 *	@private
 	 */
 	__initializeWithValue(value){
+
 		if(!Array.isArray(value)){
 			// not an array.
 			// convert to array and try again.
 			// (You can use Rf_mkString, Rf_ScalarReal, Rf_ScalarLogical if you don't want SEXPWrap)
-			this.__initializeWithValue([value]);
+			return this.__initializeWithValue([value]);
 		}else if(value.length == 0){
 			this.sexp = R.R_NilValue;
-		}else if(value instanceof RFactor){
+		}
+
+		if(!(value instanceof RArray)){
+			// Javascript normal array.
+			// Need to determine type of array.
+			if(typeof(value[0]) == "number" || value[0] === void 0){
+				value = RRealArray.of(...value);
+			}else if(typeof(value[0]) == "boolean"){
+				value = RBoolArray.of(...value);
+			}else if(typeof(value[0]) == "string"){
+				value = RStrArray.of(...value);
+			}else if(value[0] instanceof Complex){
+				value = RComplexArray.of(...value);
+			}else{
+				throw new Error("Unknown type of array.");
+			}
+		}
+		
+		if(value instanceof RFactor || value instanceof RIntArray){
 			// Factor is actually an 1-origin integers with attributes.
 			this.sexp = R.libR.Rf_allocVector(SEXPTYPE.INTSXP, value.length);
 			this.protect();
@@ -43,11 +62,13 @@ export default class SEXPWrap {
 				);
 			});
 
-			// add atribute
-			this.setAttribute("class", value.ordered ? ["factor", "ordered"] : "factor");
-			this.setAttribute("levels", value.levels);
+			if(value instanceof RFactor){
+				// add atribute
+				this.setAttribute("class", value.ordered ? ["factor", "ordered"] : "factor");
+				this.setAttribute("levels", value.levels);
+			}
 			this.unprotect();
-		}else if(typeof(value[0]) == "number" || typeof(value[0]) == "undefined"){
+		}else if(value instanceof RRealArray){
 			// assume this is array of numbers (e.g. [1, 2, 3, ...])
 			this.sexp = R.libR.Rf_allocVector(SEXPTYPE.REALSXP, value.length);
 			this.protect();
@@ -61,7 +82,7 @@ export default class SEXPWrap {
 				if(e === void 0){ ref.set(p, ref.types.int.size * i * 2, 1954, ref.types.int); }
 			});
 			this.unprotect();
-		}else if(typeof(value[0]) == "boolean"){
+		}else if(value instanceof RBoolArray){
 			// assume this is array of boolean (e.g. [false, true, true, ...])
 			// to handle NA, we use int instead of bool.
 			this.sexp = R.libR.Rf_allocVector(SEXPTYPE.LGLSXP, value.length);
@@ -78,7 +99,7 @@ export default class SEXPWrap {
 				ref.set(p, ref.types.int.size * i, value, ref.types.int);
 			});
 			this.unprotect();
-		}else if(typeof(value[0]) == "string"){
+		}else if(value instanceof RStrArray){
 			// assuming this is array of strings (e.g. ["abc", "def", ...])
 			this.sexp = R.libR.Rf_allocVector(SEXPTYPE.STRSXP, value.length);
 			this.protect();
@@ -90,7 +111,7 @@ export default class SEXPWrap {
 				}
 			});
 			this.unprotect();
-		}else if(value[0] instanceof Complex){
+		}else if(value instanceof RComplexArray){
 			this.sexp = R.libR.Rf_allocVector(SEXPTYPE.CPLXSXP, value.length);
 			this.protect();
 			let p = ref.reinterpret(this.dataptr(), ComplexInR.size * value.length);
