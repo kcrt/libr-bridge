@@ -1,4 +1,5 @@
 "use strict";
+import util from "util";
 import ref from "ref";
 import Complex from "Complex";
 import R from "./R";
@@ -59,6 +60,10 @@ export default class SEXPWrap {
 		}
 		
 		if(value instanceof RFactor || value instanceof RIntArray){
+			// Check if RFactor is proxy (asString)
+			if(value instanceof RFactor && util.types.isProxy(value)){
+				value = value["Unproxy"];
+			}
 			// Factor is actually an 1-origin integers with attributes.
 			this.sexp = R.libR.Rf_allocVector(SEXPTYPE.INTSXP, value.length);
 			this.protect();

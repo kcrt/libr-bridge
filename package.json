@@ -1,6 +1,6 @@
 {
     "name": "libr-bridge",
-    "version": "0.1.8",
+    "version": "0.1.9",
     "description": "Use libR from node.js",
     "main": "index",
     "scripts": {

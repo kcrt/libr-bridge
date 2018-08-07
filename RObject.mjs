@@ -72,12 +72,14 @@ export class RFactor extends RArray{
 	 */
 	asString(){
 		return new Proxy(this, {
-			get: (target, prop, _receiver) => {
+			get: (target, prop, receiver) => {
 				if(typeof(prop) === "string" && Number(prop) === prop * 1 ){
 					const i = target[prop];
 					return i ? this.levels[i - 1] : undefined;
+				}else if (prop === "Unproxy"){
+					return target;
 				}else{
-					return target[prop];
+					return Reflect.get(target, prop, receiver);
 				}
 			}
 		});
