@@ -116,6 +116,7 @@ describe("Factor", () => {
 	it("Create factor", () => {
 		const fac = new RFactor(v);
 		assert.arrayEqual(fac, idx);
+		assert.arrayEqual(fac.asString(), v);
 		r.setVar("facvar", fac);
 		assert.arrayEqual(r.getVar("facvar"), idx);
 	});

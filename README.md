@@ -10,7 +10,7 @@ Bridging module: JavaScript < - > R
 
 Sorry! It's under development.
 ----------------------------------------
-  * Some important features including factor, dataframe, console handling, S3/S4 object handling and expression are not supported yet!
+  * Some important features including S3/S4 object handling and expression are not supported yet!
   * Incompatible API changes may be held.
   * Please do not use in the production environment until specifications are fixed.
   * Pull requests are always welcome.

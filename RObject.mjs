@@ -6,8 +6,8 @@
 // import {REALSXP} from "./libR";
 // import SEXPWrap from "./SEXPWrap";
 
-// import debug_ from "debug";
-// const debug = debug_("libr-bridge:RObject");
+import debug_ from "debug";
+const debug = debug_("libr-bridge:RObject");
 
 /**
  * JavaScript class for R Array type.
@@ -65,6 +65,22 @@ export class RFactor extends RArray{
 		this.levels = mylevels;
 		this.ordered = ordered;
 
+	}
+
+	/**
+	 * Return proxy object which returns factor in String.
+	 */
+	asString(){
+		return new Proxy(this, {
+			get: (target, prop, _receiver) => {
+				if(typeof(prop) === "string" && Number(prop) === prop * 1 ){
+					const i = target[prop];
+					return i ? this.levels[i - 1] : undefined;
+				}else{
+					return target[prop];
+				}
+			}
+		});
 	}
 }
 
